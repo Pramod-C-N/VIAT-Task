@@ -1,0 +1,115 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Active Currency' | localize) "
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="Activecurrency_Entity">{{ l('Entity') }}</label>
+                    <input
+                        type="text"
+                        #Activecurrency_Entity="ngModel"
+                        id="Activecurrency_Entity"
+                        class="form-control"
+                        [(ngModel)]="activecurrency.entity"
+                        name="Entity"
+                    />
+                    <validation-messages [formCtrl]="Activecurrency_Entity"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Activecurrency_Currency">{{ l('Currency') }}</label>
+                    <input
+                        type="text"
+                        #Activecurrency_Currency="ngModel"
+                        id="Activecurrency_Currency"
+                        class="form-control"
+                        [(ngModel)]="activecurrency.currency"
+                        name="Currency"
+                    />
+                    <validation-messages [formCtrl]="Activecurrency_Currency"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Activecurrency_AlphabeticCode">{{ l('AlphabeticCode') }}</label>
+                    <input
+                        type="text"
+                        #Activecurrency_AlphabeticCode="ngModel"
+                        id="Activecurrency_AlphabeticCode"
+                        class="form-control"
+                        [(ngModel)]="activecurrency.alphabeticCode"
+                        name="AlphabeticCode"
+                    />
+                    <validation-messages [formCtrl]="Activecurrency_AlphabeticCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Activecurrency_NumericCode">{{ l('NumericCode') }}</label>
+                    <input
+                        type="text"
+                        #Activecurrency_NumericCode="ngModel"
+                        id="Activecurrency_NumericCode"
+                        class="form-control"
+                        [(ngModel)]="activecurrency.numericCode"
+                        name="NumericCode"
+                    />
+                    <validation-messages [formCtrl]="Activecurrency_NumericCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Activecurrency_MinorUnit">{{ l('MinorUnit') }}</label>
+                    <input
+                        type="text"
+                        #Activecurrency_MinorUnit="ngModel"
+                        id="Activecurrency_MinorUnit"
+                        class="form-control"
+                        [(ngModel)]="activecurrency.minorUnit"
+                        name="MinorUnit"
+                    />
+                    <validation-messages [formCtrl]="Activecurrency_MinorUnit"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="Activecurrency_IsActive"
+                        #Activecurrency_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="activecurrency.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="Activecurrency_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.activecurrency.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

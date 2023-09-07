@@ -1,0 +1,221 @@
+﻿<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Customer Dashboard' | localize">
+        <div role="actions">
+            <a href="/app/main/customers/createCustomers" class="btn btn-primary">
+                <i class="fa fa-plus btn-md-icon"></i>
+                <span class="d-none d-md-inline-block">
+                    {{ 'Create Customer' | localize }}
+                </span>
+            </a>
+        </div>
+    </sub-header>
+    <div class="primeng-datatable-container container-fluid">
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <form class="form" autocomplete="new-password">                       
+                    </form>
+                    <div class="primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
+                        <p-table
+                            #dataTableAuditLogs
+                            sortMode="multiple"
+                            [value]="customers"
+                            [paginator]="true"
+                            [rows]="10"
+                            [showCurrentPageReport]="true"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [rowsPerPageOptions]="[5, 10, 15, 20]"
+                            [globalFilterFields]="['id', 'name', 'tenantType','constitutionType','contactNumber','nationality']"
+
+                        >
+                            >
+                            <ng-template pTemplate="caption">
+
+                                <form class="form" autocomplete="off">
+                                    <div>
+                                        <div class="row align-items-center mb-4">
+                                            <div class="col-xl-12">
+                                                <div class="mb-5 m-form__group align-items-center">
+                                                    <div class="input-group">
+                                                        <input
+                                                            name="filterText"
+                                                            autoFocus
+                                                            class="form-control m-input"
+                                                            [placeholder]="l('SearchWithThreeDot')"
+                                                            type="text"
+                                                            [(ngModel)]="searchQuery"
+                                                            (input)="dataTableAuditLogs.filterGlobal($event.target.value, 'contains')"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row" [hidden]="!advancedFiltersAreShown">
+                                            <div class="col-md-12"> </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label" for="filterText">{{ l('Id') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'id', 'contains')"
+                                            />                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Name') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'name', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Tenant Type') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'tenantType', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Constitution Type') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value,'constitutionType','contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Nationality') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value,'nationality', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Contact No') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'contactNumber','contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="row my-4">
+                                            <div class="col-sm-12">
+                                                <span
+                                                    class="clickable-item text-muted"
+                                                    *ngIf="!advancedFiltersAreShown"
+                                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                                >
+                                                    <i class="fa fa-angle-down"></i>
+                                                    {{ l('ShowAdvancedFilters') }}
+                                                </span>
+                                                <span
+                                                    class="clickable-item text-muted"
+                                                    *ngIf="advancedFiltersAreShown"
+                                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                                >
+                                                    <i class="fa fa-angle-up"></i>
+                                                    {{ l('HideAdvancedFilters') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th class="w-150px">
+                                        {{ 'Id' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                        {{ 'Name' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                        {{ 'Tenant Type' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                        {{ 'Constitution Type' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                        {{ 'Contact No' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                        {{ 'Nationality' | localize }}
+                                    </th>
+                                    <th class="w-150px">
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-record="$implicit">
+                                <tr>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left"  ></span>
+                                        {{ record.id }}
+                                    </td>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left" ></span>
+                                        {{ record.name }}
+                                    </td>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left" ></span>
+                                        {{ record.tenantType }}
+                                    </td>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left" ></span>
+                                        {{ record.constitutionType }}
+                                    </td>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left" ></span>
+                                        {{ record.contactNumber }}
+                                    </td>
+                                    <td class="w-150px">
+                                        <span class="p-column-title text-left" ></span>
+                                        {{ record.nationality }}
+                                    </td>
+                                    <td class="w-5px">
+                                        <a
+                                        *ngIf="permission.isGranted('Pages.Affiliation.Edit')"
+                                        [routerLink]="['/app/main/customers/createCustomers']"
+                                        [queryParams]="{ id: record.id ,constitutionType:record.constitutionType,tenantType:record.tenantType}"
+                                        >
+                                        <i class='fas fa-edit '></i>
+                                    </a>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,476 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="d-flex flex-stack mt-3">
+        <sub-header [title]="'VAT Return Report' | localize"></sub-header>
+        <div class="d-flex align-items-center" id="alignitems">
+            <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" id="navtabs">
+                <li class="nav-item col-md-5">
+                    <label class="d-flex align-items-center col-md-4">
+                        <span class=""> Taxable Period</span>
+                    </label>
+                    <input class="form-control ultypes col-md-3" id="StartEndRange" name="StartEndRange"
+                        #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
+                        [(date)]="dateRange" placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
+                </li>
+                <li class="nav-item col-md-6">
+                    <label class="d-flex align-items-center col-md-4">
+                    </label>
+                    <button
+                     style="width: 100%;"
+                     class="btn btn-outline btn-outline-success btn-active-light-success me-1 p-2"
+                     (click)="downloadExcel()"
+                    >
+                    <i class="far fa-file-excel btn-lg-icon"></i>
+                     Download Report</button>
+                    </li>
+            </ul>
+        </div>
+    </div>
+    <div class="app-container container-fluid">
+        <div class="card px-0">
+            <div class="card-body px-4 py-0">
+                <div *ngIf="searched">
+                    <div class="card-body py-3">
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">VAT on Sales</span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">Amount</span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">Adjustment</span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">VAT Amount</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[0].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[0].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[0].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[0].vat.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[1].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[1].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[1].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[1].vat.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[2].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[2].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[2].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[2].vat.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[3].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[3].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[3].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[4].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[4].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[4].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[5].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[5].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[5].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[6].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[6].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[6].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{ data[7].text }}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[7].amount.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[7].adjustment.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{ data[7].vat.toFixed(2) }}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="" />
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1">VAT on Purchases</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span> {{data[8].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[8].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[8].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[8].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[9].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[9].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[9].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[9].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[10].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[10].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[10].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[10].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[11].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[11].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[11].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[11].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[12].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[12].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end " id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[12].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end " id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[12].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[13].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[13].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end " id="" name=""
+                                    placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[13].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end " id="" name=""
+                                    placeholder="" value="">
+
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[13].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span> {{data[14].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[14].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[14].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[15].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[15].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[15].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span> {{data[16].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[16].amount.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[16].adjustment.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[16].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[17].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[17].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[18].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[18].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span>{{data[19].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3 ">
+                                <input type="text" value="{{data[19].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end " id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-3">
+                                <label class="d-flex align-items-center">
+                                    <span> {{data[20].text}}</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-3">
+                                <input type="text" value="{{data[20].vat.toFixed(2)}}" disabled
+                                    class="form-control form-control-lg form-control-solid text-end" id="customerName"
+                                    name="customerName" placeholder="" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

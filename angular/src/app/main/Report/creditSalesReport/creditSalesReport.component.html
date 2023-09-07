@@ -1,0 +1,244 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-6">
+            <sub-header [title]="'Credit Note Report' | localize"></sub-header>
+        </div>
+        <div class="col-md-3">
+            <!-- <select (change)="searchData()" *ngIf="tab == 'Detailed'" [(ngModel)]="code"
+                class="form-select form-select-solid form-select-lg fw-bold " style="border-color: #E4E6EF;">
+                <option value="VATCNS000">Select a Type...</option>
+                <option *ngFor="let type of reportType" [value]="type.code">
+                    {{ type.reportName }}
+                </option>
+            </select> -->
+        </div>
+        <div class="col-md-3">
+
+            <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
+                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                placement="bottom right" (bsValueChange)="searchData()" />
+        </div>
+    </div>  
+    <div class="app-container container-fluid">
+        <div class="card px-0">
+            <div class="card-body px-4 py-4">
+                <div class="row">
+                    <!-- <div class="col-lg-3 mb-3 px-5">
+                        <div class="div2">
+                            <span>
+                                <a [ngClass]="
+                                     tab == 'Detailed'
+                                            ? 'blockquote w-100  fw-bolder '
+                                            : 'blockquote w-100 fw-bolder text-dark'
+                                    " data-bs-toggle="tab" style="color:#1BC5BD">
+                                    Detailed
+                                </a>
+                            </span>
+                            <span class="form-check form-switch mt-1 div3" >
+                                <input class="toggle form-check-input" type="checkbox" data-toggle="toggle"
+                                    [ngModel]="checkboxValue" (ngModelChange)="changeEvent($event)" checked>
+                            </span>
+                            <span >
+                                <a [ngClass]="
+                                tab == 'Daywise'
+                                       ? 'blockquote w-100  fw-bolder'
+                                       : 'blockquote w-100 fw-bolder text-dark'
+                               " data-bs-toggle="tab" style="color:#1BC5BD">
+                                    Daywise
+                                </a>
+                            </span>
+                        </div>
+                    </div> -->
+                    <div class="col-lg-3 mb-3 px-5">
+                        <div class="div10">
+                            <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link  text-active-primary me-6"
+                                    (click)="changeTab('Detailed')"
+                                    [ngClass]="{ active: tab == 'Detailed'}"
+                                >
+                                Detailed
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link text-active-primary me-6"
+                                    (click)="changeTab('Daywise')"
+                                    [ngClass]="{ active: tab == 'Daywise'}"
+                                    
+                                >
+                                Daywise 
+                                </a>
+                            </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-7 mb-3">
+                        <div class="row">
+                            <div class="col-lg-8 mb-3" >
+                                <span *ngIf="tab=='Detailed'">
+                                <input class="form form-control" pInputText type="text"
+                                    (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="Search Credit Note or Invoice Number" />
+                                    </span>
+                            </div>
+                            <div class="col-lg-4">
+                                <button type="button" class="btn btn-outline btn-outline-success me-1 w-100" 
+                                    (click)="downloadExcel()">
+                                    <i class="far fa-file-excel btn-md-icon"></i>
+                                    <!-- <span class="d-none d-md-inline-block">
+                        {{ 'Download Report' | localize }}
+                    </span> -->
+                                    Download Report</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
+                        <div class="card card-p-0 card-flush">
+                            <div class="card-body ">
+                                <p-table #dt sortMode="multiple" [value]="invoices" [columns]="columns"
+                                    [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                    [rowsPerPageOptions]="[5, 10, 15, 20]" [scrollable]="true" [style]="{width:'100%'}"
+                                    [globalFilterFields]="['irnNo','invoicenumber']">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="div4" *ngFor="let col of columns"
+                                                pSortableColumn="{{ col.field }}">
+                                                {{ col.header | localize }}
+                                                <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                              
+                                    <ng-template pTemplate="body" let-record="$implicit" let-columns="columns">
+                                        <tr [pSelectableRow]="record">
+                                            <td class="table-row" *ngFor="let col of columns">
+                                                <span *ngIf="col.header == 'Credit Note Date'" class="salesrecords">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="col.header == 'Credit Note Count'" class="salesrecords">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="col.header == 'Credit Note Number'" class="salesrecords">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="col.header == 'Invoice Number'" class="salesrecords">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span
+                                                    *ngIf="col.header != 'Credit Note Number' && col.header != 'Credit Note Date'&& col.header != 'Invoice Number'&& col.header != 'Credit Note Count'"
+                                                    class="salesrecords">
+                                                    {{ record[col.field] | currency:'':'' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="footer">
+                                        <tr *ngIf="tab == 'Detailed'">
+                                            <td>Total</td>
+                                            <td *ngIf="code !='VATCNS000'"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="table-row"
+                                                class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.taxableAmount?.toFixed(2)|
+                                                    currency:'':'' }}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.Gov?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.export?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.zeroRated?.toFixed(2)|
+                                                    currency:'':'' }}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.exempt?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords"> {{ detailedFooter?.OutofScope?.toFixed(2)|
+                                                    currency:'':'' }}</span>
+                                            </td>
+                                            <td class="table-row"></td>
+                                            <td class="table-row">
+                                                <span class="salesrecords"> {{ detailedFooter?.vatAmount?.toFixed(2)|
+                                                    currency:'':'' }}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ detailedFooter?.totalAmount?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="tab == 'Daywise'" style="background-color: limegreen">
+                                            <td>Total</td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.count }}</span>
+                                            </td>
+                                            <td class="table-row"
+                                                >
+                                                <span class="salesrecords">{{ daywiseFooter?.taxable?.toFixed(2)|
+                                                    currency:'':'' }}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.Gov?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.zeroRated?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.exempt?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.export?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.OutofScope?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.vatAmount?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                            <td class="table-row">
+                                                <span class="salesrecords">{{ daywiseFooter?.totalAmount?.toFixed(2) |
+                                                    currency:'':''}}</span>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="paginatorleft">
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="tab-pane fade" id="kt_tab_pane_8" role="tabpanel">
+          ...
+        </div>
+
+        <div class="tab-pane fade" id="kt_tab_pane_9" role="tabpanel">
+          ...
+        </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

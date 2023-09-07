@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Organisation Type' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="OrganisationType_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #OrganisationType_Name="ngModel"
+                        id="OrganisationType_Name"
+                        class="form-control"
+                        [(ngModel)]="organisationType.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="OrganisationType_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="OrganisationType_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #OrganisationType_Description="ngModel"
+                        id="OrganisationType_Description"
+                        class="form-control"
+                        [(ngModel)]="organisationType.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="OrganisationType_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="OrganisationType_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #OrganisationType_Code="ngModel"
+                        id="OrganisationType_Code"
+                        class="form-control"
+                        [(ngModel)]="organisationType.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="OrganisationType_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="OrganisationType_IsActive"
+                        #OrganisationType_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="organisationType.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="OrganisationType_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.organisationType.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

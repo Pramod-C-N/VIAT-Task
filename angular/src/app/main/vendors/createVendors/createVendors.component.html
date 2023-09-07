@@ -1,0 +1,92 @@
+﻿<!-- -----------------------------------------------edit form---------------------------------------------------- -->
+<div class="content d-flex flex-column flex-column-fluid py-0">
+  <sub-header [title]="' Vendor Details ' | localize">
+    <!-- <div role="actions">
+      <button (click)="gotoCustomer()" class="btn btn-primary blue">
+        <span>{{ ('Back') }}</span>
+      </button>
+    </div> -->
+  </sub-header>
+  <div class="ng-tns-c327-6 app-container container-fluid">
+    <!-- <div *ngIf="editMode" class="card mb-xl-10"></div> -->
+    <!-- <div class="card card-custom gutter-b"> -->
+    <div class="card">
+      <div class="card-body py-3">
+        <div class="row gx-10 mb-1">
+          <div class="col-lg-6">
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-start">
+                  <span class="mb-3">Vendor Profile Type</span>
+                </label>
+                <div class="col-lg-12 px-0" *ngIf="customer.id>0;then input else dropdown"></div>
+                <ng-template #dropdown>
+                  <div [formGroup]="commonForm">
+                    <select class="form-select form-select-solid form-select-lg fw-bold" name="type"
+                      formControlName="profileType" (change)="changestate()">
+                      <option value="Individual">Individual</option>
+                      <option value="Company">Company</option>
+                    </select>
+                  </div>
+                  <div class="fv-plugins-message-container invalid-feedback"></div>
+                </ng-template>
+                <ng-template #input>
+                  <div class="col-lg-12">
+                    <div [formGroup]="commonForm">
+                      <select class="form-select form-select-solid form-select-lg fw-bold" name="type"
+                        formControlName="profileType" (change)="changestate()">
+                        <option *ngIf="profileType=='Individual'" value="Individual">Individual</option>
+                        <option *ngIf="profileType=='Company'" value="Company">Company</option>
+                      </select>
+                    </div>
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="profileType=='Company'" class="col-lg-6">
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-start">
+                  <span class="mb-3"> Constitution Type</span>
+                </label>
+                <div [formGroup]="companyRequiredForm">
+                  <select class="form-select form-select-solid form-select-lg fw-bold" name="constitutionType"
+                    [(ngModel)]="customer.constitutionType" formControlName="companyConstitution" required>
+                    <option value="" selected>Select a Constitution Type...</option>
+                    <option *ngFor="let c of constitutionTypes" value="{{c.constitution.name}}">
+                      {{c.constitution.name}}</option>
+                  </select>
+                  <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <app-Individual *ngIf="profileType=='Individual'" [id]="customer.id"></app-Individual>
+          <app-Government *ngIf="profileType=='Company' &&  customer.constitutionType=='Government' "
+            [id]="customer.id"></app-Government>
+          <app-General *ngIf="profileType=='Company' &&  customer.constitutionType=='General Partnership' "
+            [id]="customer.id"></app-General>
+          <app-Foreign *ngIf="profileType=='Company' &&  customer.constitutionType=='Foreign Branch' "
+            [id]="customer.id"></app-Foreign>
+          <app-LLC *ngIf="profileType=='Company' &&  customer.constitutionType=='Limited Liability Company' "
+            [id]="customer.id"></app-LLC>
+          <app-JSC *ngIf="profileType=='Company' &&  customer.constitutionType=='Joint Stock Company' "
+            [id]="customer.id"></app-JSC>
+          <app-PE *ngIf="profileType=='Company' &&  customer.constitutionType=='Permanent Establishment' "
+            [id]="customer.id"></app-PE>
+          <app-Consortium *ngIf="profileType=='Company' &&  customer.constitutionType=='Consortium' "
+            [id]="customer.id"></app-Consortium>
+          <app-LLP *ngIf="profileType=='Company' &&  customer.constitutionType=='Limited Liability Partnership' "
+            [id]="customer.id"></app-LLP>
+          <app-NRC *ngIf="profileType=='Company' &&  customer.constitutionType=='Non-Resident Company' "
+            [id]="customer.id"></app-NRC>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

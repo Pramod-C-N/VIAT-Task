@@ -1,0 +1,825 @@
+
+  <div class="card card-custom gutter-b">
+    <div   class="d-flex overflow-auto h-55px pt-5">
+        <ul
+          class="
+            nav nav-stretch nav-line-tabs nav-line-tabs-2x
+            border-transparent
+            fs-5
+            fw-bolder
+            flex-nowrap
+          "
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link text-active-primary me-6"
+              (click)="loadgeneral()"
+              [ngClass]="{ 'active':loadllpdt}"
+            >
+              Basic  Details  
+            </a>
+          </li>
+          <li class="nav-item" >
+            <a
+              class="nav-link text-active-primary me-6"
+              (click)="loadAdd()"
+              [ngClass]="{ 'active':loadllpadd}"
+>
+             General Information
+            </a>
+            </li>
+            <li class="nav-item" >
+              <a
+                class="nav-link text-active-primary me-6"
+                (click)="loadReg()"
+              [ngClass]="{ 'active':loadllpReg}"
+  >
+                Additional Documents
+              </a>
+              </li>
+              <li class="nav-item d-none" >
+                <a
+                  class="nav-link text-active-primary me-6"
+                  (click)="loadPartnInfo()"
+                [ngClass]="{ 'active':loadllpPartInf}"
+    >
+                  Partner's Information(Optional)
+                </a>
+                </li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="loadllpdt" class="card" >
+      <div class="card">
+        <div class="row gx-10 mb-1 pt-5">
+          <div class="col-lg-6">
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span class="required">Name :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                  <input type="text" 
+                  [(ngModel)]="customer.name"
+                  name="Name"
+                  placeholder="Name"
+                  class="form-control form-control-lg form-control-solid" 
+                  id="Name"      
+                  required
+                  formControlName="Name" />
+                  <div *ngIf=" basicForm.controls['Name'].invalid && basicForm.controls['Name'].touched" class="fv-plugins-message-container invalid-feedback">
+                    <div *ngIf="basicForm.controls['Name'].errors.required">
+                      Name  is required.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span class="required">VAT ID :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                  <input type="text" 
+                  placeholder="VAT ID" 
+                  class="form-control form-control-lg form-control-solid"
+                  id="vatid"
+                  minlength="15"
+                  maxlength="15"
+                  [(ngModel)]="vatid" 
+                  formControlName="vatid"/>
+                  <div *ngIf=" basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched" class="fv-plugins-message-container invalid-feedback">
+
+                    <div *ngIf="basicForm.controls['vatid'].errors.minlength">
+                      VAT ID  should be minimum 15 digits
+                    </div>
+                    <div *ngIf="basicForm.controls['vatid'].errors.pattern">
+                      VAT ID  is invalid.
+                    </div>
+                  </div>                
+                 </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span >Entity Address :</span>
+                </label>
+                <div class="row gx-10 mb-0">
+                  <div class="col-lg-3 mb-1">
+                    <div [formGroup]="basicForm">
+                      <input type="text" 
+                      placeholder="Bidg No *"
+                      [(ngModel)]="address.buildingNo"
+                      class="form-control form-control-lg form-control-solid"
+                      id="Bno" 
+                      maxlength="4" 
+                      formControlName="Buildno" 
+                      pattern="^[0-9]*$"                 
+                      required />
+                      <div *ngIf=" basicForm.controls['Buildno'].invalid && basicForm.controls['Buildno'].touched" class="fv-plugins-message-container invalid-feedback">
+                        <div *ngIf="basicForm.controls['Buildno'].errors.required">
+                          Building No  is required.
+                        </div>
+                        <div *ngIf="basicForm.controls['Buildno'].errors.pattern">
+                          Building No  is Invalid.
+                        </div>
+                      </div> 
+                    </div>
+                  </div>
+    
+                  <div class="col-lg-9">
+                    <div [formGroup]="basicForm">
+                      <input type="text" placeholder="Additional building number"
+                        class="form-control form-control-lg form-control-solid"
+                        id="Abno"  
+                        [(ngModel)]="address.additionalNo"
+                        formControlName="AdditionalBno" />
+                        <div *ngIf=" basicForm.controls['AdditionalBno'].invalid && basicForm.controls['AdditionalBno'].touched" class="fv-plugins-message-container invalid-feedback">
+                          <div *ngIf="basicForm.controls['AdditionalBno'].errors.required">
+                           Additional Building No  is required.
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div [formGroup]="basicForm">
+                  <input type="text" 
+                  placeholder="Street *" 
+                  class="form-control form-control-lg form-control-solid"
+                  id="Street"
+                  [(ngModel)]="address.street"
+                  required
+                  formControlName="street" />
+                  <div *ngIf=" basicForm.controls['street'].invalid && basicForm.controls['street'].touched" class="fv-plugins-message-container invalid-feedback">
+                    <div *ngIf="basicForm.controls['street'].errors.required">
+                      Street  is required.
+                    </div>
+                  </div>   
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div [formGroup]="basicForm">
+                  <input type="text" placeholder="Additional Street"
+                    class="form-control form-control-lg form-control-solid"
+                    id="Astreet"    
+                    [(ngModel)]="address.additionalStreet"
+                    formControlName="Additnalstreet" />
+                    <div *ngIf=" basicForm.controls['Additnalstreet'].invalid && basicForm.controls['Additnalstreet'].touched" class="fv-plugins-message-container invalid-feedback">
+                      <div *ngIf="basicForm.controls['Additnalstreet'].errors.required">
+                        Additional Street  is required.
+                      </div>
+                    </div> 
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div [formGroup]="basicForm">
+                  <input type="text" placeholder="Neighbourhood"
+                    class="form-control form-control-lg form-control-solid"
+                    id="Neighbourhood *"    
+                    required
+                    [(ngModel)]="address.neighbourhood"
+                    formControlName="Neighbourhood" />
+                    <div *ngIf=" basicForm.controls['Neighbourhood'].invalid && basicForm.controls['Neighbourhood'].touched" class="fv-plugins-message-container invalid-feedback">
+                      <div *ngIf="basicForm.controls['Neighbourhood'].errors.required">
+                        Neighbourhood  is required.
+                      </div>
+                    </div> 
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div class="row gx-10 mb-1">
+                  <div class="col-lg-8 mb-1">
+                    <div [formGroup]="basicForm">
+                      <input type="text"  placeholder="City *"
+                        class="form-control form-control-lg form-control-solid"
+                        id="city"  
+                        [(ngModel)]="address.city"                    
+                        required
+                        formControlName="city" />
+                        <div *ngIf=" basicForm.controls['city'].invalid && basicForm.controls['city'].touched" class="fv-plugins-message-container invalid-feedback">
+                          <div *ngIf="basicForm.controls['city'].errors.required">
+                            City is required.
+                          </div>
+                        </div>   
+                    </div>
+                  </div>
+    
+                  <div class="col-lg-4">
+                    <div [formGroup]="basicForm">
+                      <input type="text" 
+                      placeholder="ZIP/PIN *" 
+                      class="form-control form-control-lg form-control-solid"
+                      id="pin"                    
+                      required
+                      [(ngModel)]="address.postalCode"
+                      maxlength="5"
+                      minlength="5"
+                      [(ngModel)]="address.postalCode"                
+                      formControlName="pin" />
+                      <div *ngIf=" basicForm.controls['pin'].invalid && basicForm.controls['pin'].touched" class="fv-plugins-message-container invalid-feedback">
+                        <div *ngIf="basicForm.controls['pin'].errors.required">
+                          ZIP/PIN  is required.
+                        </div>
+                        <div *ngIf="basicForm.controls['pin'].errors.minlength">
+                          ZIP/PIN should be minimun 5 digits.
+                        </div>
+                        <div *ngIf="basicForm.controls['pin'].errors.pattern">
+                          ZIP/PIN is Invalid.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div class="row-12">
+                  <div class="col-lg-8">
+                    <div [formGroup]="basicForm">
+                      <input type="text"  placeholder="State *"
+                        class="form-control form-control-lg form-control-solid"
+                        id="state"       
+                        [(ngModel)]="address.state" 
+                        required 
+                        [(ngModel)]="address.state"                
+                        formControlName="state" />
+                        <div *ngIf=" basicForm.controls['state'].invalid && basicForm.controls['state'].touched" class="fv-plugins-message-container invalid-feedback">
+                          <div *ngIf="basicForm.controls['state'].errors.required">
+                            State  is required.
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4"></div>
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-1">
+              <div class="col-lg-12">
+                <div class="col-lg-12">
+                  <label class="d-flex align-items-center">
+                    <span class="required">Nationality :</span>
+                  </label>
+                  <div [formGroup]="basicForm">
+                    <select
+                    class="form-select form-select-solid form-select-lg fw-bold"
+                    name="country"
+                    formControlName="nationality" 
+                    id="country" 
+                    [(ngModel)]="customer.nationality"                
+                    required
+                  >
+                    <option value="">Select a Country...</option>
+                    <option *ngFor="let c of countries" [value]="c.country.name">
+                      {{ c.country.name }}
+                    </option>
+                  </select>
+                  <div *ngIf=" basicForm.controls['nationality'].invalid && basicForm.controls['nationality'].touched" class="fv-plugins-message-container invalid-feedback">
+                    <div *ngIf="basicForm.controls['nationality'].errors.required">
+                      Nationality is required.
+                    </div>
+                  </div> 
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span >Contact Person :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                  <input type="text" 
+                  placeholder="Contact Person"
+                  [(ngModel)]="customer.contactPerson"
+
+                  formControlName="contactperson" 
+                  class="form-control form-control-lg form-control-solid" />
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span class="required">Designation :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                  <input type="text" 
+                  placeholder="Designation" 
+                  [(ngModel)]="customer.designation"
+
+                  formControlName="designation" 
+                  class="form-control form-control-lg form-control-solid"/>               
+                 </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span class="required">Contact No. :</span>
+                </label>
+                <div  [formGroup]="basicForm">
+                  <input type="text" 
+                  placeholder="Mobile No" 
+                  class="form-control form-control-lg form-control-solid"
+                  required
+                  [(ngModel)]="customer.contactNumber"
+
+                  formControlName="ContactNo"  />
+                  <div *ngIf=" basicForm.controls['ContactNo'].invalid && basicForm.controls['ContactNo'].touched" class="fv-plugins-message-container invalid-feedback">
+                    <div *ngIf="basicForm.controls['ContactNo'].errors.required">
+                      Contact No. is required.
+                    </div>
+                  </div> 
+                </div>
+              </div>
+            </div>
+            <div class="row gx-10 mb-5">
+              <div class="col-lg-12">
+                <label class="d-flex align-items-center">
+                  <span >Email Id :</span>
+                </label>
+                <div>
+                  <input type="text"  placeholder="Email"
+                    class="form-control form-control-lg form-control-solid" 
+                    [(ngModel)]="customer.emailID"  />
+                </div>
+              </div>
+            </div>
+
+
+
+
+          </div>
+          </div>
+        </div>
+    </div>
+    
+
+    <div *ngIf="loadllpadd" class="card" >
+      <div class="card">        
+        <div class="card-body py-3 pt-5">
+            <div class="row gx-10 mb-5">
+                <div class="col-lg-6">
+                    <div class="col-lg-12 mb-5">
+                        <label class="d-flex align-items-center">
+                            <span>Business Category :</span>
+                        </label>
+                        <div [formGroup]="companyRequiredForm">
+                            <select
+                                [(ngModel)]="taxdetails.businessCategory"
+                                type="text"
+                                formControlName="businessCategory"
+                                placeholder="Goods"
+                                class="form-control form-control-lg form-control-solid"
+                            >
+                            <option value="">Select a Business Category..</option>
+                            <option *ngFor="let c of transtype" [value]="c.transactionCategory.name">
+                                {{ c.transactionCategory.name }}
+                            </option>
+
+                            </select>
+                            <div
+                                *ngIf="
+                                    companyRequiredForm.controls['businessCategory'].invalid &&
+                                    companyRequiredForm.controls['businessCategory'].touched
+                                "
+                                class="fv-plugins-message-container invalid-feedback"
+                            ></div>
+                        </div>
+                        <div class="col-lg-12 mb-5">
+                            <label class="d-flex align-items-center">
+                                <span >Business Supplies:</span>
+                            </label>
+                            <div [formGroup]="companyRequiredForm">
+                                <select
+                                [(ngModel)]="taxdetails.businessSupplies"
+                                type="text"
+                                formControlName="businesssupplies"
+                                placeholder="Goods"
+                                class="form-control form-control-lg form-control-solid"
+                            >
+                            <option value="">Select a Business Supplies...</option>
+                            <option value="Domestic">Domestic</option>
+                            <option value="Exports">Exports</option>
+
+                            </select>
+                                <div
+                                    *ngIf="
+                                        companyRequiredForm.controls['businesssupplies'].invalid &&
+                                        companyRequiredForm.controls['businesssupplies'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                ></div>
+                            </div>
+                            <div class="col-lg-12 mb-5">
+                                <label class="d-flex align-items-center">
+                                    <span >Invoice Type:</span>
+                                </label>
+                                <div [formGroup]="companyRequiredForm">
+                                    <select
+                                    [(ngModel)]="taxdetails.invoiceType"
+
+                                        type="text"
+                                        formControlName="invoiceType"
+                                        placeholder="Goods"
+                                        class="form-control form-control-lg form-control-solid"
+                                    >
+                                    <option value="">Select a Invoice Type...</option>
+                                    <option *ngFor="let c of invoicetype" [value]="c.invoiceType.name">
+                                        {{ c.invoiceType.name }}
+                                    </option></select>
+                                    <div
+                                        *ngIf="
+                                            companyRequiredForm.controls['invoiceType'].invalid &&
+                                            companyRequiredForm.controls['invoiceType'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="col-lg-12 mb-5">
+                        <label class="d-flex align-items-center">
+                            <span >Operational Model :</span>
+                        </label>
+                        <div [formGroup]="companyRequiredForm">                           
+                            <select
+                            [(ngModel)]="taxdetails.operatingModel"
+
+                                type="text"
+                                formControlName="operatingModel"
+                                placeholder="Goods"
+                                class="form-control form-control-lg form-control-solid"
+                        >
+                        <option value="">Select a Operational Model...</option>
+                        <option *ngFor="let c of operationaltype" [value]="c.businessOperationalModel.name">
+                            {{ c.businessOperationalModel.name }}
+                        </option></select>
+                            <div
+                                *ngIf="
+                                    companyRequiredForm.controls['operatingModel'].invalid &&
+                                    companyRequiredForm.controls['operatingModel'].touched
+                                "
+                                class="fv-plugins-message-container invalid-feedback"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <label class="d-flex align-items-center">
+                            <span >Sales VAT category :</span>
+                        </label>
+                        <div [formGroup]="companyRequiredForm">
+                            <select
+                                [(ngModel)]="taxdetails.salesVATCategory"
+                                class="form-select form-select-solid form-select-lg fw-bold"
+                                name="type"
+                                formControlName="vatcategory"
+                            >
+                            <option value="">Select a Sales VAT category </option>
+                            <option *ngFor="let c of taxcat" [value]="c.taxCategory.name">
+                                {{ c.taxCategory.name }}
+                            </option></select>
+                            <div
+                                *ngIf="
+                                    companyRequiredForm.controls['vatcategory'].invalid &&
+                                    companyRequiredForm.controls['vatcategory'].touched
+                                "
+                                class="fv-plugins-message-container invalid-feedback"
+                            >
+                                <div *ngIf="companyRequiredForm.controls['vatcategory'].errors.required">
+                                    Sales VAT category is required.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator separator-dashed my-1"></div>
+            </div>
+        </div>
+        </div>
+      </div>
+
+      <div *ngIf="loadllpReg" class="card">
+        <div class="card">         
+          <div class="card-body py-0 pt-5">
+              <div class="row gx-1 text-center" >
+                  <div class="col-lg-3">
+                      <label class="d-flex align-items-center">
+                          <span >Select Document Type :</span>
+                      </label>
+                      <select
+                          [(ngModel)]="Documentitem.documentTypeCode"
+                          class="form-select form-select-solid form-select-lg fw-bold"
+                          name="type"
+                      >
+                          <option value=" " disabled selected>Select a Document Type...</option>
+                          <option *ngFor="let c of doctype" [value]="c.documentMaster.name">
+                              {{ c.documentMaster.name }}
+                          </option>
+                      </select>
+                  </div>
+
+                  <div class="col-lg-2">
+                      <label class="d-flex align-items-center">
+                          <span >Document Name:</span>
+                      </label>
+                      <div class="form-group input-field">
+                          <input
+                              [(ngModel)]="Documentitem.documentName"
+                              type="text"
+                              class="form-control form-control-lg form-control-solid"
+                              id="schemeId"
+                              name="schemeId"
+                              placeholder="Document Name"
+                              value=""
+                              autocomplete="off"
+                          />
+                      </div>
+                      <div class="fv-plugins-message-container invalid-feedback"></div>
+                  </div>
+
+                  <div class="col-lg-3">
+                      <label class="d-flex align-items-center">
+                          <span >Registration Number :</span>
+                      </label>
+                      <div class="form-group input-field">
+                          <input
+                              [(ngModel)]="Documentitem.documentNumber"
+                              type="text"
+                              class="form-control form-control-lg form-control-solid"
+                              id="schemeId"
+                              name="schemeId"
+                              placeholder="Registration no"
+                              value=""
+                              autocomplete="off"
+                          />
+                      </div>
+                      <div class="fv-plugins-message-container invalid-feedback"></div>
+                  </div>
+
+                  <div class="col-lg-2">
+                      <label class="d-flex align-items-center">
+                          <span >Registration Date</span>
+                      </label>
+                      <input
+                          [(ngModel)]="Documentitem.doumentDate"
+                          class="form-control form-control-lg form-control-solid"
+                          type="date"
+                      />
+
+                      <div class="fv-plugins-message-container invalid-feedback"></div>
+                  </div>
+
+                  <div class="col-lg-1 gx-1 pt-5" >
+                      <div class="d-flex justify-content-end flex-shrink-0">
+                          <a id="addrow" class="btn btn-primary btn-active-color-warning" (click)="additem()">
+                              Add
+                          </a>
+                      </div>
+                  </div>
+                  <div class="col-lg-1 gx-1 pt-5" >
+                      <div class="d-flex justify-content-end flex-shrink-0">
+                          <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearitem()">
+                              Clear
+                          </a>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="separator separator-dashed my-1"></div>
+          </div>
+
+          <div class="card pt-5">
+              <div class="card-body py-3">
+                  <div class="table-responsive">
+                      <table class="table table-striped align-middle">
+                          <thead class="text-center" >
+                              <tr class="fw-bolder text-muted">
+                                  <th class="min-w-50px">Sl No</th>
+                                  <th class="min-w-100px">Document Type</th>
+                                  <th class="min-w-150px">Document Name</th>
+                                  <th class="min-w-100px">Registration Number</th>
+                                  <th class="min-w-100px">Registration Date</th>
+                                  <th class="min-w-100px"></th>
+                              </tr>
+                          </thead>
+                          <tbody class="text-center">
+                              <tr *ngFor="let it of Documentitems; let i = index">
+                                  <td>
+                                      <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                          {{ i + 1 }}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                          {{ it.documentTypeCode }}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                          {{ it.documentName }}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                          {{ it.documentNumber }}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <span  class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                          {{ it.doumentDate }}
+                                      </span>
+                                  </td>
+                                  <td>
+                                      <button class="btn btn-primary btn-sm" (click)="deleteItem(i)">
+                                          Delete
+                                      </button>
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+              <div class="separator separator-dashed my-1"></div>
+          </div>
+      </div>
+    </div>
+
+        <div *ngIf="loadllpPartInf" class="card">
+            <div class="card-header border-0 pt-5">
+                <h3 class="card-title align-items-start flex-column">
+                    <span class="card-label fw-bolder fs-3 mb-1">Registration Documents :</span>
+                </h3>
+            </div>
+            <div class="card-body py-0">
+                <div class="row gx-1 text-center" >
+                    <div class="col-lg-3">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Select Document Type :</span>
+                        </label>
+                        <select
+                            [(ngModel)]="Documentitem.documentTypeCode"
+                            class="form-select form-select-solid form-select-lg fw-bold"
+                            name="type"
+                        >
+                            <option value=" " disabled selected>Select a Document Type...</option>
+                            <option *ngFor="let c of doctype" [value]="c.documentMaster.name">
+                                {{ c.documentMaster.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Document Name:</span>
+                        </label>
+                        <div class="form-group input-field">
+                            <input
+                                [(ngModel)]="Documentitem.documentNumber"
+                                type="text"
+                                class="form-control form-control-lg form-control-solid"
+                                id="schemeId"
+                                name="schemeId"
+                                placeholder="Document Name"
+                                value=""
+                                autocomplete="off"
+                            />
+                        </div>
+                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Registration Number :</span>
+                        </label>
+                        <div class="form-group input-field">
+                            <input
+                                [(ngModel)]="Documentitem.documentName"
+                                type="text"
+                                class="form-control form-control-lg form-control-solid"
+                                id="schemeId"
+                                name="schemeId"
+                                placeholder="Registration no"
+                                value=""
+                                autocomplete="off"
+                            />
+                        </div>
+                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Registration Date</span>
+                        </label>
+                        <input
+                            [(ngModel)]="Documentitem.doumentDate"
+                            class="form-control form-control-lg form-control-solid"
+                            type="date"
+                        />
+
+                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                    </div>
+
+                    <div class="col-lg-1 gx-1 pt-5" >
+                        <div class="d-flex justify-content-end flex-shrink-0">
+                            <a id="addrow" class="btn btn-primary btn-active-color-warning" (click)="additem()">
+                                Add
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 gx-1 pt-5" >
+                        <div class="d-flex justify-content-end flex-shrink-0">
+                            <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearitem()">
+                                Clear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="separator separator-dashed my-1"></div>
+            </div>
+
+            <div class="card pt-5">
+                <div class="card-body py-3">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead class="text-center" >
+                                <tr class="fw-bolder text-muted">
+                                    <th class="min-w-50px">Sl No</th>
+                                    <th class="min-w-100px">Document Type</th>
+                                    <th class="min-w-150px">Document Name</th>
+                                    <th class="min-w-100px">Registration Number</th>
+                                    <th class="min-w-100px">Registration Date</th>
+                                    <th class="min-w-100px"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <tr *ngFor="let it of Documentitems; let i = index">
+                                    <td>
+                                        <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                            {{ i + 1 }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                            {{ it.documentTypeCode }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                            {{ it.documentName }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                            {{ it.documentNumber }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                            {{ it.doumentDate }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" (click)="deleteItem(i)">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="separator separator-dashed my-1"></div>
+            </div>
+        </div>
+
+        <div class="card-footer p-1rem 1.25rem" >
+      <div class="col-lg-12 h-40px text-end">
+        <button class="btn btn-primary blue"  (click)='save()'>
+          <i class="fa fa-save"></i>
+          <span>{{ l('Save') }}</span>
+        </button>
+      </div>
+    </div>

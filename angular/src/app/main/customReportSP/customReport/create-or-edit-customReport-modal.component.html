@@ -1,0 +1,75 @@
+﻿<div
+    bsModal
+    #createOrEditModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createOrEditModal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #customReportForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="customReport.id">{{ l('EditCustomReport') }}</span>
+                        <span *ngIf="!customReport.id">{{ l('CreateNewCustomReport') }}</span>
+                    </h4>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        (click)="close()"
+                        aria-label="Close"
+                        [disabled]="saving"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="my-3">
+                        <label class="form-label" for="CustomReport_ReportName">{{ l('ReportName') }}</label>
+                        <input
+                            type="text"
+                            #CustomReport_ReportName="ngModel"
+                            id="CustomReport_ReportName"
+                            class="form-control"
+                            [(ngModel)]="customReport.reportName"
+                            name="ReportName"
+                        />
+                        <validation-messages [formCtrl]="CustomReport_ReportName"></validation-messages>
+                    </div>
+
+                    <div class="my-3">
+                        <label class="form-label" for="CustomReport_StoredProcedureName">
+                            {{ l('StoredProcedureName') }}
+                        </label>
+                        <input
+                            type="text"
+                            #CustomReport_StoredProcedureName="ngModel"
+                            id="CustomReport_StoredProcedureName"
+                            class="form-control"
+                            [(ngModel)]="customReport.storedProcedureName"
+                            name="StoredProcedureName"
+                        />
+                        <validation-messages [formCtrl]="CustomReport_StoredProcedureName"></validation-messages>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                        {{ l('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary blue"
+                        [disabled]="!customReportForm.form.valid"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,320 @@
+﻿<div [@routerTransition]>
+    <sub-header [title]="'Module' | localize" [description]="'ModuleHeaderInfo' | localize">
+        <div role="actions">
+            <button
+                *ngIf="isGranted('Pages.Administration.Module.Create')"
+                (click)="createModule()"
+                class="btn btn-primary blue"
+            >
+                <i class="fa fa-plus"></i>
+                {{ l('CreateNewModule') }}
+            </button>
+        </div>
+    </sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <form class="form" autocomplete="off">
+                    <div>
+                        <div class="row align-items-center">
+                            <div class="col-xl-12">
+                                <div class="my-3">
+                                    <div class="input-group mb-3">
+                                        <input
+                                            [(ngModel)]="filterText"
+                                            (ngModelChange)="getModule()"
+                                            name="filterText"
+                                            autoFocus
+                                            type="text"
+                                            class="form-control"
+                                            [placeholder]="l('SearchWithThreeDot')"
+                                        />
+                                        <button class="btn btn-primary" type="submit" (click)="getModule()">
+                                            <i class="flaticon-search-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" [hidden]="!advancedFiltersAreShown">
+                            <div class="col-md-12"></div>
+
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="MinModuleIdFilter">
+                                        {{ l('MinMax') }} {{ l('ModuleId') }}
+                                    </label>
+                                    <div class="input-group">
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            id="MinModuleIdFilter"
+                                            [(ngModel)]="minModuleIdFilter"
+                                            placeholder="{{ l('MinValue') }}"
+                                            name="minModuleIdFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            [(ngModel)]="maxModuleIdFilter"
+                                            placeholder="{{ l('MaxValue') }}"
+                                            name="maxModuleIdFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="ModuleNameFilter">{{ l('ModuleName') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="ModuleNameFilter"
+                                        name="moduleNameFilter"
+                                        [(ngModel)]="moduleNameFilter"
+                                        (ngModelChange)="getModule()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="MinStatusFilter">
+                                        {{ l('MinMax') }} {{ l('Status') }}
+                                    </label>
+                                    <div class="input-group">
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            id="MinStatusFilter"
+                                            [(ngModel)]="minStatusFilter"
+                                            placeholder="{{ l('MinValue') }}"
+                                            name="minStatusFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            [(ngModel)]="maxStatusFilter"
+                                            placeholder="{{ l('MaxValue') }}"
+                                            name="maxStatusFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="MinTenantIdFilter">
+                                        {{ l('MinMax') }} {{ l('TenantId') }}
+                                    </label>
+                                    <div class="input-group">
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            id="MinTenantIdFilter"
+                                            [(ngModel)]="minTenantIdFilter"
+                                            placeholder="{{ l('MinValue') }}"
+                                            name="minTenantIdFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            [(ngModel)]="maxTenantIdFilter"
+                                            placeholder="{{ l('MaxValue') }}"
+                                            name="maxTenantIdFilter"
+                                            (ngModelChange)="getModule()"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-5">
+                                <button
+                                    (click)="resetFilters()"
+                                    class="btn btn-secondary btn-sm"
+                                    id="btn-reset-filters"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col-sm-12">
+                                <span
+                                    class="clickable-item text-muted"
+                                    *ngIf="!advancedFiltersAreShown"
+                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                >
+                                    <i class="fa fa-angle-down"></i>
+                                    {{ l('ShowAdvancedFilters') }}
+                                </span>
+                                <span
+                                    class="clickable-item text-muted"
+                                    *ngIf="advancedFiltersAreShown"
+                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                >
+                                    <i class="fa fa-angle-up"></i>
+                                    {{ l('HideAdvancedFilters') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row align-items-center">
+                    <!--<Primeng-Datatable-Start>-->
+                    <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
+                        <p-table
+                            #dataTable
+                            (onLazyLoad)="getModule($event)"
+                            [value]="primengTableHelper.records"
+                            rows="{{ primengTableHelper.defaultRecordsCountPerPage }}"
+                            [paginator]="false"
+                            [lazy]="true"
+                            [scrollable]="true"
+                            ScrollWidth="100%"
+                            [responsive]="primengTableHelper.isResponsive"
+                            [resizableColumns]="primengTableHelper.resizableColumns"
+                        >
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th
+                                        style="width: 130px"
+                                        [hidden]="
+                                            !isGrantedAny(
+                                                'Pages.Administration.Module.Edit',
+                                                'Pages.Administration.Module.Delete'
+                                            )
+                                        "
+                                    >
+                                        {{ l('Actions') }}
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="moduleId">
+                                        {{ l('ModuleId') }}
+                                        <p-sortIcon field="module.moduleId"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="moduleName">
+                                        {{ l('ModuleName') }}
+                                        <p-sortIcon field="module.moduleName"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="status">
+                                        {{ l('Status') }}
+                                        <p-sortIcon field="module.status"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="tenantId">
+                                        {{ l('TenantId') }}
+                                        <p-sortIcon field="module.tenantId"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-record="$implicit" let-i="rowIndex">
+                                <tr>
+                                    <td
+                                        style="width: 130px"
+                                        [hidden]="
+                                            !isGrantedAny(
+                                                'Pages.Administration.Module.Edit',
+                                                'Pages.Administration.Module.Delete'
+                                            )
+                                        "
+                                    >
+                                        <div class="btn-group dropdown" dropdown container="body">
+                                            <button class="dropdown-toggle btn btn-sm btn-primary" dropdownToggle>
+                                                <i class="fa fa-cog"></i>
+                                                <span class="caret"></span>
+                                                {{ l('Actions') }}
+                                            </button>
+                                            <ul class="dropdown-menu" *dropdownMenu>
+                                                <li>
+                                                    <a
+                                                        href="javascript:;"
+                                                        class="dropdown-item"
+                                                        (click)="viewModuleModal.show(record)"
+                                                    >
+                                                        {{ l('View') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        href="javascript:;"
+                                                        *ngIf="permission.isGranted('Pages.Administration.Module.Edit')"
+                                                        class="dropdown-item"
+                                                        (click)="createOrEditModuleModal.show(record.module.id)"
+                                                    >
+                                                        {{ l('Edit') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        class="dropdown-item"
+                                                        href="javascript:;"
+                                                        *ngIf="
+                                                            permission.isGranted('Pages.Administration.Module.Delete')
+                                                        "
+                                                        (click)="deleteModule(record.module)"
+                                                    >
+                                                        {{ l('Delete') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        href="javascript:;"
+                                                        *ngIf="entityHistoryEnabled"
+                                                        class="dropdown-item"
+                                                        (click)="showHistory(record.module)"
+                                                    >
+                                                        {{ l('History') }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('ModuleId') }}</span>
+                                        {{ record.module.moduleId }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('ModuleName') }}</span>
+                                        {{ record.module.moduleName }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('Status') }}</span>
+                                        {{ record.module.status }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('TenantId') }}</span>
+                                        {{ record.module.tenantId }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div class="primeng-no-data" *ngIf="primengTableHelper.totalRecordsCount == 0">
+                            {{ l('NoData') }}
+                        </div>
+                        <div class="primeng-paging-container">
+                            <p-paginator
+                                [rows]="primengTableHelper.defaultRecordsCountPerPage"
+                                #paginator
+                                (onPageChange)="getModule($event)"
+                                [totalRecords]="primengTableHelper.totalRecordsCount"
+                                [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                                [showCurrentPageReport]="true"
+                                [currentPageReportTemplate]="
+                                    'TotalRecordsCount' | localize: primengTableHelper.totalRecordsCount
+                                "
+                            ></p-paginator>
+                        </div>
+                    </div>
+                    <!--<Primeng-Datatable-End>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <createOrEditModuleModal #createOrEditModuleModal (modalSave)="getModule()"></createOrEditModuleModal>
+    <viewModuleModal #viewModuleModal></viewModuleModal>
+    <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
+</div>

@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('BusinessProcess' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="BusinessProcess_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #BusinessProcess_Name="ngModel"
+                        id="BusinessProcess_Name"
+                        class="form-control"
+                        [(ngModel)]="businessProcess.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="BusinessProcess_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="BusinessProcess_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #BusinessProcess_Description="ngModel"
+                        id="BusinessProcess_Description"
+                        class="form-control"
+                        [(ngModel)]="businessProcess.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="BusinessProcess_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="BusinessProcess_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #BusinessProcess_Code="ngModel"
+                        id="BusinessProcess_Code"
+                        class="form-control"
+                        [(ngModel)]="businessProcess.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="BusinessProcess_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="BusinessProcess_IsActive"
+                        #BusinessProcess_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="businessProcess.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="BusinessProcess_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.businessProcess.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

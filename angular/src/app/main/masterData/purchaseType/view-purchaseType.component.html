@@ -1,0 +1,35 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Purchase Type' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Name') }} :</h6>
+                        {{ item.purchaseType.name }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Description') }} :</h6>
+                        {{ item.purchaseType.description }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Code') }} :</h6>
+                        {{ item.purchaseType.code }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('IsActive') }} :</h6>
+                        <div *ngIf="item.purchaseType.isActive" class="text-left">
+                            <i class="fa fa-check-circle text-success" title="True"></i>
+                        </div>
+                        <div *ngIf="!item.purchaseType.isActive" class="text-left">
+                            <i class="fa fa-times-circle" title="False"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

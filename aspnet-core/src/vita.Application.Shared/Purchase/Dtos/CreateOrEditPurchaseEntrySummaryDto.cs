@@ -1,0 +1,43 @@
+﻿using System;
+using Abp.Application.Services.Dto;
+using System.ComponentModel.DataAnnotations;
+
+namespace vita.Purchase.Dtos
+{
+    public class CreateOrEditPurchaseEntrySummaryDto : EntityDto<long?>
+    {
+
+        public string IRNNo { get; set; }
+
+        public decimal NetInvoiceAmount { get; set; }
+
+        public string NetInvoiceAmountCurrency { get; set; }
+
+        public decimal SumOfInvoiceLineNetAmount { get; set; }
+
+        public string SumOfInvoiceLineNetAmountCurrency { get; set; }
+
+        public decimal TotalAmountWithoutVAT { get; set; }
+
+        public string TotalAmountWithoutVATCurrency { get; set; }
+
+        public decimal TotalVATAmount { get; set; }
+
+        public string CurrencyCode { get; set; }
+
+        public decimal TotalAmountWithVAT { get; set; }
+
+        public decimal PaidAmount { get; set; }
+
+        public string PaidAmountCurrency { get; set; }
+
+        public decimal PayableAmount { get; set; }
+
+        public string PayableAmountCurrency { get; set; }
+
+        public decimal AdvanceAmountwithoutVat { get; set; }
+
+        public decimal AdvanceVat { get; set; }
+
+    }
+}

@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        {
+            box-sizing: border-box;
+        }
+
+        .column {
+            float: left;
+            width: 15%;
+            padding: 10px;
+            height: 100px;
+        }
+
+        .column1 {
+            float: right;
+            width: 40%;
+            paddingLeft: 30px;
+            height: 110px;
+        }
+
+        .column2 {
+            float: left;
+            width: 40%;
+            paddingLeft: 10px;
+            height: 110px;
+        }
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        table {
+            border-collapse: collapse;
+            padding: 5px
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            height: 15px;
+            padding: 5px;
+        }
+
+        p {
+            margin: 0px !important;
+            margin-bottom: 3px !important;
+        }
+    </style>
+</head>
+
+<body style="font-family:Arial">
+    <div class="row" style="font-size:12px;">
+        <div class="column2">
+            <p style="font-weight:600">DOGHMAL TRADING CO. LIMITED</p>
+            <p>Head Office-4179, KING ABDULAZIZ ROAD.</p>
+            <p>Najran-Dahadah Dist. PinCode:66273</p>
+            <p>Tel:017-5238338 -- 017-5232325</p>
+            <p>CR: 5950002557 -- VAT : 301043376600003</p>
+        </div>
+        <div class="column" style="text-align:center">
+            <img id="Barcode2" src="" alt="" width="60" height="60" />
+            <h4 style="color:black;text-align: center; margin:5px">
+                اشعار دائن (Credit Note)
+            </h4>
+        </div>
+        <div class="column1" style="text-align:right; float:right">
+            <p style="font-weight:600">شركة دغمــل للتــجارة المحدودة</p>
+            <p>٤١٧٩ طريق الملك عبدالعزيز </p>
+            <p>نجران - حي دحضة الرمز البريدي: ٦٦٢٧٣  </p>
+            <p>هاتف: 017-5238338 -- 017-5232325</p>
+            <p>CR: 5950002557 -- VAT : 301043376600003</p>
+        </div>
+    </div>
+    <div>
+        <table id="T1" style="width:100%;text-align: right;margin-bottom:30px;">
+            <tr style="background-color:#ADD8E6">
+                <td style="width:35%"><span id="T1R1V1"></span></td>
+                <th style="width:20%">العميل</th>
+                <td style="width:60%" colspan="2"><span id="T1R1V2"></span></td>
+
+            </tr>
+            <tr>
+                <td style="width:35%"><span id="T1R2V1"></span></td>
+                <th style="width:20%">السجل التجاري</th>
+                <td style="width:30%"><span id="T1R2V2"></span></td>
+                <th style="width:30%">السجل التجاري</th>
+            </tr>
+            <!--<tr style="background-color:#ADD8E6">
+                <td style="width:35%"><span id="T1R3V1"></span></td>
+                <th style="width:20%">الرقم الموحد</th>
+                <td style="width:30%">7001793327</td>
+                <th style="width:30%">الرقم الموحد</th>
+            </tr>-->
+            <tr>
+                <td style="width:35%"><span id="T1R4V1"></span></td>
+                <th style="width:20%">العنوان</th>
+                <td style="width:30%"><span id="T1R4V2"></span></td>
+                <th style="width:30%">العنوان</th>
+            </tr>
+            <tr style="background-color:#ADD8E6">
+                <td style="width:35%"><span id="T1R5V1"></span></td>
+                <th style="width:20%">الرقم الضريبي</th>
+                <td style="width:30%"><span id="T1R5V2"></span></td>
+                <th style="width:30%">الرقم الضريبي</th>
+            </tr>
+        </table>
+
+        <table id="T12" style="width:100%;text-align: right;">
+
+            <tr>
+                <td style="width: 25%; text-align: center; "><span id="T12INVNO"></span></td>
+                <th style="width: 25%; text-align: center; background-color: #ADD8E6">رقم الفاتورة</th>
+                <td style="width: 35%; text-align: center;"><span id="T12INV"></span></td>
+                <th style="width: 25%; text-align: center; background-color: #ADD8E6">رقم المرجع </th>
+            </tr>
+            <tr>
+                <td style="width: 25%; text-align: center;"><span id="T12INVDATE"></span></td>
+                <th style="width: 25%; text-align: center; background-color: #ADD8E6">تاريخ الفاتورة </th>
+                <td style="width: 35%; text-align: center;"></td>
+                <th style="width: 25%; text-align: center; background-color: #ADD8E6"> </th>
+            </tr>
+
+        </table>
+        <br />
+
+        <br />
+        <table id="T2" style="width:100%;table-layout: fixed;">
+            <tr style="background-color:#367588;color:white;text-align: center; font-size:13px">
+                <th style="width:15%">
+                    (ر.س)
+                    <p>الإجمالي مع الضريبة</p>
+                </th>
+                <th style="width:15%">
+                    (ر.س)
+                    <p>ضريبة القيمة المضافة</p>
+                </th>
+                <th style="width:10%">
+                    ننسبة ضريبة القيمة المضافة
+                    <p>%</p>
+                </th>
+                <th style="width:20%">
+                    (ر.س)
+                    <p>الصافي</p>
+                </th>
+                <th style="width:10%">الخصم</th>
+                <th style="width:10%">كمية</th>
+                <th style="width:15%">
+                    (ر.س)
+                    <p>المبلغ</p>
+                </th>
+                <th style="width:25%">تاريخ الاستحقاق</th>
+                <th style="width:5%">البيان</th>
+            </tr>
+
+
+        </table>
+
+        <table style="width:100%;margin-top:10px">
+            <tr>
+                <td style="width: 50%; border-right-width: 0px; border-left-width: 0px; border-top-width: 0px; border-bottom-width: 0px; padding-top: 0px; padding-right: 0px; padding-left: 0px; padding-bottom: 0px;">
+                    <table id="32" style="width:100%;text-align: right;margin-top: 10px">
+                        <tr>
+                            <td style="width:20%; background-color:#ADD8E6;text-align: center;">ر.س</td>
+                            <td style="font-size: 14px;width:40%;background-color:#ADD8E6"></td>
+
+                        </tr>
+                        <tr>
+                            <td style="width:20%"><span id="T3R1V1"></span></td>
+                            <td style="font-size: 14px;width:40%;background-color:#ADD8E6">الإجمالي قبل ضريبة القيمة المضافة</td>
+                        </tr>
+                        <tr>
+                            <td style="width:20%"><span id="T3R4V1"></span></td>
+                            <td style="font-size: 14px;width:40%;background-color:#ADD8E6">إجمالي قيمة الخصم</td>
+                        </tr>
+                        <tr>
+                            <td style="width:20%"><span id="T3R2V1"></span></td>
+                            <td style="font-size: 14px;width:40%;background-color:#ADD8E6">%مبلغ ضريبة القيمة المضافة 15</td>
+                        </tr>
+                        <tr>
+                            <td style="width:20%"><span id="T3R3V1"></span></td>
+                            <td style="font-size: 14px;width:40%;background-color:#ADD8E6">إجمالي الفاتورة مع الضريبة</td>
+                        </tr>
+
+                    </table>
+                </td>
+                <td style="width: 50%; text-align:center; border-right-width: 0px; border-left-width: 0px; border-top-width: 0px; border-bottom-width: 0px; padding-top: 0px; padding-right: 0px; padding-left: 0px; padding-bottom: 0px;">
+                    <img id="Barcode1" src="" alt="" width="140" height="140" />
+                </td>
+            </tr>
+        </table>
+
+        <br />
+        <footer style="font-size:12px!important">
+            <table style="width:100%;border:0px; border-color:white;margin-top:100px">
+                <tr>
+                    <td colspan="5" style="text-align: right; border-width: 0px;"> شركة دغمل للتجارة المحدودة</td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; border-width: 0px; ">تاريخ الطباعة</td>
+                    <td style="width: 10%; text-align: right; border-width: 0px;"><span id="TFR2V1"></span></td>
+                    <td style="width: 10%; text-align: right; border-width: 0px;">طبع بواسطة </td>
+                    <td style="width: 10%; text-align: right; border-width: 0px;"><span id="TFR2V2"></span></td>
+                    <td style="width: 60%; text-align: right; border-width: 0px;">
+                        رقم السجل التجاري 5950002557 الرقم الضريبي 301043376600003
+                    </td>
+
+                </tr>
+            </table>
+        </footer>
+
+
+    </div>
+</body>
+</html>

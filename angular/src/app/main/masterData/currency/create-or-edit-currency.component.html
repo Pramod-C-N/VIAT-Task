@@ -1,0 +1,128 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Currency' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="Currency_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #Currency_Name="ngModel"
+                        id="Currency_Name"
+                        class="form-control"
+                        [(ngModel)]="currency.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="Currency_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Currency_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #Currency_Description="ngModel"
+                        id="Currency_Description"
+                        class="form-control"
+                        [(ngModel)]="currency.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="Currency_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Currency_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #Currency_Code="ngModel"
+                        id="Currency_Code"
+                        class="form-control"
+                        [(ngModel)]="currency.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="Currency_Code"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Currency_NumericCode">{{ l('NumericCode') }}</label>
+                    <input
+                        type="text"
+                        #Currency_NumericCode="ngModel"
+                        id="Currency_NumericCode"
+                        class="form-control"
+                        [(ngModel)]="currency.numericCode"
+                        name="NumericCode"
+                    />
+                    <validation-messages [formCtrl]="Currency_NumericCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Currency_MinorUnit">{{ l('MinorUnit') }}</label>
+                    <input
+                        type="text"
+                        #Currency_MinorUnit="ngModel"
+                        id="Currency_MinorUnit"
+                        class="form-control"
+                        [(ngModel)]="currency.minorUnit"
+                        name="MinorUnit"
+                    />
+                    <validation-messages [formCtrl]="Currency_MinorUnit"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Currency_Country">{{ l('Country') }}</label>
+                    <input
+                        type="text"
+                        #Currency_Country="ngModel"
+                        id="Currency_Country"
+                        class="form-control"
+                        [(ngModel)]="currency.country"
+                        name="Country"
+                    />
+                    <validation-messages [formCtrl]="Currency_Country"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="Currency_IsActive"
+                        #Currency_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="currency.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="Currency_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.currency.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

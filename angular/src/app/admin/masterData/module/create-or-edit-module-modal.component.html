@@ -1,0 +1,100 @@
+﻿<div
+    bsModal
+    #createOrEditModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="createOrEditModal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form *ngIf="active" #moduleForm="ngForm" novalidate (ngSubmit)="save()" autocomplete="off">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="module.id">{{ l('EditModule') }}</span>
+                        <span *ngIf="!module.id">{{ l('CreateNewModule') }}</span>
+                    </h4>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        (click)="close()"
+                        aria-label="Close"
+                        [disabled]="saving"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="my5">
+                        <label class="form-label" for="Module_ModuleId">{{ l('ModuleId') }}</label>
+                        <input
+                            type="number"
+                            #Module_ModuleId="ngModel"
+                            id="Module_ModuleId"
+                            class="form-control"
+                            [(ngModel)]="module.moduleId"
+                            name="ModuleId"
+                        />
+                        <validation-messages [formCtrl]="Module_ModuleId"></validation-messages>
+                    </div>
+
+                    <div class="my-3">
+                        <label class="form-label" for="Module_ModuleName">{{ l('ModuleName') }} *</label>
+                        <input
+                            type="text"
+                            #Module_ModuleName="ngModel"
+                            id="Module_ModuleName"
+                            class="form-control"
+                            [(ngModel)]="module.moduleName"
+                            name="ModuleName"
+                            required
+                        />
+                        <validation-messages [formCtrl]="Module_ModuleName"></validation-messages>
+                    </div>
+
+                    <div class="my5">
+                        <label class="form-label" for="Module_Status">{{ l('Status') }}</label>
+                        <input
+                            type="number"
+                            #Module_Status="ngModel"
+                            id="Module_Status"
+                            class="form-control"
+                            [(ngModel)]="module.status"
+                            name="Status"
+                        />
+                        <validation-messages [formCtrl]="Module_Status"></validation-messages>
+                    </div>
+
+                    <div class="my5">
+                        <label class="form-label" for="Module_TenantId">{{ l('TenantId') }}</label>
+                        <input
+                            type="number"
+                            #Module_TenantId="ngModel"
+                            id="Module_TenantId"
+                            class="form-control"
+                            [(ngModel)]="module.tenantId"
+                            name="TenantId"
+                        />
+                        <validation-messages [formCtrl]="Module_TenantId"></validation-messages>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="saving" type="button" class="btn btn-default" (click)="close()">
+                        {{ l('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary blue"
+                        [disabled]="!moduleForm.form.valid"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

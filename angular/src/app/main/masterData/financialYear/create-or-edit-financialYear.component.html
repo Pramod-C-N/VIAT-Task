@@ -1,0 +1,115 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Financial Year' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="FinancialYear_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #FinancialYear_Name="ngModel"
+                        id="FinancialYear_Name"
+                        class="form-control"
+                        [(ngModel)]="financialYear.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="FinancialYear_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="FinancialYear_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #FinancialYear_Description="ngModel"
+                        id="FinancialYear_Description"
+                        class="form-control"
+                        [(ngModel)]="financialYear.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="FinancialYear_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="FinancialYear_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #FinancialYear_Code="ngModel"
+                        id="FinancialYear_Code"
+                        class="form-control"
+                        [(ngModel)]="financialYear.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="FinancialYear_Code"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="FinancialYear_EffectiveFromDate">{{ l('EffectiveFromDate') }}</label>
+                    <input
+                        type="text"
+                        #FinancialYear_EffectiveFromDate="ngModel"
+                        id="FinancialYear_EffectiveFromDate"
+                        class="form-control"
+                        [(ngModel)]="financialYear.effectiveFromDate"
+                        name="EffectiveFromDate"
+                    />
+                    <validation-messages [formCtrl]="FinancialYear_EffectiveFromDate"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="FinancialYear_EffectiveTillEndDate">{{ l('EffectiveTillEndDate') }}</label>
+                    <input
+                        type="text"
+                        #FinancialYear_EffectiveTillEndDate="ngModel"
+                        id="FinancialYear_EffectiveTillEndDate"
+                        class="form-control"
+                        [(ngModel)]="financialYear.effectiveTillEndDate"
+                        name="EffectiveTillEndDate"
+                    />
+                    <validation-messages [formCtrl]="FinancialYear_EffectiveTillEndDate"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="FinancialYear_IsActive"
+                        #FinancialYear_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="financialYear.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="FinancialYear_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.financialYear.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

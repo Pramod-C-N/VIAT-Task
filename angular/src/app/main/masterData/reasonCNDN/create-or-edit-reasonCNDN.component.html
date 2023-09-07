@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Reason CNDN' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="ReasonCNDN_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #ReasonCNDN_Name="ngModel"
+                        id="ReasonCNDN_Name"
+                        class="form-control"
+                        [(ngModel)]="reasonCNDN.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="ReasonCNDN_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ReasonCNDN_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #ReasonCNDN_Description="ngModel"
+                        id="ReasonCNDN_Description"
+                        class="form-control"
+                        [(ngModel)]="reasonCNDN.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="ReasonCNDN_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ReasonCNDN_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #ReasonCNDN_Code="ngModel"
+                        id="ReasonCNDN_Code"
+                        class="form-control"
+                        [(ngModel)]="reasonCNDN.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="ReasonCNDN_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="ReasonCNDN_IsActive"
+                        #ReasonCNDN_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="reasonCNDN.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="ReasonCNDN_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.reasonCNDN.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

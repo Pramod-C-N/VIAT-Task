@@ -1,0 +1,83 @@
+﻿<div [@routerTransition]>
+  <div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Batch Details' | localize" [description]="">
+    </sub-header>
+    <div class="app-container container-fluid">
+      <div class="card">
+        <div class="card-body py-3">
+          <div class="row gx-10 text-center">
+            <div class="col-lg-8 ">
+              <label class="d-flex align-items-center">
+                <span class="">&nbsp;</span>
+              </label>
+              <label class="d-flex align-items-center mb-2">
+                <span class="card-label fw-bolder fs-3 mb-1 px-10 pt-0">
+                  Batch Id: {{ batchid }}
+                </span>
+              </label>
+            </div>
+            <div class="col-lg-4">
+              <div role="actions">
+                <button (click)="exportToExcel(batchid)"
+                  class="btn btn-outline btn-outline-success btn-active-light-success me-1">
+                  <i class="fa fa-file-excel"></i>
+                  {{ l('ExportToExcel') }}
+                </button>
+                <button (click)="Override()" class="btn btn-outline btn-outline-danger btn-active-light-danger me-1">
+                  {{ l('Override') }}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="separator separator-dashed"></div>
+        </div>
+        <div class="primeng-datatable-container">
+          <p-table #dataTableAuditLogs sortMode="multiple" [value]="errorlist" [columns]="columns">
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="text-center" *ngFor="let c of columns">
+                  {{ c.header }}
+                </th>
+                <th class="text-center">
+                  Select All
+                  <input [(ngModel)]="isSelectAll" type="checkbox" (click)="selectAll()" />
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-record="$implicit">
+              <tr class="alternate-row-credit">
+                <td *ngFor="let c of columns">
+                  <span *ngIf="c.field !='status' && c.field !='errormessage'">
+                    {{ record[c.field] }}
+                  </span>
+                  <span class="text-start" *ngIf="c.field=='errormessage'">
+                    <ul *ngFor="let em of record[c.field].split(';')">
+                      <li>
+                        {{em}}
+                      </li>
+                    </ul>
+                  </span>
+                  <span *ngIf="!record.status && c.field=='status'" class="badge badge-danger">
+                    Failure
+                  </span>
+                  <span *ngIf="record.status  && c.field=='status'" class="badge badge-success">
+                    Success
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="record.isOverride==1">
+                    <input [(ngModel)]="record.isSelected" type="checkbox"
+                      (click)="checkAllSelected(record.isSelected)" />
+                  </span>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <tr style="background-color: limegreen">
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>

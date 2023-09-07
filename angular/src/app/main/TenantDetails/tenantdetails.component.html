@@ -1,0 +1,19 @@
+<div class="content d-flex flex-column flex-column-fluid py-0">
+
+<div class="container-fluid" >
+    <div class="containerClass">
+        <div class="card card-custom gutter-b">
+          <sub-header [title]="'Edit Company Details ' | localize" >
+            <div role="actions">
+              <!-- <button (click)="gotoCustomer()" class="btn btn-primary blue" >
+                <span>{{ ('Back') }}</span>
+              </button> -->
+            </div>
+          </sub-header>
+<Tenantdetailtabs (state)="update()" [tenantid]="tenantid" [type]="type"></Tenantdetailtabs>
+
+
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,44 @@
+#alignitems {
+    margin-right: 55px;
+    float: right
+}
+
+#thstyle {
+    width: 100px;
+    text-align: center
+}
+
+#trstyle {
+    background-color: limegreen
+}
+
+.tdwidth {
+    width: 200px;
+    text-align: center
+}
+
+tr.p-selectable-row:nth-child(even) {
+    background-color: #ebf5ff;
+}
+
+#display {
+    display: flex;
+    justify-content: end
+}
+
+#textalign {
+    text-align: center;
+    float: right
+}
+
+#spanalign {
+    text-align: left
+}
+
+#ptable {
+    width: 100%
+}
+
+#formcontrol {
+    width: 100%
+}

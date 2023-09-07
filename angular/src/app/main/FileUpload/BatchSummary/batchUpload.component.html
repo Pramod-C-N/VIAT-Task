@@ -1,0 +1,99 @@
+<div class="content d-flex flex-column flex-column-fluid" *ngIf="setview==false">
+  <sub-header [title]="'File Upload - Batch Summary' | localize">
+    <div role="actions">
+    </div>
+  </sub-header>
+  <div class="app-container container-fluid">
+    <div class="card">
+      <div class="card-body py-3">
+        <div class="row gx-10 text-center">
+          <div class="col-lg-12 text-end">
+            <div class="dteContainer">
+              <!-- <label class="d-flex align-items-center">
+              <span class="">Date Range</span>
+            </label> -->
+              <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
+                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                placement="bottom right" (bsValueChange)="searchData()" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="separator separator-dashed my-1"></div>
+    </div>
+    <div class="primeng-datatable-container">
+      <p-table #dataTableAuditLogs sortMode="multiple" [value]="invoices" [paginator]="true" [rows]="10"
+        [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[5, 10, 15, 20]">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>
+              {{ 'Date' | localize }}
+            </th>
+            <th>
+              {{ 'File Name' | localize }}
+            </th>
+            <th>
+              {{ 'Batch No' | localize }}
+            </th>
+            <th>
+              {{ 'Valid Records' | localize }}
+            </th>
+            <th>
+              {{ 'Invalid Records' | localize }}
+            </th>
+            <th>
+              {{ 'Total Records' | localize }}
+            </th>
+            <th>
+              {{ 'Download Invalid Records' | localize }}
+            </th>
+            <th>
+              {{ 'View All Records' | localize }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-record="$implicit">
+          <tr class="alternate-row-credit">
+            <td>
+              <span class="p-column-title">{{ 'Id' | localize }}</span>
+              {{record.createdDate}}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Issue Date' | localize }}</span>
+              {{ record.fileName }}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Taxable amount' | localize
+                }}</span>
+              {{ record.batchId }}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Zero Rated' | localize }}</span>
+              {{ record.successRecords }}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Private health' | localize
+                }}</span>
+              {{record.failedRecords }}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Exports' | localize }}</span>
+              {{ record.successRecords + record.failedRecords }}
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'Exempt' | localize }}</span>
+              <button type="button" class="dwnldBtn btn"
+                (click)="exportToExcel(record.fileName,record.batchId)">Download</button>
+            </td>
+            <td>
+              <span class="p-column-title">{{ 'VAT Rate' | localize }}</span>
+              <a type="button" class="btn btn-primary" (click)="view(record.batchId,record.fileName)">View</a>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+<app-errorlist *ngIf="setview==true" [batchid]="batchid" [fileName]="fileName"></app-errorlist>

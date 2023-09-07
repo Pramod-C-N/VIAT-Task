@@ -1,0 +1,1146 @@
+<div class="d-flex overflow-auto h-55px pt-5" style="padding-left: 15px;display: none;"  >
+    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
+        <li class="nav-item">
+            <a
+                class="nav-link text-active-primary me-6"
+                (click)="loadIndividual()"
+                [ngClass]="{ active: loadindividualdt }"
+            >
+                Basic Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-active-primary me-6" (click)="loadAdd()" [ngClass]="{ active: loadindividualadd }">
+                General Information
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-active-primary me-6" (click)="loadReg()" [ngClass]="{ active: loadIndividualReg }">
+                Additional Documents
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-active-primary me-6" (click)="loadpat()" [ngClass]="{ active: loadIndividualpat }">
+                Partner's Information
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="card" *ngIf="loadindividualdt">
+    <div class="card-body py-3">
+        <div class="row mb-5">
+                <div class="row gx-10 mb-1">
+                    <div class="col-lg-12">
+                        <label class="d-flex align-items-center">
+                            <span class="row"><h5>Company Address :</h5></span>
+                        </label>
+                        <div class="row gx-10 mb-0">
+                            <div class="col-lg-3 mb-1">
+                                <label class="d-flex align-items-center">
+                                    <span class="required">Building Number :</span>
+                                </label>
+                                <div [formGroup]="basicForm">
+                                    <input
+                                        type="text"
+                                        placeholder="Building Number * "
+                                        class="form-control form-control-lg"
+                                        id="Bno"
+                                        maxlength="4"
+                                        formControlName="Buildno"
+                                        pattern="^[0-9]*$"
+                                        [(ngModel)]="address.buildingNo"
+                                    />
+                                    <div
+                                        *ngIf="
+                                            basicForm.controls['Buildno'].invalid &&
+                                            basicForm.controls['Buildno'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    >
+                                        <div *ngIf="basicForm.controls['Buildno'].errors.required">
+                                            Building Number is required.
+                                        </div>
+                                        <div *ngIf="basicForm.controls['Buildno'].errors.pattern">
+                                            Building Number is Invalid.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-9">
+                                <label class="d-flex align-items-center">
+                                    <span>Additional Building Number :</span>
+                                </label>
+                                <div [formGroup]="basicForm">
+                                    <input
+                                        type="text"
+                                        placeholder="Additional Building Number"
+                                        class="form-control form-control-lg"
+                                        id="Abno"
+                                        pattern="^[0-9]*$"
+                                        [(ngModel)]="address.additionalBuildingNumber"
+                                        formControlName="AdditionalBno"
+                                    />
+                                    <div
+                                        *ngIf="
+                                            basicForm.controls['AdditionalBno'].invalid &&
+                                            basicForm.controls['AdditionalBno'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    >
+                                        <div *ngIf="basicForm.controls['AdditionalBno'].errors.pattern">
+                                            Additional Building Number is Invalid.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gx-10 mb-1">
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Street :</span>
+                        </label>
+                        <div [formGroup]="basicForm">
+                            <input
+                                type="text"
+                                placeholder="Street *"
+                                class="form-control form-control-lg"
+                                id="street"
+                                
+                                [(ngModel)]="address.street"
+                                formControlName="street"
+                            />
+                            <div
+                                *ngIf="basicForm.controls['street'].invalid && basicForm.controls['street'].touched"
+                                class="fv-plugins-message-container invalid-feedback"
+                            >
+                                <div *ngIf="basicForm.controls['street'].errors.required">Street is required.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span>Additional Street :</span>
+                        </label>
+                        <div [formGroup]="basicForm">
+                            <input
+                                type="text"
+                                placeholder="Additional Street"
+                                class="form-control form-control-lg"
+                                id="Astreet"
+                                
+                                [(ngModel)]="address.additionalStreet"
+                                formControlName="Additnalstreet"
+                            />
+                            <div
+                                *ngIf="
+                                    basicForm.controls['Additnalstreet'].invalid &&
+                                    basicForm.controls['Additnalstreet'].touched
+                                "
+                                class="fv-plugins-message-container invalid-feedback"
+                            >
+                                <div *ngIf="basicForm.controls['Additnalstreet'].errors.required">
+                                    Additional Street is required.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gx-10 mb-1">
+                            <div class="col-lg-8 mb-1">
+                                <label class="d-flex align-items-center">
+                                    <span class="required">City :</span>
+                                </label>
+                                <div [formGroup]="basicForm">
+                                    <input
+                                        type="text"
+                                        placeholder="City *"
+                                        class="form-control form-control-lg"
+                                        id="city"
+                                        
+                                        [(ngModel)]="address.city"
+                                        formControlName="city"
+                                    />
+                                    <div
+                                        *ngIf="
+                                            basicForm.controls['city'].invalid && basicForm.controls['city'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    >
+                                        <div *ngIf="basicForm.controls['city'].errors.required">
+                                            City is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 mb-1">
+                                <label class="d-flex align-items-center">
+                                    <span class="required">ZIP or PIN :</span>
+                                </label>
+                                <div [formGroup]="basicForm">
+                                    <input
+                                        type="text"
+                                        placeholder="ZIP or PIN *"
+                                        class="form-control form-control-lg"
+                                        id="pin"
+                                        
+                                        maxlength="5"
+                                        minlength="5"
+                                        [(ngModel)]="address.postalCode"
+                                        formControlName="pin"
+                                    />
+                                    <div
+                                        *ngIf="
+                                            basicForm.controls['pin'].invalid && basicForm.controls['pin'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    >
+                                        <div *ngIf="basicForm.controls['pin'].errors.required">
+                                            ZIP or PIN is required.
+                                        </div>
+                                        <div *ngIf="basicForm.controls['pin'].errors.minlength">
+                                            ZIP or PIN should be minimun 5 digits.
+                                        </div>
+                                        <div *ngIf="basicForm.controls['pin'].errors.pattern">
+                                            ZIP or PIN is Invalid.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+                <div class="row gx-10 mb-1">      
+                            <div class="col-lg-6">
+                                <label class="d-flex align-items-center">
+                                    <span class="required">State :</span>
+                                </label>
+                                <div [formGroup]="basicForm">
+                                    <input
+                                        type="text"
+                                        placeholder="State *"
+                                        class="form-control form-control-lg"
+                                        id="state"
+                                        pattern="[a-zA-Z][a-zA-Z ]+"
+                                        [(ngModel)]="address.state"
+                                        formControlName="state"
+                                    />
+                                    <div
+                                        *ngIf="
+                                            basicForm.controls['state'].invalid &&
+                                            basicForm.controls['state'].touched
+                                        "
+                                        class="fv-plugins-message-container invalid-feedback"
+                                    >
+                                        <div *ngIf="basicForm.controls['state'].errors.required">
+                                            State is required.
+                                        </div>
+                                        <div *ngIf="basicForm.controls['state'].errors.pattern">
+                                            State is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-lg-6">
+                            <label class="d-flex align-items-center">
+                                <span class="required">Country :</span>
+                            </label>
+                        <div [formGroup]="basicForm">
+                            <select
+                                class="form-select form-select-lg fw-bold"
+                                name="country"
+                                formControlName="nationality"
+                                [(ngModel)]="address.country"
+                                id="country"
+                                
+                            >
+                                <option value="">Select a Country...</option>
+                                <option value="SA">Saudi Arabia</option>
+                            </select>
+                            <div
+                                *ngIf="
+                                    basicForm.controls['nationality'].invalid &&
+                                    basicForm.controls['nationality'].touched
+                                "
+                                class="fv-plugins-message-container invalid-feedback"
+                            >
+                                <div *ngIf="basicForm.controls['nationality'].errors.required">
+                                    Country is required.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+        
+                </div>
+                <div class="row gx-10 mb-1"> 
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Contact Person :</span>
+                        </label>
+                        <div >
+                            <input
+                                type="text"
+                                [(ngModel)]="tenants.contactPerson"
+                                placeholder="Contact Person Name"
+                                class="form-control form-control-lg"
+                            />
+                        </div>
+                        </div>
+                      
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Contact Number :</span>
+                        </label>
+                        <div [formGroup]="basicForm">
+                            <input
+                                type="text"
+                                placeholder="Contact Number *"
+                                class="form-control form-control-lg"
+                                [(ngModel)]="tenants.contactNumber"
+                                formControlName="ContactNo"
+                                minlength="12"
+                                maxlength="12"
+                                pattern="^[0-9]*$"
+                            />
+                        </div>
+                        <div
+                        *ngIf="
+                            basicForm.controls['ContactNo'].invalid &&
+                            basicForm.controls['ContactNo'].touched
+                        "
+                        class="fv-plugins-message-container invalid-feedback"
+                    >
+                        <div *ngIf="basicForm.controls['ContactNo'].errors.required">
+                            Contact Number is required.
+                        </div>
+                        <div *ngIf="basicForm.controls['ContactNo'].errors.pattern || basicForm.controls['ContactNo'].errors.minlength ">
+                            Contact Number is invalid.
+                        </div>
+                        </div>
+                    </div>
+                </div>  
+                <div class="row gx-10 mb-1">
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Email :</span>
+                        </label>
+                        <div >
+                            <input
+                                type="email"
+                                placeholder="Email Id"
+                                [(ngModel)]="tenants.emailID"
+                                class="form-control form-control-lg"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Designation :</span>
+                        </label>
+                        <div>
+                            <select
+                            class="form-select form-select-lg fw-bold"
+                            name="type"
+                            [(ngModel)]="tenants.designation"
+                            >
+                        <option value="" disabled selected>Select a Designation Type...</option>
+                        <option *ngFor="let c of designationtype" [value]="c.designation.name">
+                            {{ c.designation.name }}
+                        </option>
+                        </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gx-10 mb-1">
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Parent Entity Name :</span>
+                        </label>
+                        <div >
+                            <input
+                                type="email"
+                                placeholder="Parent Entity Name"
+                                [(ngModel)]="tenants.parentEntityName"
+                                class="form-control form-control-lg"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Country of Parent Entity :</span>
+                        </label>
+                        <div>
+                            <select
+                            class="form-select form-select-lg fw-bold"
+                            name="type"
+                            [(ngModel)]="tenants.parentEntityCountryCode"
+                          >
+                          <option value="">Select a Country...</option>
+                          <option value="SA">Saudi Arabia</option>
+                          </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row gx-10 mb-1">
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Legal Representative : :</span>
+                        </label>
+                        <div >
+                            <input
+                                type="email"
+                                placeholder="Legal Representative"
+                                [(ngModel)]="tenants.legalRepresentative"
+                                class="form-control form-control-lg"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="d-flex align-items-center">
+                            <span class="required">Name of Manager/Agent :</span>
+                        </label>
+                        <div >
+                            <input
+                                type="email"
+                                placeholder="Name of Manager/Agent"
+                                class="form-control form-control-lg"
+                            />
+                        </div>
+                    </div>
+                </div>
+        <br>
+        <div class="row  mb-1 ">
+            <label class="d-flex align-items-center">
+                <span class="row  mb-1" >
+                    <h5>VAT Information :</h5>
+                </span>
+            </label>
+            <div class="row   mb-1">
+                <div class="col-lg-6">
+                <label class="d-flex align-items-center">
+                    <span >VAT ID :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                    <input
+                        type="text"
+                        id="vatid"
+                        placeholder="VAT ID"
+                        class="form-control form-control-lg"
+                        minlength="15"
+                        maxlength="15"
+                        [(ngModel)]="tenants.vatid"
+                        formControlName="vatid"
+                    />
+                </div>
+                <div
+                    *ngIf="basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
+                    class="fv-plugins-message-container invalid-feedback"
+                >
+                    Please enter a valid VAT ID
+                    <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is required.</div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label class="d-flex align-items-center">
+                    <span>CR  Number :</span>
+                </label>
+                <div [formGroup]="basicForm">
+                    <input
+                        type="text"
+                        id="crnumber"
+                        placeholder="CR Number"
+                        class="form-control form-control-lg"
+                        [(ngModel)]="documents.documentNumber"
+                        maxlength="10"
+                        minlength="10"
+                        pattern="^[0-9]*$"
+                        formControlName="crnumber"
+                    />
+                </div>
+                <div
+                    *ngIf="basicForm.controls['crnumber'].invalid && basicForm.controls['crnumber'].touched"
+                    class="fv-plugins-message-container invalid-feedback"
+                >
+                <div *ngIf="basicForm.controls['crnumber'].errors.pattern || basicForm.controls['crnumber'].errors.minlength">
+
+                    Please enter a valid CR Number
+                    </div>
+                    <div *ngIf="basicForm.controls['crnumber'].errors.required">CR Number is required.</div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="row mb-1" *ngIf="ishost">
+            <div class="col-md-6">
+                <h5 class="mt-5">{{ 'ApplicationLogo' | localize }}</h5>
+                <form #logoUploadForm>
+                    <div
+                        class="mb-5"
+                        *ngIf="appSession.tenant.logoId"
+                        style="
+                            background: url(/assets/common/images/transparent_background.png);
+                            width: 50%;
+                            padding: 5px;
+                        "
+                    >
+                        <a
+                            [href]="
+                                remoteServiceBaseUrl +
+                                '/TenantCustomization/GetLogo?tenantId=' +
+                                appSession.tenant.id
+                            "
+                            target="_blank"
+                        >
+                            <img
+                                height="38"
+                                [src]="
+                                    remoteServiceBaseUrl +
+                                    '/TenantCustomization/GetLogo?tenantId=' +
+                                    appSession.tenant.id
+                                "
+                            />
+                        </a>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input
+                                type="file"
+                                class="custom-file-input"
+                                id="uploadLogoInput"
+                                ng2FileSelect
+                                [uploader]="logoUploader"
+                                (change)="onUploadLogoInputChange($event.target.files)"
+                            />
+                            <label
+                                class="custom-file-label"
+                                #uploadLogoInputLabel
+                                for="uploadLogoInput"
+                            >
+                                {{ 'ChooseAFile' | localize }}
+                            </label>
+                        </div>
+                        <span class="form-text text-muted col-lg-12">
+                            {{ 'UploadLogo_Info' | localize }}
+                        </span>
+                    </div>
+
+                    <button class="btn btn-primary" type="button" (click)="uploadLogo()">
+                        {{ 'Upload' | localize }}
+                    </button>
+                    <button class="btn btn-default" type="button" (click)="clearLogo()">
+                        {{ 'Clear' | localize }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div> 
+
+<div *ngIf="loadIndividualReg" class="card">
+    <div class="card">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">Additional Documents :</span>
+            </h3>
+        </div>
+        <div class="card-body py-0">
+            <div class="row gx-1" style="text-align: center">
+                <div class="col-lg-3">
+                    <label class="d-flex align-items-center">
+                        <span >Select Document Type :</span>
+                    </label>
+                    <select
+                        class="form-select form-select-solid form-select-lg fw-bold"
+                        [(ngModel)]="Documentitem.documentType"
+                        name="type"
+
+                    >
+                        <option value=" " disabled selected>Select a Document Type...</option>
+                        <option *ngFor="let c of doctype" [value]="c.documentMaster.name">
+                            {{ c.documentMaster.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span >Document Name:</span>
+                    </label>
+                    <div class="form-group input-field">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg form-control-solid"
+                            id="schemeId"
+                            name="schemeId"
+                            [(ngModel)]="Documentitem.documentId"
+                            placeholder="Document Name"
+
+                            value=""
+                            autocomplete="off"
+                        />
+                    </div>
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+
+                <div class="col-lg-3">
+                    <label class="d-flex align-items-center">
+                        <span >Registration Number :</span>
+                    </label>
+                    <div class="form-group input-field">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg form-control-solid"
+                            id="schemeId"
+                            name="schemeId"
+                            [(ngModel)]="Documentitem.documentNumber"
+                            placeholder="Registration no"
+                            value=""
+                            autocomplete="off"
+                        />
+                    </div>
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span >Registration Date</span>
+                    </label>
+                    <input
+                        class="form-control form-control-lg form-control-solid"
+                        [(ngModel)]="Documentitem.registrationDate"
+                        type="date"
+                    />
+
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+
+                <div class="col-lg-1 gx-1" style="padding-top: 25px">
+                    <div class="d-flex justify-content-end flex-shrink-0">
+                        <a id="addrow" class="btn btn-success btn-active-color-warning"  (click)="additem()">
+                            Add
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-1 gx-1" style="padding-top: 25px">
+                    <div class="d-flex justify-content-end flex-shrink-0">
+                        <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearitem()" >
+                            Clear
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="separator separator-dashed my-1"></div>
+        </div>
+
+        <div class="card pt-5">
+            <div class="card-body py-3">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead style="text-align: center">
+                            <tr class="fw-bolder text-muted">
+                                <th class="min-w-50px">Sl No</th>
+                                <th class="min-w-100px">Document Type</th>
+                                <th class="min-w-150px">Document Name</th>
+                                <th class="min-w-100px">Registration Number</th>
+                                <th class="min-w-100px">Registration Date</th>
+                                <th class="min-w-100px"></th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align: center">
+                            <tr *ngFor="let it of Documentitems; let i = index">
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ i + 1 }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.documentType }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.documentId }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.documentNumber }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span  class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.registrationDate }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" (click)="deleteItem(i)">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- <div class="col-lg-12 h-40px">
+                <button class="btn btn-primary blue" style="float: right" (click)="loadAdd()">
+                    <i class="fa fa-save"></i>
+                    <span>{{ l('Back') }}</span>
+                </button>
+            </div>
+            <div class="col-lg-12 h-40px">
+                <button class="btn btn-primary blue" style="float: right" (click)="save()">
+                    <i class="fa fa-save"></i>
+                    <span>{{ l('Save') }}</span>
+                </button>
+            </div> -->
+            <div class="separator separator-dashed my-1"></div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="loadindividualadd" class="card">
+    <div class="card">
+        <div class="card-header border-0 pt-5">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label fw-bolder fs-3 mb-1">General Information</span>
+            </h3>
+        </div>
+        <div class="card-body py-3">
+            <div class="row gx-10 mb-5">
+                <div class="col-lg-6">
+                    <div class="col-lg-12 mb-5">
+                        <label class="d-flex align-items-center">
+                            <span >Business Category :</span>
+                        </label>
+                        <div >
+                            <select
+                                type="text"
+                                placeholder="Goods"
+                                [(ngModel)]="tenants.businessCategory"
+                                class="form-control form-control-lg form-control-solid"
+                            >
+                            <option value="">Select a Business Category...</option>
+                            <option *ngFor="let c of transtype" [value]="c.transactionCategory.name">
+                                {{ c.transactionCategory.name }}
+                            </option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12 mb-5">
+                            <label class="d-flex align-items-center">
+                                <span >Business Supplies:</span>
+                            </label>
+                            <div >
+                                <select
+                                type="text"
+                                placeholder="Goods"
+                                [(ngModel)]="businessSupplies.businessSupplies"
+                                class="form-control form-control-lg form-control-solid"
+                            >
+                            <option value="">Select a Business Supplies...</option>
+                            <option *ngFor="let c of businesssales" [value]="c.salestype">
+                                {{ c.salestype }}
+                            </option>
+
+                            </select>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="d-flex align-items-center">
+                                    <span >Sales VAT category :</span>
+                                </label>
+                                <div >
+                                    <select
+                                        class="form-control form-control-lg form-control-solid"
+                                        [(ngModel)]="supplyVATCategory.vatCategoryName"
+                                        name="type"
+                                    >
+                                    <option value="">Select a Sales VAT category...</option>
+                                    <option *ngFor="let c of salesvat" [value]="c.name">
+                                        {{ c.name }}
+                                    </option></select>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="d-flex align-items-center">
+                                    <span >Invoice Type:</span>
+                                </label>
+                                <div >
+                                    <select
+                                        type="text"
+                                        placeholder="Goods"
+                                        class="form-control form-control-lg form-control-solid"
+                                    >
+                                    <option value="">Select a Invoice Type...</option>
+                                    <option *ngFor="let c of invoicetype" [value]="c.invoiceType.name">
+                                        {{ c.invoiceType.name }}
+                                    </option>
+                                </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="d-flex align-items-center">
+                                    <span >Last Return Filed:</span>
+                                </label>
+                                <div >
+                                    <input
+                                    type="date"
+                                    [(ngModel)]="tenants.lastReturnFiled"
+                                    class="form-control form-control-lg form-control-solid"
+                                    placeholder="Last Return Filed"
+                                    value=""
+                                />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="col-lg-12 ">
+                        <label class="d-flex align-items-center">
+                            <span >Operational Model :</span>
+                        </label>
+                        <div >
+                            <select
+                                type="text"
+                                placeholder="Goods"
+                                [(ngModel)]="tenants.operationalModel"
+                                class="form-control form-control-lg form-control-solid"
+                        >
+                        <option value="">Select a Operational Model...</option>
+                        <option *ngFor="let c of OperationalModels" [value]="c.businessOperationalModel.code">
+                            {{ c.businessOperationalModel.code }}
+                        </option></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 ">
+                        <label class="d-flex align-items-center">
+                            <span >Business Purchase :</span>
+                        </label>
+                        <div >
+                            <select
+                                type="text"
+                                placeholder="Business Purchase"
+                                [(ngModel)]="BusinessPurchase.businessPurchase"
+                                class="form-control form-control-lg form-control-solid"
+                        >
+                        <option value="">Select a Business Purchase...</option>
+                        <option *ngFor="let c of businesspurchase" [value]="c.purchasetype">
+                            {{ c.purchasetype }}
+                        </option>
+                    </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="d-flex align-items-center">
+                            <span >Purchase VAT category :</span>
+                        </label>
+                        <div>
+                            <select
+                                class="form-control form-control-lg form-control-solid"
+                                [(ngModel)]="purchaseVatCateory.vatCategoryName"
+                                name="type"
+                            >
+                            <option value="">Select a Purchase VAT category... </option>
+                            <option *ngFor="let c of purchasevat" [value]="c.name">
+                                {{ c.name }}
+                            </option></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="d-flex align-items-center">
+                            <span >Turnover Slab :</span>
+                        </label>
+                        <div >
+                            <select
+                                class="form-control form-control-lg form-control-solid"
+                                [(ngModel)]="tenants.turnoverSlab"
+                                name="type"
+                            >
+                            <option value="">Select a Turnover Slab... </option>
+                            <option *ngFor="let c of turnoverslabs" [value]="c.businessTurnoverSlab.description">
+                                {{ c.businessTurnoverSlab.description }}
+                            </option></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <label class="d-flex align-items-center">
+                            <span >VAT Return Filing Frequency :</span>
+                        </label>
+                        <div >
+                            <select
+                                class="form-control form-control-lg form-control-solid"
+                                name="type"
+                                [(ngModel)]="tenants.vatReturnFillingFrequency"
+                            >
+                            <option value="">Select a VAT Return Filing Frequency... </option>
+                            <option value="Quarterly/Monthly">Quarterly/Monthly </option>
+                            <option value="Monthly">Monthly </option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="separator separator-dashed my-1"></div>
+            </div>
+        </div>
+        </div>
+</div>
+
+<div *ngIf="loadIndividualpat">
+    <div class="card">
+        <div class="card-body py-3">
+            <div class="row gx-10 mb-5"></div>
+
+            <div class="row gx-1" style="text-align: center">
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span class="required"> Name</span>
+                    </label>
+                    <div class="form-group input-field">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemName"
+                            name="itemName"
+                            [(ngModel)]="partnerShareHolderItem.representativeName"
+                            placeholder=""
+                            value=""
+                            autocomplete="off"
+                            required
+                        />
+                    </div>
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Company Name:</span>
+                    </label>
+                    <input
+                    type="text"
+                    class="form-control form-control-lg form-control-solid"
+                    id="itemName"
+                    name="itemName"
+                    [(ngModel)]="partnerShareHolderItem.partnerName"
+                    placeholder=""
+                    value=""
+                    autocomplete="off"
+                    required
+                />
+                </div>
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Domestic Name</span>
+                    </label>
+                    <div class="form-group input-field">
+                        <input
+                            type="text"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemName"
+                            name="itemName"
+                            [(ngModel)]="partnerShareHolderItem.domesticName"
+                            placeholder=""
+                            value=""
+                            autocomplete="off"
+                            required
+                        />
+                    </div>
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+                <div class="col-lg-1">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Agent Name</span>
+                    </label>
+                    <input
+                    type="text"
+                    class="form-control form-control-lg form-control-solid"
+                    id="itemName"
+                    name="itemName"
+                    placeholder=""
+                    value=""
+                    autocomplete="off"
+                    required
+                />
+                </div>
+                <div class="col-lg-2">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Nationality</span>
+                    </label>
+                    <select
+                    class="form-select form-select-solid form-select-lg fw-bold"
+                    name="country"
+                    [(ngModel)]="partnerShareHolderItem.nationality"
+                    id="country"
+                    
+                >
+                    <option value="">Select a Country...</option>
+                    <option value="SA">Saudi Arabia</option>
+                </select>
+                </div>
+                <div class="col-lg-1">
+                    <label class="d-flex align-items-center" style="width: 100%">
+                        <span class="required">Capital Amount</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="itemRate"
+                        name="itemRate"
+                        [(ngModel)]="partnerShareHolderItem.capitalAmount"
+                        value="0"
+                        placeholder=""
+                        style="text-align: right"
+                    />
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+                <div class="col-lg-1">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Capital Share</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="itemDisc"
+                        name="itemDisc"
+                        [(ngModel)]="partnerShareHolderItem.capitalShare"
+                        placeholder=""
+                        value="0"
+                        style="text-align: right"
+                    />
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+                <div class="col-lg-1">
+                    <label class="d-flex align-items-center">
+                        <span class="required">Profit Share</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="itemVATPercent"
+                        [(ngModel)]="partnerShareHolderItem.profitShare"
+                        name="itemVATPercent"
+                        placeholder=""
+                        value="0"
+                        style="text-align: right"
+                    />
+                    <div class="fv-plugins-message-container invalid-feedback"></div>
+                </div>
+            </div>
+            <div class="row-12">
+                <div class="col-lg-1 gx-1" style="padding-top: 25px; float: right">
+                    <div class="d-flex justify-content-end flex-shrink-0">
+                        <a id="addrow" class="btn btn-success btn-active-color-warning" (click)="addpatitem()">Add</a>
+                    </div>
+                </div>
+                <div class="col-lg-1 gx-1" style="padding-top: 25px; float: right">
+                    <div class="d-flex justify-content-end flex-shrink-0">
+                        <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearpatitem()">Clear</a>
+                    </div>
+                </div>
+            </div>
+            <div class="separator separator-dashed my-1"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body py-3">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead style="text-align: center">
+                        <tr class="fw-bolder text-muted">
+                            <th class="min-w-50px">Sl No</th>
+                            <th class="min-w-100px">Name</th>
+                            <th class="min-w-100px">Company Name</th>
+                            <th class="min-w-100px">Domestic Name</th>
+                            <th class="min-w-100px">Agent Name</th>
+                            <th class="min-w-100px">Nationality</th>
+                            <th class="min-w-100px">Capiatal Amount(SAR)</th>
+                            <th class="min-w-100px">Capital Share</th>
+                            <th class="min-w-100px">Profit Share</th>
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center">
+                        <tr *ngFor="let it of partnerShareHolderItems; let i = index">
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ i + 1 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.representativeName}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.partnerName    }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.domesticName}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.agentName}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.nationality}}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.capitalAmount}}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.capitalShare}}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{it.profitShare}}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" (click)="deletepatItem(i)">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="separator separator-dashed my-1"></div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" [disabled]="saving" class="btn btn-light-primary fw-bold" (click)="close()">
+        {{ 'Cancel' | localize }}
+    </button>
+    <button
+        type="submit"
+        [buttonBusy]="saving"
+        [busyText]="l('SavingWithThreeDot')"
+        class="btn btn-primary fw-bold"
+        (click)="updatedetails()"
+    >
+        <i class="fa fa-save"></i>
+        <span>{{ 'Save' | localize }}</span>
+    </button>
+</div>

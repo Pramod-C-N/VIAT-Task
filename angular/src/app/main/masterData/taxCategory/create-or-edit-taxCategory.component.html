@@ -1,0 +1,115 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Tax Category' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="TaxCategory_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #TaxCategory_Name="ngModel"
+                        id="TaxCategory_Name"
+                        class="form-control"
+                        [(ngModel)]="taxCategory.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="TaxCategory_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="TaxCategory_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #TaxCategory_Description="ngModel"
+                        id="TaxCategory_Description"
+                        class="form-control"
+                        [(ngModel)]="taxCategory.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="TaxCategory_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="TaxCategory_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #TaxCategory_Code="ngModel"
+                        id="TaxCategory_Code"
+                        class="form-control"
+                        [(ngModel)]="taxCategory.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="TaxCategory_Code"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="TaxCategory_IsKSAApplicable">{{ l('Is KSA Applicable') }}</label>
+                    <input
+                        type="text"
+                        #TaxCategory_IsKSAApplicable="ngModel"
+                        id="TaxCategory_IsKSAApplicable"
+                        class="form-control"
+                        [(ngModel)]="taxCategory.isKSAApplicable"
+                        name="IsKSAApplicable"
+                    />
+                    <validation-messages [formCtrl]="TaxCategory_IsKSAApplicable"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="TaxCategory_TaxSchemeID">{{ l('TaxSchemeID') }}</label>
+                    <input
+                        type="text"
+                        #TaxCategory_TaxSchemeID="ngModel"
+                        id="TaxCategory_TaxSchemeID"
+                        class="form-control"
+                        [(ngModel)]="taxCategory.taxSchemeID"
+                        name="TaxSchemeID"
+                    />
+                    <validation-messages [formCtrl]="TaxCategory_TaxSchemeID"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="TaxCategory_IsActive"
+                        #TaxCategory_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="taxCategory.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="TaxCategory_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.taxCategory.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

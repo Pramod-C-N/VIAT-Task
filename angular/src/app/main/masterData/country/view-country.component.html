@@ -1,0 +1,59 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Country' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Name') }} :</h6>
+                        {{ item.country.name }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('StateName') }} :</h6>
+                        {{ item.country.stateName }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Sovereignty') }} :</h6>
+                        {{ item.country.sovereignty }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('AlphaCode') }} :</h6>
+                        {{ item.country.alphaCode }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('NumericCode') }} :</h6>
+                        {{ item.country.numericCode }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('InternetCCTLD') }} :</h6>
+                        {{ item.country.internetCCTLD }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('SubDivisionCode') }} :</h6>
+                        {{ item.country.subDivisionCode }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Alpha3Code') }} :</h6>
+                        {{ item.country.alpha3Code }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('CountryGroup') }} :</h6>
+                        {{ item.country.countryGroup }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('IsActive') }} :</h6>
+                        <div *ngIf="item.country.isActive" class="text-left">
+                            <i class="fa fa-check-circle text-success" title="True"></i>
+                        </div>
+                        <div *ngIf="!item.country.isActive" class="text-left">
+                            <i class="fa fa-times-circle" title="False"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

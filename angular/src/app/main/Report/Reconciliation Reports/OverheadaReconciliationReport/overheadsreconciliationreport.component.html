@@ -1,0 +1,62 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="d-flex flex-stack mt-3">
+        <sub-header [title]="'Reconciliation Report' | localize"></sub-header>
+        <div class="d-flex align-items-center" id="alignitems">
+            <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" id="navtabs">
+                <li class="nav-item">
+                    <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
+                        readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                        placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="app-container container-fluid">
+        <div class="card px-0">
+            <div *ngIf="searched" class="card">
+                <div class="card-body py-3">
+                    <div class="row gx-10 mb-5 pt-5">
+                        <div class="col-lg-9">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-gray-800 fw-bold fs-2 mb-1">
+                                    Overheads - VAT Return Reconciliation Report
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="col-lg-3" style="text-align: right">
+                            <button id="buttonstyle"
+                                class="btn btn-outline btn-outline-success btn-active-light-success me-1"
+                                (click)="downloadExcel()">
+                                <i class="far fa-file-excel btn-md-icon"></i>
+                                <span class="d-none d-md-inline-block">
+                                    {{ 'Download Report' | localize }}
+                                </span>
+                            </button>
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-4">
+                                <h3 class="card-title text-center align-items-start flex-column">
+                                    <span class="card-label text-muted fw-bold fs-3 mb-1">DESCRIPTION</span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-4">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder fs-3 mb-1"></span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-4">
+                                <h3 class="card-title text-center align-items-start flex-column">
+                                    <span class="card-label text-muted fw-bold fs-3 mb-3">AMOUNT (SAR)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <reconciliationdata [vatdata]="data"></reconciliationdata>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

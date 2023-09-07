@@ -1,0 +1,174 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Country' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="Country_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #Country_Name="ngModel"
+                        id="Country_Name"
+                        class="form-control"
+                        [(ngModel)]="country.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="Country_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_StateName">{{ l('StateName') }}</label>
+                    <input
+                        type="text"
+                        #Country_StateName="ngModel"
+                        id="Country_StateName"
+                        class="form-control"
+                        [(ngModel)]="country.stateName"
+                        name="StateName"
+                    />
+                    <validation-messages [formCtrl]="Country_StateName"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_Sovereignty">{{ l('Sovereignty') }}</label>
+                    <input
+                        type="text"
+                        #Country_Sovereignty="ngModel"
+                        id="Country_Sovereignty"
+                        class="form-control"
+                        [(ngModel)]="country.sovereignty"
+                        name="Sovereignty"
+                    />
+                    <validation-messages [formCtrl]="Country_Sovereignty"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_AlphaCode">{{ l('AlphaCode') }}</label>
+                    <input
+                        type="text"
+                        #Country_AlphaCode="ngModel"
+                        id="Country_AlphaCode"
+                        class="form-control"
+                        [(ngModel)]="country.alphaCode"
+                        name="AlphaCode"
+                        pattern="^[a-zA-Z]*$"
+                        minlength="0"
+                        maxlength="2"
+                    />
+                    <validation-messages [formCtrl]="Country_AlphaCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_NumericCode">{{ l('NumericCode') }}</label>
+                    <input
+                        type="text"
+                        #Country_NumericCode="ngModel"
+                        id="Country_NumericCode"
+                        class="form-control"
+                        [(ngModel)]="country.numericCode"
+                        name="NumericCode"
+                        pattern="^[0-9]*$"
+                    />
+                    <validation-messages [formCtrl]="Country_NumericCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_InternetCCTLD">{{ l('InternetCCTLD') }}</label>
+                    <input
+                        type="text"
+                        #Country_InternetCCTLD="ngModel"
+                        id="Country_InternetCCTLD"
+                        class="form-control"
+                        [(ngModel)]="country.internetCCTLD"
+                        name="InternetCCTLD"
+                    />
+                    <validation-messages [formCtrl]="Country_InternetCCTLD"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_SubDivisionCode">{{ l('SubDivisionCode') }}</label>
+                    <input
+                        type="text"
+                        #Country_SubDivisionCode="ngModel"
+                        id="Country_SubDivisionCode"
+                        class="form-control"
+                        [(ngModel)]="country.subDivisionCode"
+                        name="SubDivisionCode"
+                    />
+                    <validation-messages [formCtrl]="Country_SubDivisionCode"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_Alpha3Code">{{ l('Alpha3Code') }}</label>
+                    <input
+                        type="text"
+                        #Country_Alpha3Code="ngModel"
+                        id="Country_Alpha3Code"
+                        class="form-control"
+                        [(ngModel)]="country.alpha3Code"
+                        name="Alpha3Code"
+                        pattern="^[a-zA-Z]*$"
+                        minlength="0"
+                        maxlength="3"
+                    />
+                    <validation-messages [formCtrl]="Country_Alpha3Code"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Country_CountryGroup">{{ l('CountryGroup') }}</label>
+                    <input
+                        type="text"
+                        #Country_CountryGroup="ngModel"
+                        id="Country_CountryGroup"
+                        class="form-control"
+                        [(ngModel)]="country.countryGroup"
+                        name="CountryGroup"
+                    />
+                    <validation-messages [formCtrl]="Country_CountryGroup"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="Country_IsActive"
+                        #Country_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="country.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="Country_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.country.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

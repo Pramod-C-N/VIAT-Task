@@ -1,0 +1,56 @@
+.purchaserecords{
+    text-align: right;
+    width: 100px;
+}
+tr.p-selectable-row:nth-child(even) {
+    background-color: #fffcf2;
+}  
+
+.div1{
+    margin-right: 55px; float: right
+}
+
+.div2{
+    width: 7%
+}
+.li{
+    border-radius: 0
+}
+.div3{
+    width: 5%
+}
+.div4{
+    width: 79%
+}
+.div5{
+    display: flex; justify-content: end
+}
+.div6{
+    margin-left: auto; width: 400px
+}
+.div7{
+    width: 400px
+}
+.div8{
+    text-align:center;right: 0; margin-left: 5px
+}
+.ultypes{
+    width: 285px;
+    border-color: #E4E6EF;
+}
+.div9{
+    width: 150px;text-align: end;
+}
+
+.div10{
+    display: flex; justify-content: start
+}
+.div11{
+    border-radius: 0; 
+}
+.div12{
+    margin-left:5%;
+}
+.toggle:checked {
+    background-color:#F1BC00
+  }

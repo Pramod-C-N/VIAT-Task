@@ -1,0 +1,634 @@
+<style>
+    .ui-autocomplete .inputTest {
+        background-color: red;
+    }
+
+    .panelTest .ui-autocomplete-items .ui-state-highlight {
+        background-color: blue;
+    }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Sales Invoice' | localize">
+        <div role="actions"></div>
+    </sub-header>
+    <div class="ng-tns-c327-6 app-container container-fluid">
+        <div class="card">
+            <div class="row">
+            <div class="col-lg-8">
+                <div class="card-header  border-0 pt-5 col-lg-11">
+                    <h3 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">Customer Details &nbsp;</span>
+                    </h3>
+                </div>
+                <div class="card-body py-3">
+                    <div class="row gx-10 mb-2 " style="text-align: center">
+                        <div class="col-lg-6 px-1">
+                            <div [formGroup]="basicForm">
+                                <!-- <p-autoComplete
+                                    id="SingleSelectInput"
+                                    [(ngModel)]="customers"
+                                    field="name"
+                                    [minLength]="1"
+                                    name="SingleSelectInput"
+                                    inputStyleClass="form-control form-control-lg form-control-solid "
+                                    [style]="{ width: '100%', 'text-align': 'left' }"
+                                    [suggestions]="filteredCustomers"
+                                    (completeMethod)="filterCustomers($event)"
+                                    (onSelect)="onSelectCustomer($event)"
+                                    formControlName="Name"
+                                    placeholder="Customer Name *"
+                                ></p-autoComplete> -->
+                                <input
+                                type="text"
+                                [(ngModel)]="customer.registrationName"
+                                class="form-control form-control-lg form-control-solid"
+                                id="name"
+                                name="name"
+                                placeholder="Customer Name"
+                                value=""
+                                formControlName="Name"
+                            />
+                                <div
+                                    *ngIf="basicForm.controls['Name'].invalid && basicForm.controls['Name'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['Name'].errors.required">Name is required.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-6 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    minlength="15"
+                                    [(ngModel)]="customer.vatid"
+                                    maxlength="15"
+                                    pattern="^3[0-9]*3$"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="vatid"
+                                    name="vatid"
+                                    placeholder="VAT Registration Number"
+                                    value=""
+                                    formControlName="vatid"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['vatid'].errors.minlength">
+                                        VAT ID should be minimum 15 digits
+                                    </div>
+                                    <div *ngIf="basicForm.controls['vatid'].errors.pattern">VAT ID is invalid.</div>
+                                    <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is required.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>                   
+                    </div>
+                    <div class="row gx-10 mb-2 " style="text-align: center">
+                        <div class="col-lg-3 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    [(ngModel)]="address.buildingNo"
+                                    maxlength="4"
+                                    pattern="^[0-9]*$"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="build"
+                                    name="build"
+                                    placeholder="Building No *"
+                                    value=""
+                                    formControlName="Buildno"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['Buildno'].invalid && basicForm.controls['Buildno'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['Buildno'].errors.required">
+                                        Building No is required.
+                                    </div>
+                                    <div *ngIf="basicForm.controls['Buildno'].errors.pattern">Building No is Invalid.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        <div class="col-lg-9 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    name="street"
+                                    [(ngModel)]="address.street"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="itemDescription"
+                                    formControlName="street"
+                                    placeholder="Street *"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['street'].invalid && basicForm.controls['street'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['street'].errors.required">Street is required.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                    </div>
+
+                     <div class="row gx-10 mb-2" style="text-align: center">
+                        <div class="col-lg-6 px-1">
+                            <input
+                                type="text"
+                                name="additionalStreet"
+                                [(ngModel)]="address.additionalStreet"
+                                class="form-control form-control-lg form-control-solid"
+                                id="itemDescription"
+                                placeholder="Additional Street"
+                            />
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+    
+                        <div class="col-lg-6 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    name="neighbourhood"
+                                    [(ngModel)]="address.neighbourhood"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="itemDescription"
+                                    formControlName="Neighbourhood"
+                                    placeholder="Neighbourhood *"
+                                />
+                                <div
+                                    *ngIf="
+                                        basicForm.controls['Neighbourhood'].invalid &&
+                                        basicForm.controls['Neighbourhood'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['Neighbourhood'].errors.required">
+                                        Neighbourhood is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                    </div>
+                    <div class="row gx-10 mb-2" style="text-align: center">
+                        <div class="col-lg-3 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    name="city"
+                                    [(ngModel)]="address.city"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="itemDescription"
+                                    formControlName="city"
+                                    placeholder="City *"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['city'].invalid && basicForm.controls['city'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['city'].errors.required">City is required.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        <div class="col-lg-3 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    name="state"
+                                    [(ngModel)]="address.state"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="itemDescription"
+                                    formControlName="state"
+                                    placeholder="Province *"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['state'].invalid && basicForm.controls['state'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['state'].errors.required">Province is required.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        <div class="col-lg-3 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    [(ngModel)]="address.postalCode"
+                                    minlength="4"
+                                    maxlength="5"
+                                    pattern="^[0-9]*$"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="post"
+                                    name="post"
+                                    placeholder="Postal Code *"
+                                    value=""
+                                    formControlName="pin"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['pin'].invalid && basicForm.controls['pin'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['pin'].errors.required">ZIP/PIN is required.</div>
+                                    <div *ngIf="basicForm.controls['pin'].errors.minlength">
+                                        ZIP/PIN should be minimun 5 digits.
+                                    </div>
+                                    <div *ngIf="basicForm.controls['pin'].errors.pattern">ZIP/PIN is Invalid.</div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        <div class="col-lg-3 px-1">
+                            <div [formGroup]="basicForm">
+                                <select
+                                    class="form-select form-select-solid form-select-lg"
+                                    name="country"
+                                    [(ngModel)]="address.countryCode"
+                                    formControlName="nationality"
+                                >
+                                    <option [ngValue]="null" disabled selected>Country *</option>
+                                    <option value="SA">Saudi Arabia</option>
+                                </select>
+                                <div
+                                    *ngIf="
+                                        basicForm.controls['nationality'].invalid &&
+                                        basicForm.controls['nationality'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                    <div *ngIf="basicForm.controls['nationality'].errors.required">
+                                        Country is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                    </div>
+                    <div class="row gx-10 mb-2" style="text-align: center">
+                        <div class="col-lg-6 mb-1 px-1">
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    [(ngModel)]="customer.contactPerson.contactNumber"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="contactNo"
+                                    name="contactNo"
+                                    placeholder="Contact Number *"
+                                    value=""
+                                    formControlName="ContactNo"
+                                    pattern="^[0-9]*$"
+                                    maxlength="12"
+                                    minlength="12"
+                                />
+                                <div
+                                    *ngIf="
+                                        basicForm.controls['ContactNo'].invalid && basicForm.controls['ContactNo'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                    style="text-align: left"
+                                >
+                                <div *ngIf="basicForm.controls['ContactNo'].errors.minlength || basicForm.controls['ContactNo'].errors.pattern">
+                                    Contact No. is Invalid.
+                                </div>
+                                   
+                                    <div *ngIf="basicForm.controls['ContactNo'].errors.required">
+                                        Contact No. is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="col-lg-6 px-1">
+                            <input
+                                type="email"
+                                [(ngModel)]="customer.contactPerson.email"
+                                class="form-control form-control-lg form-control-solid"
+                                id="itemDescription"
+                                name="itemDescription"
+                                placeholder="Email"
+                                value=""
+                            />
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                    </div>
+                     </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card-header border-0 pt-5 col-lg-11">
+                    <h3 class="card-title align-items-start flex-column col-lg-12">
+                        <span class="card-label fw-bolder fs-3 mb-1">Invoice Details &nbsp;</span>
+                    </h3>
+                </div>
+                <div class="card-body py-3">
+                        <div class="row" style="text-align: center">
+                        <div class="col-lg-12 px-1">
+                            <label class="d-flex align-items-center">
+                                <span class="required"><b>Invoice Date</b></span>
+                            </label>
+                            <input
+                                [(ngModel)]="issueDate"
+                                class="form-control form-control-lg form-control-solid"
+                                type="date"
+                                [max]="maxDate"
+                                [value]="maxDate"
+                                style="text-align: left"
+                            />
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        </div>
+                        <div class="row" style="text-align: center">
+                        <div class="col-lg-12 px-1">
+                            <label class="d-flex align-items-center">
+                                <span class=""><b>Reference Number</b></span>
+                            </label>
+                            <input
+                                [(ngModel)]="invoice.billingReferenceId"
+                                type="text"
+                                class="form-control form-control-lg form-control-solid"
+                                id="itemDescription"
+                                name="itemDescription"
+                                placeholder="Reference Id"
+                            />
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>
+                        </div>
+                        </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="row gx-1" style="text-align: center">
+                    <div class="col-lg-2">
+                        <label class="d-flex align-items-center">
+                            <span class="required"><b>Name</b></span>
+                        </label>
+                        <div class="form-group input-field">
+                            <input
+                                type="text"
+                                class="form-control form-control-lg form-control-solid"
+                                list="ps"
+                                id="itemName"
+                                name="itemName"
+                                placeholder="Item Name"
+                                value=""
+                                [(ngModel)]="invoiceItem.name"
+                                autocomplete="off"
+                                required
+                            />
+                        </div>
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="d-flex align-items-center">
+                            <span class="required"><b>Item Description</b></span>
+                        </label>
+                        <input
+                            [(ngModel)]="invoiceItem.description"
+                            type="text"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemDescription"
+                            name="itemDescription"
+                            placeholder="Item Description"
+                            value=""
+                        />
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-1">
+                        <label class="d-flex align-items-center">
+                            <span class="required"><b>Quantity</b></span>
+                        </label>
+                        <input
+                            [(ngModel)]="invoiceItem.quantity"
+                            type="number"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemQty"
+                            name="itemQty"
+                            placeholder="Item Qty."
+                            value="1"
+                            style="text-align: center"
+                            min="0"
+                        />
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-1">
+                        <label class="d-flex align-items-center" style="width: 100%">
+                            <span class="required"><b>Price</b></span>
+                        </label>
+                        <input
+                            type="number"
+                            class="form-control form-control-lg form-control-solid"
+                            [(ngModel)]="invoiceItem.unitPrice"
+                            id="itemRate"
+                            name="itemRate"
+                            placeholder="Price"
+                            style="text-align: left"
+                        />
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-1">
+                        <label class="d-flex align-items-center">
+                            <span class="required"><b>Discount %</b></span>
+                        </label>
+                        <input
+                            [(ngModel)]="invoiceItem.discountPercentage"
+                            type="number"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemDisc"
+                            name="itemDisc"
+                            placeholder="Item Discount"
+                            value="0"
+                            style="text-align: left"
+                            min="0"
+                        />
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-1">
+                        <label class="d-flex align-items-center">
+                            <span class="required"><b>VAT %</b></span>
+                        </label>
+                        <input
+                            [(ngModel)]="invoiceItem.vatRate"
+                            type="number"
+                            class="form-control form-control-lg form-control-solid"
+                            id="itemVATPercent"
+                            name="itemVATPercent"
+                            placeholder="VAT%"
+                            value="15"
+                            style="text-align: left"
+                            min="0"
+                        />
+                        <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                    </div>
+                    <div class="col-lg-1 gx-1" style="padding-top: 20px">
+                        <div class="d-flex justify-content-end flex-shrink-0">
+                            <a id="addrow" class="btn btn-primary" (click)="addItem()">Add</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 gx-1" style="padding-top: 20px">
+                        <div class="d-flex justify-content-end flex-shrink-0">
+                            <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearItem()">
+                                Clear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="separator separator-dashed my-1"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body py-3">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead style="text-align: center">
+                            <tr class="fw-bolder text-muted">
+                                <th class="min-w-50px">Sl No</th>
+                                <th class="min-w-100px">Name</th>
+                                <th class="min-w-150px">Description</th>
+                                <th class="min-w-100px">Quantity</th>
+                                <th class="min-w-100px">Price(SAR)</th>
+                                <th class="min-w-100px">Discount %</th>
+                                <th class="min-w-100px">VAT %</th>
+                                <th class="min-w-100px">Total</th>
+                                <th class="min-w-100px">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align: center">
+                            <tr *ngFor="let it of invoiceItems; let i = index">
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ i + 1 }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.description }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.quantity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.unitPrice.toFixed(2) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.discountPercentage.toFixed(2) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.vatRate.toFixed(2) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                        {{ it.lineAmountInclusiveVAT.toFixed(2) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteItem(i)">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="separator separator-dashed my-1"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table style="width: 100%">
+                    <tr>
+                        <td style="width: 60%">
+                            <label class="form-label fs-6 fw-bolder text-gray-700">Notes</label>
+                            <textarea
+                                [(ngModel)]="invoice.invoiceNotes"
+                                id="notes"
+                                name="Notes"
+                                class="form-control form-control-solid"
+                                rows="3"
+                                placeholder="Thanks for your business"
+                                maxlength="500"
+                            ></textarea>
+                        </td>
+                        <td style="width: 40%">
+                            <table style="text-align: right; width: 100%">
+                                <tr>
+                                    <td style="width: 70%">Total Amount</td>
+                                    <td style="width: 30%">
+                                        <label id="totalAmount">
+                                            {{ invoiceSummary.netInvoiceAmount | number: '.2-2' }}
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 70%">Discount Amount</td>
+                                    <td style="width: 30%">
+                                        <label id="DiscAmount">{{ discount | number: '.2-2' }}</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 50%">VAT Amount</td>
+                                    <td style="width: 50%">
+                                        <label id="VATAmount">
+                                            {{
+                                                invoiceSummary.totalAmountWithVAT - invoiceSummary.totalAmountWithoutVAT
+                                                    | number: '.2-2'
+                                            }}
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 50%">Net Amount</td>
+                                    <td style="width: 50%">
+                                        <label id="NetAmount">
+                                            {{ invoiceSummary.totalAmountWithVAT | number: '.2-2' }}
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <div class="btn-text-left" style="text-align: right">
+                    <button
+                        [disabled]="isSaving"
+                        style="margin-top: 10px"
+                        type="submit"
+                        class="btn btn-primary btn-lg btn-block"
+                        (click)="save()"
+                    >
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,246 @@
+[
+  {
+    "product": "itext-core",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 7,
+      "minor": 2
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "UIhd74TzFBhPDsWF6TJjBdWFUC5oBARNNr3sFCKPN/H9gAhbjTFa4/afZB6gJDm5nP9Evn85/wbPGs0+83BgkoJBoqycsKCIG77rIJByfmOPgdU6inxkRnfxTAUGSMgsv9nXGZAXE/5UhYl6pKczxEHtbqBRM85YaO7PRR+CEzMsnmuDb5ogc56iby5A5NUGYueHFYhUjhgHf8aQb10vDzJZFpgRdKWVVwAczK/66aQWsOqPuu+9uPwhKlPSgDASLmQo37zIIvNeY/MBcflTEMGylmgxxrQGGAkOgl5aZ/bEq4B/DjvLyyRBYE/EtM3fO9Z59iD2vgf96M57fnPELE+6Um1mcaR5w6+Hm1PmSLUfy6Z0r6bXqmVm6hNdV1YLLJnvMdCUJLiIyz8Bpkafm8TdEHKs/gmjZYN1/GV8Q2Lug4v1XbwNgJ7kCmA3jso7vwlJcSV2tbq7Gf+pngwEMUEAs8twkC4rRg8AeS+pJiivVv3EU7vjgSEErmBAfffOKcqeEtL973KgYgnXTyUpTb6oRmB6OBQ7A9Qc5nghUcs7HHTWLA6P1CEiaea/Y+uDFev0N1qVESpXmtU4v8bMpwvIW7uF+1WwbAIY3jopNXzZHe55z2Wg5/Z8Yc4rxaiXw+88sD1YBSjFY8lCYPH/3y1xutCxH9JyI6FlmFEIoZc="
+  },
+  {
+    "product": "pdfXfa",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 3
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "S3y+zNVoJgiChuliaSFUHTyO/vUpJqft566v/l/RWELiVVbBLu0LGDW/VifLtxeKH29HV/gVm8aNozqlsCGdonPiUEZ7PU/7xzWaQvXMuZBbboOjGQhAQ4FSlAAAOpUXH0VgFlSn0r8oQLcPkp87gmA8KMhQMGGbi+cppz8eQL/f6v0V16nFxY3uoPFzOwiSw8cMFPDmeDyCno6W0wyT76JVPdYPwF6WvLmIXN/RHwsbP9JyVZsACs004Vlu43JajS0N6LNG8slGEV1EnGuBPujy8nIamT1iHMBTQifBttRn9or7bfTG+7ezcKCeI3v+SSc9SsguhKLedwfUOm6G/BYYnuOuzOUtJ2+zmlBceeQz7/NEKOupaJ7uM4WYxX6Rvn1sPja37rujse+q3sy6qT+nL8p10FwC+6P0NB5mJwV0toYGsIs68pljDmFQwFnDBURaJKIPQuAw/jp2unsa9ZavRs315M7OuYl3KqImDUSUestynCfnShVAL1LsE3S4XeHOXdh3z2AZOzuLoLAsC7HTxHiHVIWPBfeFFO02/HyLYvuI5IScQkWmxNG2NHQ/l+18RabcAAE3vcSgK5Al8gFfctYV+DENOc2sbtu15Q3igmrWib2WV0wIMeDxD2LrHtQuPTvpp68IouQX6BH6dfsyUbR8y3DvGxkfvr9li4Y="
+  },
+  {
+    "product": "pdfSweep",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 3
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "g7X8RpUlo1VBJvGu6SMHu7jjaHF2JTZ8EBVeAdp+m5z7DnyFXTEfpaLWNXfwLbpKYwxLCO3Pe6IldPOfdkDQ+d8zBYp4O6IVwGjkwm/bw+c53IiuJYnoSXXa485a1p5YE7JdRj5Y7khP7rKvLSKEG+ugO9MvDJ6xUaJQl5WOVJnJD2xtp9CjYE7TFRtOyFoMXsWzcAHNmkro9M+qSraAPDdiNxzzP28CRKIEdExm7I8V4ETmLAFrBKNGtLGIPYJRBji5oNaS5aiT4wOj81gTfrvwXG/o+4zf4fpMhcsBCTrjycOx3POS6FEfwDO6Ivg+OT9906Niv8pcXPBw5jx7cxnWwNVtgjkIzC0J01t6nviDaNbQoPOZsvCVwIfm+jyRIjl4MyEp41FxhPAckAQxMmxkSS83K+RxY8mIjrhkXTKQvQcNZVc792846KYUZm3kbrSZpAYZkVYE9eFJLmvmafT22MLnMb1ALFRsLR498nRWhRk/kMc+uhdtlq+4joA0apXpEFH0UT8qxg1ieooILvQLIF2zx3RnThkHW4qOdyhHZx0kc8gGsBLYUsIolaZzC7ZKSZSaksTc1wUlHLVKQFfLrNix1MoE+OKmM41KjEVTWIrwwk34t2vJTqCNtRdosutis32+ScG57gzyUxhHPyw3BSGbRHyRjuTHxjzIgoE="
+  },
+  {
+    "product": "pdfRender",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 2
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "KorBcqGUdDRYRGD3Vp6MdgNEUf08KSzrhGqRGBklEO/3loflxiJvPqrXHhEesyIKDn9hCR42bTVFiz11cq0JYn4LZB+KGurEIEhy4ruCNtwNm8AwZ2Zx5PhQem/LMUUHnZrZ62r5oQCcTTQNCR/hwCjlXcn56oSyB1cuZnigykr8W4qDkgU7FPXWh2zUj+IjDIZN0JJQKdiQ99r33yZeHdGfc6SxDiqYwQRUfBNPvrb27oIdNBoinTqbjcHndzAChPVAQgAg6ZONxPstnYV0BO50rOySYmQvwE7H+R95TWOUb9cBvk8uLxCxw014vb4G4hgw7e1ItPHBe7g1RFKnO+Nsk8y84t+RHIko7R4Bm1Cei67vTe069ZKGOZr3bt3z0l2V8HbVHgeBM/xcJud+xRZeM1aPSO9l+kjwpRI0TAuZHc+wTRKNeCnIi+sirHY7YmHwenBFc3sDf39bqrKF5qfi5ZCd1FBuT+Plk5NSIKCaSuoQCzY1wHToe5YU3CTjtCfLYmGjwogS46kSEPkh6Shb8cHUU5Z7zNgL3xXKfgGRX69a6ujRhcq/fMFol9f58RXcsdAqTGwaseGeMjnXXdtu+mpSDS9FJGGvvpHzLlFaT/mm4EGvStZ8MSIM4YVn52M0l04HhWpYJ4+o7A0o/AvhTjNjWoYwH7m5vPIM55w="
+  },
+  {
+    "product": "pdfOcr-tesseract4",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 2
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "Tqm3ddYCAxTgU36kgRAGX+4Zn9bBHAoGKa9BwRZunp6yTwlm5aGuK5jvUwRjJmykyT6YR2hSmGYTN4ExkvrHZ8L5PB+jssAbVP4HeuPgbf7uosInuKbZfL/TUdHqEnQHv5gpu3XCSU+rkfOWi+CIgCvVobjmGRnjtWDl4caDYId41eOvaN6AQCzb+PTeVLsLewy4BxIyJUp9khkHEs3bkCC9pqT3WN6HGS61oTTZH/koZuTbEWGboKOjwR6vXPMsiYIpvZLRJjtu9Wn/S3HrmM4cJ9/7FlD6X/67eZD1YM4QwNmiWFZNCxoEiGSFnUT7KVNQQmogWtItPUO4j4grOeA6dLGbD6wwiGUk+0e+CTxfkaAKcRKhGnYT9pMBtCIx6NGUO7rh78T59hKhed5/SNqWX+pZVIKOA6veG08154E+s66+hFF4Br6czc5auu9744cS1AoKwAJO79sAR6SbjC55c42VNchBsy+i7lMDYuAFnLguMYcGX7nar21W6TqUBYTBllzUXDrUawp/W+XdoGIgy/K80nbDXY6b8638SGFv3k3VotZtdyuThye22mTN/G+N+qYlbk4jB+XyoHC25z3vY9GvCE1cWdHQ1zydGhK3Ccn/WuO2+jG6IkV6FCJE1vM/u1yZhIuTKZEPQLMi/CZPoCfZOQJ7+E6LCzafdWI="
+  },
+  {
+    "product": "pdfOptimizer",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 2
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "Fv4ixlrIXQv6MBjgASNOi8KdFH/mno8mOmlXGNEU9DMC8NG2I7wUZjpIPmDcbM50mgFoErLBgIPUoA+0jFt6C/WC+2Q9waKez1V6MhRuYHvxMWDfScI9k+186Cjoz96He93Ksap3S+C37YMgckqh3JyCcuSJctRK5YhL3jI//9NMxjmj7jnxkVa9WuP399c1Tbvvg7YjpYA8LR3rAyKuhPBCSOSq5WNTPEYZTLuGhlejbPjSLb5eRNmHT0ydrpLNo/f7MkcPNGMFqw0DAjjF2d4ZN612EXOYiaMGOPNA1Irvxydx709W4kTeimDr75KPpAepituL/M3+fDKCIQapTfsHK+nv/kkJ+FAZmr7Js9CyCE4IHyST+Nrcqejx0Vc+Dkv1LbuvUqkFJAxCjoEU7UXJK2xRqXB61MEJRcmne+sfxfFptUjEM/4vCNfJcas53IRxr56ASdb8lLBN118H1DQXniVfhW4dfU2VMlX7d3IgP/4MMg5rvZfGF6kQrIQDn4G8LstAO9NL17cuBivI9VUXoHFLgqB/kNcCKOd79NAS6gZnnf25/0xZNaMcmAv41hjoe75KYLExbplP+SJBlz7nqk6eSGuhlcUGDjQsfPglMTStW/WlQh6ffoKb1F7N9aLLdTDuphf06wfLgw2bcYJZu1pJCRW3Ers20lVyWGQ="
+  },
+  {
+    "product": "pdfHtml",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 4
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "Q0EUM6vtADRZkl4JoTd6OFnUei0ckqLYuWDAKAU8z0bTmQWKJMSD9eKQ+quLFhQE7rN9wUHR/WL2MdaoTtYWHjn6APla3OnwHqMoswM1VPnopPj91pI9F/Fs24gCXPo+RLzbK/sjuV9SYeW/3c/iNXx4PUjkMJA2rIwgN47qKVTn2YYQoWG5SF9Is5fByNZEJkgC4iet5lfZJVv4vyAa4aiTc0PBmbUJ72EF6Api93YTJfpgOJHcsZc457RZ9b4VfyD0/p2M7+THk0Sg9o+PRwgRTWTUgoEqNYuBVemSlZ2hSG8uTts2MpVt+1GCQC1Y2jSIk8Xmxs/ntrt27vKgX/+9e9Q9s6j6sT7Y+ZfIprYfd9ZXOqHQnSzZSoUrQSV1iWnGt492ug9HrFSJspFhHQ2g3F1/Z+ILBV/nACp724HlUmD1sir7eRIYLc5Ag80iJMXZdJpCG2cQIUDsv+qe/hhRQ+hnQZD66zkMTSU+tUiNH57YudbQ+G/EXR6v4dlgPGLLizcMAtuiA6OnNdeUXMCt/z/I+umegopYduklQMDdvUjunBC75SjxTq7GSRzs6ZQ/Or+JBIVFGNkmpSZeAppMN2GZrxbpVY1bSoywcksxN4WLBbXm2EIRKso8Iv7QyvNgsj1+C0Y+IQCmQwLkfWlXVTl3WI0FGD/z356Kdgk="
+  },
+  {
+    "product": "pdfCalligraph",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 3
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "KL15yiEpJf+nS8Emwkm5L68MeNROL6ALVKvrM15XYrHzH+nlpduBBUVLnL/E4ID88gGtnHdzVPxfdKzhuqkfTVEPBJmfYlftEcheud1DLp30GdJpa73JwMtY5J4EZ6JGs3IECvc/2bxPmMEEUqe/CfUNdWXsLKvzPpLj5iSj6U2WjX8cxMAnr3zHb9r+Mr+wyqnth6n4Owv/ZmWoxU1RvJauGKw5V85qU1+AJ1oRXdpETpeOYUvhWDpPRkFi5SJEGVuXnDy1gWdNpRko83d4cp7JhmRdfLm2qou92P59btgnzVcHmQgrQnBpLBh63JKMhhyl3neaDAaQ2pwRuieRJltcdBDNwTb0VJIh+omeHzpYrGKZ+RaHP247fkbQLMIBEu2ydIvBMOiA7V+4R+0s7jfgXC0YTDmIHd/fkzR9hgAzUmaP5lKpl+XAaRl+6OvN2Uz9svIe6qtY03Pm1G3eVcxw6ZJfUusFRlza2MEgOx2yZt9XLAPfY95SBXO841ay12f682uBmuNXpUerJVFsohx0hCTzQZOSWgY58AdtIXGoWOvNJq8mkuE5r5ke7LMOhJGkN5AergGf7fedslF+GkBH84NVs/WfnOIx8Ba/jzSnaNgH5Uzc/uV+xB3BC+wPI6KakW032SCT9oPdP3jtpf/7aNtiSg3HlPDtjBM7dOE="
+  },
+  {
+    "product": "pdfOffice",
+    "licensee": {
+      "company": "N/A",
+      "name": "Pavan Shetty",
+      "email": "pavan.shetty@abylle.com"
+    },
+    "key": "643d0248591c8cabc55c0b4e9294762b1227292d3697801af50332a67fc07858",
+    "creationDate": "2022-11-22",
+    "expirationDate": "2022-12-22",
+    "onExpiration": "grace",
+    "gracePeriod": "1d0h0m",
+    "platform": "any",
+    "licenseType": "trial",
+    "productVersion": {
+      "major": 2
+    },
+    "limits": {
+      "default": {
+        "limitType": "unlimited",
+        "sendEvents": false
+      }
+    },
+    "licenseVersion": "1.0.0",
+    "sendStatistics": "disabled",
+    "signature": "dKah/3fHeqdSp0kAVIVBXiWUFdlPzCq8zJP1094P71+g9s77DAo0miY/yTSp9VsMLZCxadT8FFT22ex7ER5fG6aqa7Xl5/PlpveZfaIDNovxwF73BH0eqKu25yMyyotH1mBc9Ni7eMuDyrH4hfyxQPsbtNzM5VLK81XV0+0MKlqiB96LxrNjyf5RlmaYtKbqkYpHAJc9DXRaeXRyGNzQeJmmELj+EgHcTogQA4eWhzqHOduTeNfKe6CEoREhKw0tYBKzQBOFnqNxwbDymooE/kNqvvchS3yOwEdkPCUjIRCOiZMa4I6jP9P5P8Uq+W9jMPUpH+tsMZBbBflRI4MSORLY5sFcrlYDRhCpdqNbbq5am/TCJXskQaBpDTMq6hmaR4/SPWnAfe90V/WXyP7JPHfihw/h5EeFmpXtqzOSvpp1JGtaI37J/GB54kONqZA2WpZkA43z86LI1yZIIVE+tCDsFSnsfSEZih15hXOkhJY63aDu+yc9/+MiWTZ+wlZ0qebgj/2NlcHBwRAm9KiGoOlLeZ7vsjnTM/JETNQxbRASdgOPMK2OS662Nng7D337D4+1JWmhNgLELmzg3RDqCaG1gtP8TBpwjZNKQsT8/R88QDEvOi5vNwsqGowCaRDVifgKOanBp/uTn9fgKjpyppH3d+cK5cODp4jXAkNhArA="
+  }
+]

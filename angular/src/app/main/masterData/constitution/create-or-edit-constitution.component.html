@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Constitution' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="Constitution_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #Constitution_Name="ngModel"
+                        id="Constitution_Name"
+                        class="form-control"
+                        [(ngModel)]="constitution.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="Constitution_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Constitution_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #Constitution_Description="ngModel"
+                        id="Constitution_Description"
+                        class="form-control"
+                        [(ngModel)]="constitution.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="Constitution_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="Constitution_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #Constitution_Code="ngModel"
+                        id="Constitution_Code"
+                        class="form-control"
+                        [(ngModel)]="constitution.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="Constitution_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="Constitution_IsActive"
+                        #Constitution_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="constitution.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="Constitution_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.constitution.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

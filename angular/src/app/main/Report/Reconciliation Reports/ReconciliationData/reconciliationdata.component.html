@@ -1,0 +1,166 @@
+<div *ngFor="let dt of vatdata">
+    <!-- 3 coloumns -->
+    <div *ngIf="dt.style == 0">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-4">
+                <label class="d-flex align-items-center">
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.amount.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.adjustment.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+        </div>
+    </div>
+    <!-- heading column only -->
+    <div *ngIf="dt.style == 1">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-4">
+                <label
+                    class="d-flex align-items-center card-label text-dark00 fw-semibold fs-2"
+                >
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+    </div>
+    <!-- amount column only -->
+    <div *ngIf="dt.style == 2">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-4">
+                <label class="d-flex align-items-center fw-semibold fs-5 mb-3 text-dark00">
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.adjustment.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+        </div>
+    </div>
+    <!-- sub-headers -->
+    <div *ngIf="dt.style == 3">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">
+                <label class="d-flex align-items-center fw-semibold fs-5 mb-3 text-dark00">
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.amount.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+            <div class="col-lg-4"></div>
+        </div>
+    </div>
+    <!-- Totals -->
+    <div *ngIf="dt.style == 4">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-4">
+                <label class="d-flex align-items-center fw-bold fs-3 text-dark00">
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.adjustment.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+        </div>
+    </div>
+    <!-- subheaders with 2 cols -->
+    <div *ngIf="dt.style == 5">
+        <div class="row gx-10 mb-5">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">
+                <label class="d-flex align-items-center fw-semibold fs-5 mb-3 text-dark00">
+                    <span>{{ dt.text }}</span>
+                </label>
+            </div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.amount.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+            <div class="col-lg-4">
+                <input
+                    type="text"
+                    value="{{ dt.adjustment.toFixed(2) }}"
+                    disabled
+                    class="form-control form-control-lg form-control-solid text-end"
+                    id="customerName"
+                    name="customerName"
+                    placeholder=""
+                    value=""
+                />
+            </div>
+        </div>
+    </div>
+
+    <!-- Extra Line -->
+    <div *ngIf="dt.style == 6">
+        <div style="padding: 2%">
+            <div class="row gx-10">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-4"></div>
+            </div>
+        </div>
+    </div>
+</div>

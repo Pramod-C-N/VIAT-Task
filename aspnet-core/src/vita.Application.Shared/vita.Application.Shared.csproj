@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common.props"></Import>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>vita</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.Web.Common" Version="7.4.0" />
+    <PackageReference Include="itext7" Version="7.2.4" />
+    <PackageReference Include="itext7.licensekey" Version="3.1.5" />
+    <PackageReference Include="itext7.pdfcalligraph" Version="3.0.1" />
+    <PackageReference Include="itext7.pdfhtml" Version="4.0.4" />
+    <PackageReference Include="UblSharp" Version="1.1.1" />
+    <PackageReference Include="ZXing.Net" Version="0.16.8" />
+    <PackageReference Include="ZXing.Net.Bindings.CoreCompat.System.Drawing" Version="0.16.6-beta" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vita.Core.Shared\vita.Core.Shared.csproj" />
+  </ItemGroup>
+</Project>

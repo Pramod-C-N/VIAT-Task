@@ -1,0 +1,322 @@
+﻿<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Vendor Dashboard' | localize">
+        <div role="actions">
+            <a href="/app/main/vendors/createVendors" class="btn btn-primary">
+                <i class="fa fa-plus btn-md-icon"></i>
+                <span class="d-none d-md-inline-block">
+                    {{ 'Create Vendor' | localize }}
+                </span>
+            </a>
+        </div>
+    </sub-header>
+    <div class="primeng-datatable-container container-fluid">
+        <div [class]="containerClass">
+            <div class="card card-custom gutter-b">
+                <div class="card-body">
+                    <form class="form" autocomplete="new-password">
+                        <!-- <div>
+                            <div class="row align-items-center mb-4">
+                                <div class="col-xl-12">
+                                    <div class="mb-5 m-form__group align-items-center">
+                                        <div class="input-group">
+                                            <input
+                                                name="filterText"
+                                                autoFocus
+                                                class="form-control m-input"
+                                                [placeholder]="l('SearchWithThreeDot')"
+                                                type="text"
+                                                [(ngModel)]="searchQuery"
+                                            />
+                                            <button
+                                                class="btn btn-primary"
+                                                (click)="GetCustomerByPage(null, searchQuery)"
+                                            >
+                                                <i class="flaticon-search-1" [attr.aria-label]="l('Search')"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- <form class="form" autocomplete="off">
+                            <div>
+                                <div class="row" [hidden]="!advancedFiltersAreShown">
+                                    <div class="col-md-12"></div>
+
+                                    <div class="col-md-3">
+                                        <div class="my-3">
+                                            <label class="form-label" for="filterText">{{ l('Id') }}</label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="filterText"
+                                                name="filterText"
+                                                [(ngModel)]="filterText"
+                                                (ngModelChange)="GetCustomerByPage(null, '')"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="my-3">
+                                            <label class="form-label" for="nameFilter">{{ l('Name') }}</label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="nameFilter"
+                                                name="nameFilter"
+                                                [(ngModel)]="nameFilter"
+                                                (ngModelChange)="GetCustomerByPage(null, '')"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-5">
+                                        <button
+                                            (click)="resetFilters()"
+                                            class="btn btn-secondary btn-sm"
+                                            id="btn-reset-filters"
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row my-4">
+                                    <div class="col-sm-12">
+                                        <span
+                                            class="clickable-item text-muted"
+                                            *ngIf="!advancedFiltersAreShown"
+                                            (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                        >
+                                            <i class="fa fa-angle-down"></i>
+                                            {{ l('ShowAdvancedFilters') }}
+                                        </span>
+                                        <span
+                                            class="clickable-item text-muted"
+                                            *ngIf="advancedFiltersAreShown"
+                                            (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                        >
+                                            <i class="fa fa-angle-up"></i>
+                                            {{ l('HideAdvancedFilters') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form> -->
+                    </form>
+                    <div class="primeng-datatable-container" [busyIf]="primengTableHelper.isLoading">
+                        <p-table
+                            #dataTableAuditLogs
+                            sortMode="multiple"
+                            [value]="customers"
+                            [paginator]="true"
+                            [rows]="10"
+                            [showCurrentPageReport]="true"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [rowsPerPageOptions]="[5, 10, 15, 20]"
+                            [globalFilterFields]="['id', 'name', 'tenantType','constitutionType','contactNumber','nationality']"
+
+                        >
+                            >
+
+                            <!-- -->
+                            <ng-template pTemplate="caption">
+
+                                <form class="form" autocomplete="off">
+                                    <div>
+                                        <div class="row align-items-center mb-4">
+                                            <div class="col-xl-12">
+                                                <div class="mb-5 m-form__group align-items-center">
+                                                    <div class="input-group">
+                                                        <input
+                                                            name="filterText"
+                                                            autoFocus
+                                                            class="form-control m-input"
+                                                            [placeholder]="l('SearchWithThreeDot')"
+                                                            type="text"
+                                                            [(ngModel)]="searchQuery"
+                                                            (input)="dataTableAuditLogs.filterGlobal($event.target.value, 'contains')"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="row" [hidden]="!advancedFiltersAreShown">
+                                            <div class="col-md-12"> </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label" for="filterText">{{ l('Id') }}</label>
+
+                                            <th>
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'id', 'contains')"
+                                            />                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Name') }}</label>
+
+                                            <th>
+                                                <!-- <p-columnFilter type="text" field="name"></p-columnFilter> -->
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'name', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Tenant Type') }}</label>
+
+                                            <th>
+                                                <!-- <p-columnFilter type="text" field="name"></p-columnFilter> -->
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'tenantType', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Constitution Type') }}</label>
+
+                                            <th>
+                                                <!-- <p-columnFilter type="text" field="name"></p-columnFilter> -->
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value,'constitutionType','contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Nationality') }}</label>
+
+                                            <th>
+                                                <!-- <p-columnFilter type="text" field="name"></p-columnFilter> -->
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value,'nationality', 'contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label" for="filterText">{{ l('Contact No') }}</label>
+
+                                            <th>
+                                                <!-- <p-columnFilter type="text" field="name"></p-columnFilter> -->
+                                                <input
+                                                autoFocus
+                                                class="form-control m-input"
+                                                type="text"
+                                                (input)="dataTableAuditLogs.filter($event.target.value, 'contactNumber','contains')"
+                                            />  
+                                            </th>
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="row my-4">
+                                            <div class="col-sm-12">
+                                                <span
+                                                    class="clickable-item text-muted"
+                                                    *ngIf="!advancedFiltersAreShown"
+                                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                                >
+                                                    <i class="fa fa-angle-down"></i>
+                                                    {{ l('ShowAdvancedFilters') }}
+                                                </span>
+                                                <span
+                                                    class="clickable-item text-muted"
+                                                    *ngIf="advancedFiltersAreShown"
+                                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                                >
+                                                    <i class="fa fa-angle-up"></i>
+                                                    {{ l('HideAdvancedFilters') }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </ng-template>
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 150px">
+                                        {{ 'Id' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                        {{ 'Name' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                        {{ 'Tenant Type' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                        {{ 'Constitution Type' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                        {{ 'Contact No' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                        {{ 'Nationality' | localize }}
+                                    </th>
+                                    <th style="width: 150px">
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-record="$implicit">
+                                <tr>
+                                    <!-- <td style="width: 150px">
+                  <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Id' | localize }}</span>
+                  {{ record.fileDate | luxonFormat: 'yyyy' }}-{{ record.fileDate | luxonFormat: 'MM' }}-{{ record.fileDate | luxonFormat: 'dd' }} {{ record.fileDate | luxonFormat: 'HH' }}:{{ record.fileDate | luxonFormat: 'mm' }}:{{ record.fileDate | luxonFormat: 'ss' }}
+
+              </td> -->
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.id }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.name }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.tenantType }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.constitutionType }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.contactNumber }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title" style="width: 150px; text-align: end"></span>
+                                        {{ record.nationality }}
+                                    </td>
+                                    <td style="width: 5px">
+                                        <a
+                                        *ngIf="permission.isGranted('Pages.Affiliation.Edit')"
+                                        [routerLink]="['/app/main/vendors/createVendors']"
+                                        [queryParams]="{ id: record.id ,constitutionType:record.constitutionType,tenantType:record.tenantType}"
+                                        >
+                                        <i class='fas fa-edit '></i>
+                                    </a>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+
+                <!--<Primeng-TurboTable-End>-->
+            </div>
+        </div>
+    </div>
+</div>

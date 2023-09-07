@@ -1,0 +1,103 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('DocumentMaster' | localize) + ' ' + ('Details' | localize)"
+        [breadcrumbs]="breadcrumbs"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="DocumentMaster_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #DocumentMaster_Name="ngModel"
+                        id="DocumentMaster_Name"
+                        class="form-control"
+                        [(ngModel)]="documentMaster.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="DocumentMaster_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="DocumentMaster_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #DocumentMaster_Description="ngModel"
+                        id="DocumentMaster_Description"
+                        class="form-control"
+                        [(ngModel)]="documentMaster.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="DocumentMaster_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="DocumentMaster_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #DocumentMaster_Code="ngModel"
+                        id="DocumentMaster_Code"
+                        class="form-control"
+                        [(ngModel)]="documentMaster.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="DocumentMaster_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="DocumentMaster_IsActive"
+                        #DocumentMaster_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="documentMaster.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="DocumentMaster_IsActive"></validation-messages>
+
+                <div class="form-group">
+                    <label for="DocumentMaster_Validformat">{{ l('Validformat') }}</label>
+                    <input
+                        type="text"
+                        #DocumentMaster_Validformat="ngModel"
+                        id="DocumentMaster_Validformat"
+                        class="form-control"
+                        [(ngModel)]="documentMaster.validformat"
+                        name="Validformat"
+                    />
+                    <validation-messages [formCtrl]="DocumentMaster_Validformat"></validation-messages>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.documentMaster.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

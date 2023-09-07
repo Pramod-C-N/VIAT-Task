@@ -1,0 +1,115 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Error Type' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="ErrorType_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #ErrorType_Name="ngModel"
+                        id="ErrorType_Name"
+                        class="form-control"
+                        [(ngModel)]="errorType.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="ErrorType_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorType_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #ErrorType_Description="ngModel"
+                        id="ErrorType_Description"
+                        class="form-control"
+                        [(ngModel)]="errorType.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="ErrorType_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorType_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #ErrorType_Code="ngModel"
+                        id="ErrorType_Code"
+                        class="form-control"
+                        [(ngModel)]="errorType.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="ErrorType_Code"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorType_ModuleName">{{ l('ModuleName') }}</label>
+                    <input
+                        type="text"
+                        #ErrorType_ModuleName="ngModel"
+                        id="ErrorType_ModuleName"
+                        class="form-control"
+                        [(ngModel)]="errorType.moduleName"
+                        name="ModuleName"
+                    />
+                    <validation-messages [formCtrl]="ErrorType_ModuleName"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorType_ErrorGroupId">{{ l('ErrorGroupId') }}</label>
+                    <input
+                        type="text"
+                        #ErrorType_ErrorGroupId="ngModel"
+                        id="ErrorType_ErrorGroupId"
+                        class="form-control"
+                        [(ngModel)]="errorType.errorGroupId"
+                        name="ErrorGroupId"
+                    />
+                    <validation-messages [formCtrl]="ErrorType_ErrorGroupId"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="ErrorType_IsActive"
+                        #ErrorType_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="errorType.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="ErrorType_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.errorType.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

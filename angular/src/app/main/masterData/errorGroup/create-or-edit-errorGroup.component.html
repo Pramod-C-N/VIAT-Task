@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Error Group' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="ErrorGroup_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #ErrorGroup_Name="ngModel"
+                        id="ErrorGroup_Name"
+                        class="form-control"
+                        [(ngModel)]="errorGroup.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="ErrorGroup_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorGroup_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #ErrorGroup_Description="ngModel"
+                        id="ErrorGroup_Description"
+                        class="form-control"
+                        [(ngModel)]="errorGroup.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="ErrorGroup_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="ErrorGroup_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #ErrorGroup_Code="ngModel"
+                        id="ErrorGroup_Code"
+                        class="form-control"
+                        [(ngModel)]="errorGroup.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="ErrorGroup_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="ErrorGroup_IsActive"
+                        #ErrorGroup_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="errorGroup.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="ErrorGroup_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.errorGroup.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

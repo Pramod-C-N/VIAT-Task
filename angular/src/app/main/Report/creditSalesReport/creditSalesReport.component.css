@@ -1,0 +1,36 @@
+.salesrecords{
+    text-align: right;
+    width: 100px;
+}
+tr.p-selectable-row:nth-child(even) {
+    background-color: #f1fffe;
+      } 
+  .toggle:checked {
+    background-color: #1BC5BD;
+  }
+
+  .ultypes{
+    width: 285px;
+    border-color: #E4E6EF;
+}
+.toggle:checked {
+  background-color:#1BC5BD;
+}
+
+.div1{
+  margin-left: -6%;
+}
+.div2{
+  display: flex; justify-content: start
+}
+
+.div3{
+  margin-left:5%;
+}
+.div4{
+  width: 180px
+}
+
+.table-row{
+  width: 150px; text-align: end
+}

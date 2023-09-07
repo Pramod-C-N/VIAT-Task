@@ -1,0 +1,20 @@
+.card.card-custom > .card-body{
+    padding: 1rem 1.25rem;
+}
+.card .card-header {   
+    flex-wrap: unset; 
+}
+#createbutton {
+    position: absolute; /* Reposition logo from the natural layout */
+    z-index: 2;
+    /* padding-left: 15%;
+    padding-right: 15%;
+    width: 100%; */
+
+  }
+  #wave {
+    width: 100%;
+    padding: 0%;
+    pointer-events: none;
+
+  }

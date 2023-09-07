@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('NatureofServices' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="NatureofServices_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #NatureofServices_Name="ngModel"
+                        id="NatureofServices_Name"
+                        class="form-control"
+                        [(ngModel)]="natureofServices.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="NatureofServices_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="NatureofServices_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #NatureofServices_Description="ngModel"
+                        id="NatureofServices_Description"
+                        class="form-control"
+                        [(ngModel)]="natureofServices.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="NatureofServices_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="NatureofServices_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #NatureofServices_Code="ngModel"
+                        id="NatureofServices_Code"
+                        class="form-control"
+                        [(ngModel)]="natureofServices.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="NatureofServices_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="NatureofServices_IsActive"
+                        #NatureofServices_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="natureofServices.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="NatureofServices_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.natureofServices.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

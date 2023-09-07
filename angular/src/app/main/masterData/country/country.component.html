@@ -1,0 +1,406 @@
+﻿<div [@routerTransition]>
+    <sub-header [title]="'Country' | localize" >
+        <div role="actions">
+            <button (click)="exportToExcel()" class="btn btn-outline btn-outline-success btn-active-light-success me-1">
+                <i class="fa fa-file-excel"></i>
+                {{ l('ExportToExcel') }}
+            </button>
+
+            <button *ngIf="isGranted('Pages.Country.Create')" (click)="createCountry()" class="btn btn-primary blue">
+                <i class="fa fa-plus"></i>
+                {{ l('New Country') }}
+            </button>
+        </div>
+    </sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <form class="form" autocomplete="off">
+                    <div>
+                        <div class="row align-items-center">
+                            <div class="col-xl-12">
+                                <div class="my-3">
+                                    <div class="input-group mb-3">
+                                        <input
+                                            [(ngModel)]="filterText"
+                                            (ngModelChange)="getCountry()"
+                                            name="filterText"
+                                            autoFocus
+                                            type="text"
+                                            class="form-control"
+                                            [placeholder]="l('SearchWithThreeDot')"
+                                        />
+                                        <button class="btn btn-primary" type="submit" (click)="getCountry()">
+                                            <i class="flaticon-search-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" [hidden]="!advancedFiltersAreShown">
+                            <div class="col-md-12"></div>
+
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="NameFilter">{{ l('Name') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="NameFilter"
+                                        name="nameFilter"
+                                        [(ngModel)]="nameFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="StateNameFilter">{{ l('StateName') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="StateNameFilter"
+                                        name="stateNameFilter"
+                                        [(ngModel)]="stateNameFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="SovereigntyFilter">{{ l('Sovereignty') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="SovereigntyFilter"
+                                        name="sovereigntyFilter"
+                                        [(ngModel)]="sovereigntyFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="AlphaCodeFilter">{{ l('AlphaCode') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="AlphaCodeFilter"
+                                        name="alphaCodeFilter"
+                                        [(ngModel)]="alphaCodeFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="NumericCodeFilter">{{ l('NumericCode') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="NumericCodeFilter"
+                                        name="numericCodeFilter"
+                                        [(ngModel)]="numericCodeFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="InternetCCTLDFilter">{{ l('InternetCCTLD') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="InternetCCTLDFilter"
+                                        name="internetCCTLDFilter"
+                                        [(ngModel)]="internetCCTLDFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="SubDivisionCodeFilter">
+                                        {{ l('SubDivisionCode') }}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="SubDivisionCodeFilter"
+                                        name="subDivisionCodeFilter"
+                                        [(ngModel)]="subDivisionCodeFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="Alpha3CodeFilter">{{ l('Alpha3Code') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="Alpha3CodeFilter"
+                                        name="alpha3CodeFilter"
+                                        [(ngModel)]="alpha3CodeFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="CountryGroupFilter">{{ l('CountryGroup') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="CountryGroupFilter"
+                                        name="countryGroupFilter"
+                                        [(ngModel)]="countryGroupFilter"
+                                        (ngModelChange)="getCountry()"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="my-3">
+                                    <label class="form-label" for="IsActiveFilterSelect">{{ l('IsActive') }}</label>
+                                    <select
+                                        class="form-select"
+                                        name="IsActiveFilter"
+                                        id="IsActiveFilterSelect"
+                                        [(ngModel)]="isActiveFilter"
+                                        (ngModelChange)="getCountry()"
+                                    >
+                                        <option value="-1">{{ l('All') }}</option>
+                                        <option value="0">{{ l('False') }}</option>
+                                        <option value="1">{{ l('True') }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-5">
+                                <button
+                                    (click)="resetFilters()"
+                                    class="btn btn-secondary btn-sm"
+                                    id="btn-reset-filters"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row my-4">
+                            <div class="col-sm-12">
+                                <span
+                                    class="clickable-item text-muted"
+                                    *ngIf="!advancedFiltersAreShown"
+                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                >
+                                    <i class="fa fa-angle-down"></i>
+                                    {{ l('ShowAdvancedFilters') }}
+                                </span>
+                                <span
+                                    class="clickable-item text-muted"
+                                    *ngIf="advancedFiltersAreShown"
+                                    (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                                >
+                                    <i class="fa fa-angle-up"></i>
+                                    {{ l('HideAdvancedFilters') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="row align-items-center">
+                    <!--<Primeng-Datatable-Start>-->
+                    <div class="primeng-datatable-container col-12" [busyIf]="primengTableHelper.isLoading">
+                        <p-table
+                            #dataTable
+                            (onLazyLoad)="getCountry($event)"
+                            [value]="primengTableHelper.records"
+                            rows="{{ primengTableHelper.defaultRecordsCountPerPage }}"
+                            [paginator]="false"
+                            [lazy]="true"
+                            [scrollable]="true"
+                            ScrollWidth="100%"
+                            [responsive]="primengTableHelper.isResponsive"
+                            [resizableColumns]="primengTableHelper.resizableColumns"
+                        >
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th
+                                        style="width: 130px"
+                                        [hidden]="!isGrantedAny('Pages.Country.Edit', 'Pages.Country.Delete')"
+                                    >
+                                        {{ l('Actions') }}
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="name">
+                                        {{ l('Name') }}
+                                        <p-sortIcon field="country.name"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="stateName">
+                                        {{ l('StateName') }}
+                                        <p-sortIcon field="country.stateName"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="sovereignty">
+                                        {{ l('Sovereignty') }}
+                                        <p-sortIcon field="country.sovereignty"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="alphaCode">
+                                        {{ l('AlphaCode') }}
+                                        <p-sortIcon field="country.alphaCode"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="numericCode">
+                                        {{ l('NumericCode') }}
+                                        <p-sortIcon field="country.numericCode"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="internetCCTLD">
+                                        {{ l('InternetCCTLD') }}
+                                        <p-sortIcon field="country.internetCCTLD"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="subDivisionCode">
+                                        {{ l('SubDivisionCode') }}
+                                        <p-sortIcon field="country.subDivisionCode"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="alpha3Code">
+                                        {{ l('Alpha3Code') }}
+                                        <p-sortIcon field="country.alpha3Code"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="countryGroup">
+                                        {{ l('CountryGroup') }}
+                                        <p-sortIcon field="country.countryGroup"></p-sortIcon>
+                                    </th>
+                                    <th style="width: 150px" pSortableColumn="isActive">
+                                        {{ l('IsActive') }}
+                                        <p-sortIcon field="country.isActive"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-record="$implicit" let-i="rowIndex">
+                                <tr>
+                                    <td
+                                        style="width: 130px"
+                                        [hidden]="!isGrantedAny('Pages.Country.Edit', 'Pages.Country.Delete')"
+                                    >
+                                        <div class="btn-group dropdown" dropdown container="body">
+                                            <button class="dropdown-toggle btn btn-sm btn-primary" dropdownToggle>
+                                                <i class="fa fa-cog"></i>
+                                                <span class="caret"></span>
+                                                {{ l('Actions') }}
+                                            </button>
+                                            <ul class="dropdown-menu" *dropdownMenu>
+                                                <li>
+                                                    <a
+                                                        *ngIf="permission.isGranted('Pages.Country.Edit')"
+                                                        class="dropdown-item"
+                                                        [routerLink]="['/app/main/masterData/country/view']"
+                                                        [queryParams]="{ id: record.country.id }"
+                                                    >
+                                                        {{ l('View') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        *ngIf="permission.isGranted('Pages.Country.Edit')"
+                                                        class="dropdown-item"
+                                                        [routerLink]="['/app/main/masterData/country/createOrEdit']"
+                                                        [queryParams]="{ id: record.country.id }"
+                                                    >
+                                                        {{ l('Edit') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        class="dropdown-item"
+                                                        href="javascript:;"
+                                                        *ngIf="permission.isGranted('Pages.Country.Delete')"
+                                                        (click)="deleteCountry(record.country)"
+                                                    >
+                                                        {{ l('Delete') }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a
+                                                        href="javascript:;"
+                                                        *ngIf="entityHistoryEnabled"
+                                                        class="dropdown-item"
+                                                        (click)="showHistory(record.country)"
+                                                    >
+                                                        {{ l('History') }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('Name') }}</span>
+                                        {{ record.country.name }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('StateName') }}</span>
+                                        {{ record.country.stateName }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('Sovereignty') }}</span>
+                                        {{ record.country.sovereignty }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('AlphaCode') }}</span>
+                                        {{ record.country.alphaCode }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('NumericCode') }}</span>
+                                        {{ record.country.numericCode }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('InternetCCTLD') }}</span>
+                                        {{ record.country.internetCCTLD }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('SubDivisionCode') }}</span>
+                                        {{ record.country.subDivisionCode }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('Alpha3Code') }}</span>
+                                        {{ record.country.alpha3Code }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('CountryGroup') }}</span>
+                                        {{ record.country.countryGroup }}
+                                    </td>
+                                    <td style="width: 150px">
+                                        <span class="p-column-title">{{ l('IsActive') }}</span>
+                                        <div *ngIf="record.country.isActive" class="text-center">
+                                            <i class="fa fa-check-circle text-success" title="True"></i>
+                                        </div>
+                                        <div *ngIf="!record.country.isActive" class="text-center">
+                                            <i class="fa fa-times-circle" title="False"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <div class="primeng-no-data" *ngIf="primengTableHelper.totalRecordsCount == 0">
+                            {{ l('NoData') }}
+                        </div>
+                        <div class="primeng-paging-container">
+                            <p-paginator
+                                [rows]="primengTableHelper.defaultRecordsCountPerPage"
+                                #paginator
+                                (onPageChange)="getCountry($event)"
+                                [totalRecords]="primengTableHelper.totalRecordsCount"
+                                [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                                [showCurrentPageReport]="true"
+                                [currentPageReportTemplate]="
+                                    'TotalRecordsCount' | localize: primengTableHelper.totalRecordsCount
+                                "
+                            ></p-paginator>
+                        </div>
+                    </div>
+                    <!--<Primeng-Datatable-End>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <entityTypeHistoryModal #entityTypeHistoryModal></entityTypeHistoryModal>
+</div>

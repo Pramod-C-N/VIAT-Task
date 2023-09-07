@@ -1,0 +1,47 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Currency' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Name') }} :</h6>
+                        {{ item.currency.name }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Description') }} :</h6>
+                        {{ item.currency.description }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Code') }} :</h6>
+                        {{ item.currency.code }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('NumericCode') }} :</h6>
+                        {{ item.currency.numericCode }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('MinorUnit') }} :</h6>
+                        {{ item.currency.minorUnit }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('Country') }} :</h6>
+                        {{ item.currency.country }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h6>{{ l('IsActive') }} :</h6>
+                        <div *ngIf="item.currency.isActive" class="text-left">
+                            <i class="fa fa-check-circle text-success" title="True"></i>
+                        </div>
+                        <div *ngIf="!item.currency.isActive" class="text-left">
+                            <i class="fa fa-times-circle" title="False"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

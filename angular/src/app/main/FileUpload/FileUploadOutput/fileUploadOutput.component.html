@@ -1,0 +1,204 @@
+﻿<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Batch Details' | localize" [description]=""></sub-header>
+    <div class="app-container container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card bg-success m-1">
+                    <div class="card-body">
+                        <h5 class="card-title">All records</h5>
+                        <button type="button" class="btn btn-light" (click)="viewRecords(0)">
+                            View Records
+                            <span class="badge badge-dark">4</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-primary m-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Error Category-1</h5>
+                        <button type="button" class="btn btn-light" (click)="viewRecords(1)">
+                            View Records
+                            <span class="badge badge-dark">1</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning m-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Error Category-2</h5>
+                        <button type="button" class="btn btn-light" (click)="viewRecords(2)">
+                            View Records
+                            <span class="badge badge-dark">1</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger m-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Error Category-3</h5>
+                        <button type="button" class="btn btn-light" (click)="viewRecords(3)">
+                            View Records
+                            <span class="badge badge-dark">1</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion accordion-solid accordion-toggle-plus" id="recordAccordian">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" data-toggle="collapse" data-target="#collapseRecord">
+                        Error Details &nbsp;
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </div>
+                <div id="collapseRecord" class="collapse show" data-parent="#recordAccordian">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8 card">
+                                <table class="table table-hover" style="text-align: center">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Last modified by</th>
+                                            <th>Last modified on</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            *ngFor="let r of result"
+                                            [ngClass]="{
+                                                'table-success': r.status == 'Success',
+                                                'table-danger': r.status == 'Failure'
+                                            }"
+                                            (click)="viewErrors(r.id)"
+                                            (dblclick)="viewData(r.id)"
+                                        >
+                                            <td>{{ r.id }}</td>
+                                            <td>{{ r.lastModifiedBy }}</td>
+                                            <td>1{{ r.lastModifiedOn }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <span>Record number - {{ selectedData?.id }}</span>
+                                        <ul>
+                                            <li *ngFor="let e of selectedData?.errors">
+                                                Type - {{ e.type }}
+                                                <br />
+                                                {{ e.code }} - {{ e.message }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" data-toggle="collapse" data-target="#collapseRecord">
+                        Records &nbsp;
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+                </div>
+                <div id="collapseRecord" class="collapse show" data-parent="#recordAccordian">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8 card">
+                                <table class="table table-hover" style="text-align: center">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Errors</th>
+                                            <th>Last modified by</th>
+                                            <th>Last modified on</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            *ngFor="let r of result"
+                                            [ngClass]="{
+                                                'table-success': r.status == 'Success',
+                                                'table-danger': r.status == 'Failure'
+                                            }"
+                                            (click)="viewErrors(r.id)"
+                                            (dblclick)="viewData(r.id)"
+                                        >
+                                            <td>{{ r.id }}</td>
+                                            <td>{{r.errors.length}}</td>
+                                            <td>{{ r.lastModifiedBy }}</td>
+                                            <td>1{{ r.lastModifiedOn }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <span>Record number - {{ selectedData?.id }}</span>
+                                        <ul>
+                                            <li *ngFor="let e of selectedData?.errors">
+                                                Type - {{ e.type }}
+                                                <br />
+                                                {{ e.code }} - {{ e.message }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    bsModal
+    #modal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="modal"
+    aria-hidden="true"
+    [config]="{ backdrop: 'static' }"
+>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span>Record number - {{ selectedData?.id }}</span>
+                </h5>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; height: 300px">
+                <div class="row">
+                    <div class="col-md-6" *ngFor="let d of data">
+                        <label>{{ d }}</label>
+                        <input
+                            class="form-control"
+                            [(ngModel)]="selectedData?.data[d]"
+                            [ngStyle]="checkIfError(d) ? { 'border-color': 'red' } : {}"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="modal.hide()">
+                    {{ 'Save' | localize }}
+                </button>
+                <button type="button" class="btn btn-primary" (click)="modal.hide()">
+                    {{ 'Close' | localize }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,443 @@
+<!-- <div class="d-flex overflow-auto h-55px pt-5" style="padding-left: 15px">
+    <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
+        <li class="nav-item">
+            <a
+                class="nav-link text-active-primary me-6"
+                (click)="loadIndividual()"
+                [ngClass]="{ active: loadindividualdt }"
+            >
+                General Details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-active-primary me-6" (click)="loadAdd()" [ngClass]="{ active: loadindividualadd }">
+                Address Information
+            </a>
+        </li>
+    </ul>
+</div> -->
+
+<div  class="card">
+    <div class="card">
+        <div class="card-body py-3">
+            <div class="row mb-5">
+                    <div class="row gx-10 mb-1">
+                        <div class="col-lg-12">
+                            <label class="d-flex align-items-center">
+                                <span class="row"><h5>Company Address :</h5></span>
+                            </label>
+                            <div class="row gx-10 mb-0">
+                                <div class="col-lg-3 mb-1">
+                                    <label class="d-flex align-items-center">
+                                        <span class="required">Building Number :</span>
+                                    </label>
+                                    <div [formGroup]="basicForm">
+                                        <input
+                                            type="text"
+                                            placeholder="Building Number * "
+                                            class="form-control form-control-lg"
+                                            id="Bno"
+                                            maxlength="4"
+                                            formControlName="Buildno"
+                                            pattern="^[0-9]*$"
+                                            [(ngModel)]="address.buildingNo"
+                                        />
+                                        <div
+                                            *ngIf="
+                                                basicForm.controls['Buildno'].invalid &&
+                                                basicForm.controls['Buildno'].touched
+                                            "
+                                            class="fv-plugins-message-container invalid-feedback"
+                                        >
+                                            <div *ngIf="basicForm.controls['Buildno'].errors.required">
+                                                Building Number is required.
+                                            </div>
+                                            <div *ngIf="basicForm.controls['Buildno'].errors.pattern">
+                                                Building Number is Invalid.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-9">
+                                    <label class="d-flex align-items-center">
+                                        <span>Additional Building Number :</span>
+                                    </label>
+                                    <div [formGroup]="basicForm">
+                                        <input
+                                            type="text"
+                                            placeholder="Additional Building Number"
+                                            class="form-control form-control-lg"
+                                            id="Abno"
+                                            pattern="^[0-9]*$"
+                                            [(ngModel)]="address.additionalBuildingNumber"
+                                            formControlName="AdditionalBno"
+                                        />
+                                        <div
+                                            *ngIf="
+                                                basicForm.controls['AdditionalBno'].invalid &&
+                                                basicForm.controls['AdditionalBno'].touched
+                                            "
+                                            class="fv-plugins-message-container invalid-feedback"
+                                        >
+                                            <div *ngIf="basicForm.controls['AdditionalBno'].errors.pattern">
+                                                Additional Building Number is Invalid.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gx-10 mb-1">
+                        <div class="col-lg-6">
+                            <label class="d-flex align-items-center">
+                                <span class="required">Street :</span>
+                            </label>
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    placeholder="Street *"
+                                    class="form-control form-control-lg"
+                                    id="street"
+                                    
+                                    [(ngModel)]="address.street"
+                                    formControlName="street"
+                                />
+                                <div
+                                    *ngIf="basicForm.controls['street'].invalid && basicForm.controls['street'].touched"
+                                    class="fv-plugins-message-container invalid-feedback"
+                                >
+                                    <div *ngIf="basicForm.controls['street'].errors.required">Street is required.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="d-flex align-items-center">
+                                <span>Additional Street :</span>
+                            </label>
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    placeholder="Additional Street"
+                                    class="form-control form-control-lg"
+                                    id="Astreet"
+                                    
+                                    [(ngModel)]="address.additionalStreet"
+                                    formControlName="Additnalstreet"
+                                />
+                                <div
+                                    *ngIf="
+                                        basicForm.controls['Additnalstreet'].invalid &&
+                                        basicForm.controls['Additnalstreet'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                >
+                                    <div *ngIf="basicForm.controls['Additnalstreet'].errors.required">
+                                        Additional Street is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gx-10 mb-1">
+                                <div class="col-lg-8 mb-1">
+                                    <label class="d-flex align-items-center">
+                                        <span class="required">City :</span>
+                                    </label>
+                                    <div [formGroup]="basicForm">
+                                        <input
+                                            type="text"
+                                            placeholder="City *"
+                                            class="form-control form-control-lg"
+                                            id="city"
+                                            
+                                            [(ngModel)]="address.city"
+                                            formControlName="city"
+                                        />
+                                        <div
+                                            *ngIf="
+                                                basicForm.controls['city'].invalid && basicForm.controls['city'].touched
+                                            "
+                                            class="fv-plugins-message-container invalid-feedback"
+                                        >
+                                            <div *ngIf="basicForm.controls['city'].errors.required">
+                                                City is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mb-1">
+                                    <label class="d-flex align-items-center">
+                                        <span class="required">ZIP or PIN :</span>
+                                    </label>
+                                    <div [formGroup]="basicForm">
+                                        <input
+                                            type="text"
+                                            placeholder="ZIP or PIN *"
+                                            class="form-control form-control-lg"
+                                            id="pin"
+                                            
+                                            maxlength="5"
+                                            minlength="5"
+                                            [(ngModel)]="address.postalCode"
+                                            formControlName="pin"
+                                        />
+                                        <div
+                                            *ngIf="
+                                                basicForm.controls['pin'].invalid && basicForm.controls['pin'].touched
+                                            "
+                                            class="fv-plugins-message-container invalid-feedback"
+                                        >
+                                            <div *ngIf="basicForm.controls['pin'].errors.required">
+                                                ZIP or PIN is required.
+                                            </div>
+                                            <div *ngIf="basicForm.controls['pin'].errors.minlength">
+                                                ZIP or PIN should be minimun 5 digits.
+                                            </div>
+                                            <div *ngIf="basicForm.controls['pin'].errors.pattern">
+                                                ZIP or PIN is Invalid.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                    <div class="row gx-10 mb-1">      
+                                <div class="col-lg-6">
+                                    <label class="d-flex align-items-center">
+                                        <span class="required">State :</span>
+                                    </label>
+                                    <div [formGroup]="basicForm">
+                                        <input
+                                            type="text"
+                                            placeholder="State *"
+                                            class="form-control form-control-lg"
+                                            id="state"
+                                            pattern="[a-zA-Z][a-zA-Z ]+"
+                                            [(ngModel)]="address.state"
+                                            formControlName="state"
+                                        />
+                                        <div
+                                            *ngIf="
+                                                basicForm.controls['state'].invalid &&
+                                                basicForm.controls['state'].touched
+                                            "
+                                            class="fv-plugins-message-container invalid-feedback"
+                                        >
+                                            <div *ngIf="basicForm.controls['state'].errors.required">
+                                                State is required.
+                                            </div>
+                                            <div *ngIf="basicForm.controls['state'].errors.pattern">
+                                                State is required.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="col-lg-6">
+                                <label class="d-flex align-items-center">
+                                    <span class="required">Country :</span>
+                                </label>
+                            <div [formGroup]="basicForm">
+                                <select
+                                    class="form-select form-select-lg fw-bold"
+                                    name="country"
+                                    formControlName="nationality"
+                                    [(ngModel)]="address.country"
+                                    id="country"
+                                    
+                                >
+                                    <option value="">Select a Country...</option>
+                                    <option value="SA">Saudi Arabia</option>
+                                </select>
+                                <div
+                                    *ngIf="
+                                        basicForm.controls['nationality'].invalid &&
+                                        basicForm.controls['nationality'].touched
+                                    "
+                                    class="fv-plugins-message-container invalid-feedback"
+                                >
+                                    <div *ngIf="basicForm.controls['nationality'].errors.required">
+                                        Country is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+            
+                    </div>
+                    <div class="row gx-10 mb-1">   
+                        <div class="col-lg-12">
+                            <label class="d-flex align-items-center">
+                                <span class="required">Contact Number :</span>
+                            </label>
+                            <div [formGroup]="basicForm">
+                                <input
+                                    type="text"
+                                    placeholder="Contact Number *"
+                                    class="form-control form-control-lg"
+                                    [(ngModel)]="tenants.contactNumber"
+                                    formControlName="ContactNo"
+                                    minlength="12"
+                                    maxlength="12"
+                                    pattern="^[0-9]*$"
+                                />
+                            </div>
+                            <div
+                            *ngIf="
+                                basicForm.controls['ContactNo'].invalid &&
+                                basicForm.controls['ContactNo'].touched
+                            "
+                            class="fv-plugins-message-container invalid-feedback"
+                        >
+                            <div *ngIf="basicForm.controls['ContactNo'].errors.required">
+                                Contact Number is required.
+                            </div>
+                            <div *ngIf="basicForm.controls['ContactNo'].errors.pattern || basicForm.controls['ContactNo'].errors.minlength ">
+                                Contact Number is invalid.
+                            </div>
+                            </div>
+                        </div>
+                    </div>  
+            <br>
+            <div class="row  mb-1 ">
+                <label class="d-flex align-items-center">
+                    <span class="row  mb-1" >
+                        <h5>VAT Information :</h5>
+                    </span>
+                </label>
+                <div class="row   mb-1">
+                    <div class="col-lg-6">
+                    <label class="d-flex align-items-center">
+                        <span >VAT ID :</span>
+                    </label>
+                    <div [formGroup]="basicForm">
+                        <input
+                            type="text"
+                            id="vatid"
+                            placeholder="VAT ID"
+                            class="form-control form-control-lg"
+                            minlength="15"
+                            maxlength="15"
+                            [(ngModel)]="tenants.vatid"
+                            formControlName="vatid"
+                        />
+                    </div>
+                    <div
+                        *ngIf="basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
+                        class="fv-plugins-message-container invalid-feedback"
+                    >
+                        Please enter a valid VAT ID
+                        <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is required.</div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <label class="d-flex align-items-center">
+                        <span>CR  Number :</span>
+                    </label>
+                    <div [formGroup]="basicForm">
+                        <input
+                            type="text"
+                            id="crnumber"
+                            placeholder="CR Number"
+                            class="form-control form-control-lg"
+                            [(ngModel)]="documents.documentNumber"
+                            maxlength="10"
+                            minlength="10"
+                            pattern="^[0-9]*$"
+                            formControlName="crnumber"
+                        />
+                    </div>
+                    <div
+                        *ngIf="basicForm.controls['crnumber'].invalid && basicForm.controls['crnumber'].touched"
+                        class="fv-plugins-message-container invalid-feedback"
+                    >
+                    <div *ngIf="basicForm.controls['crnumber'].errors.pattern || basicForm.controls['crnumber'].errors.minlength">
+
+                        Please enter a valid CR Number
+                        </div>
+                        <div *ngIf="basicForm.controls['crnumber'].errors.required">CR Number is required.</div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="row mb-1" *ngIf="tenantid != null">
+                <div class="col-md-6">
+                    <h5 class="mt-5">{{ 'ApplicationLogo' | localize }}</h5>
+                    <form #logoUploadForm>
+                        <div
+                            class="mb-5"
+                            *ngIf="appSession.tenant.logoId"
+                            style="
+                                background: url(/assets/common/images/transparent_background.png);
+                                width: 50%;
+                                padding: 5px;
+                            "
+                        >
+                            <a
+                                [href]="
+                                    remoteServiceBaseUrl +
+                                    '/TenantCustomization/GetLogo?tenantId=' +
+                                    appSession.tenant.id
+                                "
+                                target="_blank"
+                            >
+                                <img
+                                    height="38"
+                                    [src]="
+                                        remoteServiceBaseUrl +
+                                        '/TenantCustomization/GetLogo?tenantId=' +
+                                        appSession.tenant.id
+                                    "
+                                />
+                            </a>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="custom-file">
+                                <input
+                                    type="file"
+                                    class="custom-file-input"
+                                    id="uploadLogoInput"
+                                    ng2FileSelect
+                                    #inputFile
+                                    [uploader]="logoUploader"
+                                    (change)="onUploadLogoInputChange($event.target.files)"
+                                />
+                               
+                            </div>
+                            <!-- <span class="form-text text-muted col-lg-12">
+                                {{ 'UploadLogo_Info' | localize }}
+                            </span> -->
+                        </div>
+
+                        <button class="btn btn-primary" type="button" (click)="uploadLogo()">
+                            {{ 'Upload' | localize }}
+                        </button>
+                        <button class="btn btn-default" type="button" (click)="clearLogo()">
+                            {{ 'Clear' | localize }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-footer">
+    <button type="button" [disabled]="saving" class="btn btn-light-primary fw-bold" (click)="close()">
+        {{ 'Cancel' | localize }}
+    </button>
+    <button
+        type="submit"
+        [buttonBusy]="saving"
+        [busyText]="l('SavingWithThreeDot')"
+        class="btn btn-primary fw-bold"
+        (click)="updatedetails()"
+    >
+        <i class="fa fa-save"></i>
+        <span>{{ 'Save' | localize }}</span>
+    </button>
+</div>

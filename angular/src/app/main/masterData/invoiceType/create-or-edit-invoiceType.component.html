@@ -1,0 +1,89 @@
+﻿<div [@routerTransition]>
+    <sub-header
+        [title]="('Invoice Type' | localize)"
+    ></sub-header>
+
+    <div [class]="containerClass">
+        <div class="card card-custom gutter-b">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="InvoiceType_Name">{{ l('Name') }}</label>
+                    <input
+                        type="text"
+                        #InvoiceType_Name="ngModel"
+                        id="InvoiceType_Name"
+                        class="form-control"
+                        [(ngModel)]="invoiceType.name"
+                        name="Name"
+                    />
+                    <validation-messages [formCtrl]="InvoiceType_Name"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="InvoiceType_Description">{{ l('Description') }}</label>
+                    <input
+                        type="text"
+                        #InvoiceType_Description="ngModel"
+                        id="InvoiceType_Description"
+                        class="form-control"
+                        [(ngModel)]="invoiceType.description"
+                        name="Description"
+                    />
+                    <validation-messages [formCtrl]="InvoiceType_Description"></validation-messages>
+                </div>
+
+                <div class="form-group">
+                    <label for="InvoiceType_Code">{{ l('Code') }}</label>
+                    <input
+                        type="text"
+                        #InvoiceType_Code="ngModel"
+                        id="InvoiceType_Code"
+                        class="form-control"
+                        [(ngModel)]="invoiceType.code"
+                        name="Code"
+                    />
+                    <validation-messages [formCtrl]="InvoiceType_Code"></validation-messages>
+                </div>
+
+                <br />
+                <label class="form-check form-check-custom form-check-solid">
+                    <input
+                        id="InvoiceType_IsActive"
+                        #InvoiceType_IsActive="ngModel"
+                        name="IsActive"
+                        [(ngModel)]="invoiceType.isActive"
+                        type="checkbox"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label">
+                        {{ l('IsActive') }}
+                    </span>
+                </label>
+                <validation-messages [formCtrl]="InvoiceType_IsActive"></validation-messages>
+            </div>
+            <div class="card-footer">
+                <div class="col-lg-12">
+                    <button
+                        (click)="save()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('Save') }}</span>
+                    </button>
+                    <button
+                        *ngIf="!this.invoiceType.id"
+                        (click)="saveAndNew()"
+                        class="btn btn-primary blue float-right"
+                        [buttonBusy]="saving"
+                        [busyText]="l('SavingWithThreeDot')"
+                    >
+                        <i class="fa fa-save"></i>
+                        <span>{{ l('SaveAndNew') }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

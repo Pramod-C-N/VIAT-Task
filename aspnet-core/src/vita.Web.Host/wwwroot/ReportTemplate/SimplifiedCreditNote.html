@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-size: 10px;
+            color: teal;
+        }
+
+        .column {
+            float: left;
+            width: 15%;
+            padding: 10px;
+            //height: 100px;
+        }
+
+        .column1 {
+            float: right;
+            width: 40%;
+            paddingLeft: 30px;
+            // height: 110px;
+        }
+
+        .column2 {
+            float: left;
+            width: 40%;
+            paddingLeft: 10px;
+            // height: 110px;
+        }
+
+        .black {
+            color: black;
+        }
+
+        table {
+            border-collapse: collapse
+        }
+
+        td {
+            border-bottom: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+            font-size: 10px;
+        }
+
+        #T4 td {
+            border: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+        }
+
+        .firstRow {
+            background-color: lightgray;
+            border-top: 1px teal solid;
+        }
+
+        .firstCol {
+            border-left: 1px teal solid;
+        }
+
+        .lastCol {
+            border-right: 1px teal solid;
+        }
+
+        span {
+            font-size: 10px;
+            padding: 2px;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body style="font-family:Arial; font-size:10px">
+    <!--<div style="width: 100%;">
+        <p style="width:100%;text-align:center;font-weight:bolder;font-size:14px">
+            <span style="font-size:15px" id="headE"></span> <br />
+            <span style="font-size:15px" id="headA"></span>
+
+        </p>
+    </div>-->
+
+    <table style="width: 100%; margin-top:100px;">
+
+        <tr style="width: 100%;">
+            <td style="width: 35%;border-bottom:0px;">
+                <table id="T1">
+                    <tr>
+                        <td style="width: 40%; text-align:left;border-bottom: 0px;">Invoice Number</td>
+                        <td class="black" style="width: 40%; text-align:center;"><span id="T12INVNO"></span></td>
+                         <td style="width: 30%; text-align:right;border-bottom: 0px;"> رقم الفاتورة</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align:left;border-bottom: 0px;">Invoice Date</td>
+                        <td class="black" style="width: 40%; text-align:center;"><span id="T12INVDATE"></span></td>
+                        <td style="width: 30%; text-align:right;border-bottom: 0px;"> تاريخ الفاتورة </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align:left;border-bottom: 0px;">Currency</td>
+                        <td class="black" style="width: 40%; text-align:center;">SAR</td>
+                        <td style="width: 30%; text-align:right;border-bottom: 0px;">العملة</td> 
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align:left;border-bottom: 0px;">Reference Number</td>
+                        <td class="black" style="width: 40%; text-align:center;"><span id="T12IRVNO"></span></td>
+                        <td style="width: 30%; text-align:right;border-bottom: 0px;">رقم المرجع</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align:left;border-bottom: 0px;">Invoice Type</td>
+                        <td class="black" style="width: 40%; text-align:center;"><span id="T12IT"></span></td>
+                        <td style="width: 30%; text-align:right;border-bottom: 0px;">نوع الفاتورة</td>
+                    </tr>
+                </table>
+            </td>
+            <td style="width: 40%; border-bottom: 0px;">
+                <p style="width:100%;text-align:center;font-weight:bolder;font-size:14px">
+                    <img src="" id="logo" style="width: 70px; height: 40px; display:block; margin-left:auto; margin-right:auto; margin-top:-50px" />
+                </p>
+                <p style="width:100%;text-align:center;font-weight:bolder;font-size:14px">
+                    <span style="font-size:16px" id="headE"></span> <br />
+                    <span style="font-size:16px" id="headA"></span>
+                </p>
+            </td>
+            <td style="width: 25%; border-bottom: 0px">
+                <img src="" id="Barcode1" style="width: 100px; height: 100px; float: initial; vertical-align: top; margin: 0px 50px; " />
+            </td>
+        </tr>
+    </table>
+    <br />
+    <br />
+
+    <table id="T2" style="width: 100%;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align:left;">Vendor</td>
+            <td class="black" style="width: 50%; text-align:right;"></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">المورد  </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Vendor Name</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T2R1V1"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">إسم المورد    </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Vendor Address</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T2R1V2"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">  عنوان المورد</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Vendor VAT Registration No.</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T2R1V3"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">
+                الرقم الضريبي
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Vendor CR Number</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T2R1V4"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">  رقم السجل التجاري  </td>
+        </tr>
+    </table>
+    <br />
+    <br />
+    <table id="T3" style="width: 100%; display: none;" >
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align:left;">Customer</td>
+            <td class="black" style="width: 50%; text-align:right;"></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">العميل </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Customer Name</td>
+            <td class="black" id="T3R2V1" style="width: 50%; text-align:right;"><span id="T3R1V1"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">  اسم العميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Customer Address</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T3R1V2"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">عنوان للعميل </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Contact Number</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T3R1V3"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">
+                هاتف للعميل
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">VAT Registration No.</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T3R1V4"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">
+                مرجع ضريبة القيمة المضافة للعميل
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align:left;">Email</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T3R1V5"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">
+                البريد الإلكتروني
+            </td>
+        </tr>
+        <tr style="display:none">
+            <td class="firstCol" style="width: 20%; text-align:left;">CR Number</td>
+            <td class="black" style="width: 50%; text-align:right;"><span id="T3R1V6"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;">رقم السجل التجاري للعميل    </td>
+        </tr>
+
+    </table>
+    <br />
+    <br />
+    <table id="T4" style="width: 100%;">
+        <tr class="firstRow" style="border-bottom: 0px">
+            <td style="width: 5%; text-align:center;">Sl No  <br />رقم </td>
+            <td style="width: 25%; text-align:center;">Description  <br />  وصف المبيع </td>
+            <td style="width: 8%; text-align:center;">Qty  <br />كمية </td>
+            <td style="width: 10%; text-align:center;">
+                Unit Price  <br />
+                سعر الوحدة (ر.س)
+            </td>
+            <td style="width: 7%; text-align:center; display: none;">Discount %  <br /> الخصم ٪ </td>
+            <td style="width: 10%; text-align:center; display: none;">Taxable Amount  <br />  سعر خاضع للضريبة  </td>
+            <td style="width: 10%; text-align:center; display: none;">Tax Rate  <br /> النسبة المئوية لضريبة القيمة المضافة      </td>
+            <td style="width: 10%; text-align:center;">
+                Tax Amount  <br /> <span>(ريال سعودي)</span><br /> <span>ضريبة القيمة المضافة</span>
+
+
+            </td>
+            <td style="width: 15%; text-align:center;">Total Including Tax (SAR)  <br /> الاجمالي شاملا الضريبة(ر.س) </td>
+
+        </tr>
+    </table>
+    <br />
+    <br />
+    <!--<table style="width:100%">
+        <tr>
+            <td style="width:50%">
+                <div>
+                    <label class="form-label fs-6 fw-bolder text-gray-700">Notes</label>
+                </div>
+                <textarea name="Notes" class="form-control form-control-lg form-control-solid" rows="3" placeholder="Thanks for your business" style="width:100%;"></textarea>
+            </td>
+            <td style="width:50%">-->
+    <table id="T5" style="width: 100%;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 40%; text-align:left;">Invoice Summary</td>
+            <td style="width: 20%;text-align:right"><span id="T5R1V0"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">ملخص الفاتورة</td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 40%; text-align:left;">Total Before VAT(SAR)</td>
+            <td style="width: 20%;text-align:right"><span id="T5R1V1"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">
+                الإجمالي قبل ضريبة القيمة المضافة                <span>(ر.س )</span>
+
+            </td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 40%; text-align:left;">Total Discount(SAR)</td>
+            <td style="width: 20%; text-align: right"><span id="T5R1V2"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">
+                اجمالي خصم (ر.س)
+
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left;">Final Total Before VAT(SAR)</td>
+            <td style="width: 20%; text-align: right"><span id="T5R1V5"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">
+                الاجمالي بدون ضريبة القيمة المضافة (ر.س)
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left;">Total VAT(SAR)</td>
+            <td style="width: 20%; text-align: right"><span id="T5R1V3"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">إجمالي ضريبة القيمة المضافة<span>( ر.س)</span> </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left;">Total with VAT(SAR)</td>
+            <td style="width: 20%; text-align: right"><span id="T5R1V4"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;"> الاجمالي شاملا الضريبة(ر.س) </td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 40%; text-align:left;">Due Balance(SAR)</td>
+            <td style="width: 20%; text-align: right"><span id="T5R1V6"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">المبلغ المستحق<span>(ر.س )</span> </td>
+        </tr>
+    </table>
+
+
+    <table id="T6" style="width: 100%; margin-top: 15px;display: none;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 28%; text-align:left;">VAT Summary</td>
+            <td style="width: 12%; text-align: right"><span>Taxable Amount</span></td>
+            <td style="width: 12%; text-align: right "><span>Tax Amount</span></td>
+            <td style="width: 12%; text-align: right "><span>Total Amount</span></td>
+            <td class="lastCol" style="width: 36%; text-align:right;">ملخص ضريبة القيمة المضافة</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align:left;">
+                Standard Rated Supplies/Services @ 15%
+            </td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V6"></span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V7"></span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V2"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">  خدمات/ سلع خاضعة لنسبة أساسية</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align:left;">Zero Rated Supplies/Services</td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V8"></span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V9"></span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V3"></span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">
+                خدمات/ سلع خاضعة لنسبة صفرية
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align:left;">
+                Exempt Supplies/Services
+            </td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V10">0.00</span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V11">0.00</span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V4">0.00</span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;">  خدمات/ سلع معفاة </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align:left;">Out of Scope Supplies/Services  </td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V12">0.00</span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V13">0.00</span></td>
+            <td style="width: 10%;text-align:right"><span id="T6R1V5">0.00</span></td>
+            <td class="lastCol" style="width: 40%; text-align:right;"> خدمات/ سلع خارج نطاق الضريبة </td>
+        </tr>
+    </table>
+    <!--</td>
+        </tr>
+    </table>-->
+    <table style="width: 100%; margin-top:15px;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 70%; text-align:left;">Reason</td>
+            <td class="lastCol" style="width: 30%; text-align:right;"></td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 70%; text-align:left; height:20px;"><span id="T6R1V1"></span></td>
+            <td class="lastCol" style="width: 30%; text-align:right;"></td>
+        </tr>
+    </table>
+
+    <br />
+    <br />
+    <footer style="display:none">
+        <div class="row" style="font-size:10px;">
+            <div class="column2">
+                <p>
+                    <span style="font-weight:600">DOGHMAL TRADING CO. LIMITED</span> <br />
+                    Head Office-4179, KING ABDULAZIZ ROAD. <br />
+                    Najran-Dahadah Dist. PinCode:66273 <br />
+                    Tel:017-5238338 -- 017-5232325 <br />
+                    CR: 5950002557 -- VAT : 301043376600003
+                </p>
+            </div>
+            <div class="column" style="text-align:center">
+                <img id="Barcode1" src="" alt="" width="60" height="60" />
+                <h4 style="color:black;text-align: center; margin:5px">
+                    فاتورة المبيعات
+                </h4>
+            </div>
+            <div class="column1" style="text-align:right; float:right">
+                <p>
+                    <span style="font-weight:600">شركة دغمــل للتــجارة المحدودة </span><br />
+                    ٤١٧٩ طريق الملك عبدالعزيز <br />
+                    نجران - حي دحضة الرمز البريدي: ٦٦٢٧٣  <br />
+                    هاتف: 017-5238338 -- 017-5232325<br />
+                    CR: 5950002557 -- VAT : 301043376600003
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

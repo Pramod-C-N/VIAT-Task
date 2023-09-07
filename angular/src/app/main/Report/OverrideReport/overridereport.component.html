@@ -1,0 +1,100 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="d-flex flex-stack mt-3 col-lg-12">
+        <sub-header [title]="'Override Option Exercised Report' | localize"></sub-header>
+        <div class="d-flex align-items-center mb-2" id="alignitems">
+            <div class="nav-item px-2 col-md-7">
+                <label class="d-flex align-items-center">
+                    <span class="">Transaction Type</span>
+                </label>
+                <select [(ngModel)]="code" class="form-control"  id="formcontrol">
+                    <option value="" disabled>Select a Type...</option>
+                    <option value="OVRSAL001">Sales Invoice</option>
+                    <option value="OVRSCN002">Sales Credit Note</option>
+                    <option value="OVRSDN003">Sales Debit Note</option>
+                    <option value="OVRPUR004">Purchase Entry</option>
+                    <option value="OVRPDN005">Purchase Debit Note</option>
+                    <option value="OVRPCN006">Purchase Credit Note</option>
+                    <option value="OVRTEN007">Tenants</option>
+                    <option value="OVRCUS008">Customer</option>
+                    <option value="OVRVEN009">Vendor</option>
+                </select>
+            </div>
+            <div class="nav-item col-md-6" >
+                <label class="d-flex align-items-center">
+                    <span class="">Date Range</span>
+                </label>
+                <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
+                    #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
+                    [(date)]="dateRange" placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
+            </div>
+        </div>
+    </div>
+    <div class="app-container container-fluid">
+        <div class="card px-0">
+            <div class="card-body px-4 py-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="display">
+                            <span class="col-lg-6"></span>
+                            <span class="col-lg-4">
+                                <input class="form form-control" pInputText type="text"
+                                    (input)="dataTableAuditLogs.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="Search Keyword" />
+                            </span>
+                            <span id="textalign" class="col-lg-2">
+                                <button type="button" class="btn btn-outline btn-outline-success btn-"
+                                    (click)="downloadExcel(dataTableAuditLogs.value)">
+                                    <i class="far fa-file-excel btn-md-icon"></i>
+                                    <span class="d-none d-md-inline-block">
+                                        {{ 'Download Report' | localize }}
+                                    </span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
+                        <div class="card card-p-0 card-flush">
+                            <div class="card-body">
+                                <p-table #dataTableAuditLogs sortMode="multiple" [value]="invoices" [columns]="columns"
+                                    exportFilename="OverrideReport" [paginator]="true" [rows]="10"
+                                    [showCurrentPageReport]="true"
+                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                    [rowsPerPageOptions]="[5, 10, 15, 20]" [scrollable]="true" id="ptable">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th id="thstyle" *ngFor="let c of columns">
+                                                {{ c.header }}
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-record="$implicit">
+                                        <tr [pSelectableRow]="record">
+                                            <td class="tdwidth" *ngFor="let c of columns">
+                                                <span *ngIf="c.field != 'status' && c.field != 'errormessage'">
+                                                    {{ record[c.field] }}
+                                                </span>
+                                                <span  id="spanalign" *ngIf="c.field == 'errormessage'">
+                                                    <ul *ngFor="let em of record[c.field].split(';')">
+                                                        <li>
+                                                            {{ em }}
+                                                        </li>
+                                                    </ul>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <tr  id="trstyle"></tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="paginatorleft"></ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
