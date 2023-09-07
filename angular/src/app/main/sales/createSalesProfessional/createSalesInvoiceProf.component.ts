@@ -894,10 +894,11 @@ export class CreateSalesInvoiceProfComponent extends AppComponentBase {
 
       //  this.invoice.buyer[0].additionalData1 = JSON.stringify([this.deliveryFormGroup.value]);
     
-          if(this.multilanguage==true && this.deliveryLangFormGroup != undefined)
+      if(this.multilanguage==true && this.deliveryLangFormGroup != undefined)
           {
           this.invoice.buyer[1].additionalData1 = JSON.stringify([this.deliveryLangFormGroup.value]);
-          }
+          }    
+
           //----------------------------------------------------------
           this.invoice.vatDetails = this.vatDetails;
           console.log(this.invoice);
