@@ -33,57 +33,59 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetReasonCNDNForViewDto>> GetAll(GetAllReasonCNDNInput input)
         {
-
-            var filteredReasonCNDN = _reasonCNDNRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredReasonCNDN = _reasonCNDNRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredReasonCNDN = filteredReasonCNDN
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredReasonCNDN = filteredReasonCNDN
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var reasonCNDN = from o in pagedAndFilteredReasonCNDN
-                             select new
-                             {
+                var reasonCNDN = from o in pagedAndFilteredReasonCNDN
+                                 select new
+                                 {
 
-                                 o.Name,
-                                 o.Description,
-                                 o.Code,
-                                 o.IsActive,
-                                 Id = o.Id
-                             };
+                                     o.Name,
+                                     o.Description,
+                                     o.Code,
+                                     o.IsActive,
+                                     Id = o.Id
+                                 };
 
-            var totalCount = await filteredReasonCNDN.CountAsync();
+                var totalCount = await filteredReasonCNDN.CountAsync();
 
-            var dbList = await reasonCNDN.ToListAsync();
-            var results = new List<GetReasonCNDNForViewDto>();
+                var dbList = await reasonCNDN.ToListAsync();
+                var results = new List<GetReasonCNDNForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetReasonCNDNForViewDto()
+                foreach (var o in dbList)
                 {
-                    ReasonCNDN = new ReasonCNDNDto
+                    var res = new GetReasonCNDNForViewDto()
                     {
+                        ReasonCNDN = new ReasonCNDNDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetReasonCNDNForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetReasonCNDNForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetReasonCNDNForViewDto> GetReasonCNDNForView(int id)

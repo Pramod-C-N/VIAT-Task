@@ -39,3 +39,9 @@ tr.alternate-row:nth-child(even) {
    padding-bottom: 10px;
 }
 
+@media screen and (max-width: 480px) {
+  .gapbetweenbtn {
+    width: 100%; /* The width is 100%, when the viewport is 800px or smaller */
+  }
+}
+

@@ -45,6 +45,7 @@ import {
     SectorServiceProxy,
     TaxCategoryServiceProxy,
     TenantBasicDetailsServiceProxy,
+    TenantRegistrationServiceProxy,
     TenantSettingsServiceProxy,
     TransactionCategoryServiceProxy,
 } from '@shared/service-proxies/service-proxies';
@@ -53,6 +54,7 @@ import { AppSessionService } from '@shared/common/session/app-session.service';
 import { Location } from '@angular/common';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'IndividualTenant',
@@ -108,6 +110,7 @@ export class IndividualTenantComponent extends AppComponentBase {
     businesspurchase: any[];
     businesssales: any[];
     profileType = 'Individual';
+    vatid: string;
     ishost = true;
     constructor(
         injector: Injector,
@@ -126,6 +129,8 @@ export class IndividualTenantComponent extends AppComponentBase {
         private _masterSectorServiceProxy: SectorServiceProxy,
         private _masterBusinessCategoryServiceProxy: TransactionCategoryServiceProxy,
         private _masterTaxCategoryServiceProxy: TaxCategoryServiceProxy,
+        private _tenantRegistrationService: TenantRegistrationServiceProxy,
+
         private fb: FormBuilder,
         private _tokenService: TokenService
     ) {
@@ -292,8 +297,7 @@ export class IndividualTenantComponent extends AppComponentBase {
             this.tenants.businessCategory = data[0].businessCategory?.trim();
             this.tenants.operationalModel = data[0].operationalModel?.trim();
             this.tenants.turnoverSlab = data[0].turnoverSlab?.trim();
-            this.tenants.lastReturnFiled = data[0].lastReturnFiled?.trim();
-            this.tenants.vatReturnFillingFrequency = data[0].vatReturnFillingFrequency?.trim();
+this.tenants.lastReturnFiled = data[0].lastReturnFiled1?.trim();            this.tenants.vatReturnFillingFrequency = data[0].vatReturnFillingFrequency?.trim();
             this.address.buildingNo = data[0]?.buildingNo;
             this.address.additionalBuildingNumber = data[0]?.additionalBuildingNumber;
             this.address.street = data[0]?.street?.trim();
@@ -309,6 +313,8 @@ export class IndividualTenantComponent extends AppComponentBase {
             this.supplyVATCategory.vatCategoryName = data[0].vatCategoryName?.trim();
             this.purchaseVatCateory.vatCategoryName = data[0].vatCategoryName?.trim();
             for (let i = 0; i < data.length; i++) {
+                if(data[i].documentType != null || data[i].documentType != undefined)
+                {
                 this.Documentitem.docUniqueId = data[i].docunique;
                 this.Documentitem.documentId = data[i].documentId;
                 this.Documentitem.documentNumber = data[i].documentNumber;
@@ -316,19 +322,26 @@ export class IndividualTenantComponent extends AppComponentBase {
                 this.Documentitem.registrationDate = data[i].registrationDate;
                 this.Documentitems.push(this.Documentitem);
                 this.Documentitem = new CreateOrEditTenantDocumentsDto();
+                }
             }
             this.tenants.address = this.address;
             this.tenants.documents = this.Documentitems;
+            this.vatid=data[0]?.vatid;
+
         });
     }
-    updatedetails() {
+    async updatedetails() {
+        if(await this.isvatRegistered()){
+            this.notify.error(this.l('Entered VAT Number  already exists'));
+          return null;
+        }
         if (
             (this.tenants.vatid == null || this.tenants.vatid === undefined || !this.tenants.vatid) &&
             (this.documents.documentNumber === null ||
                 this.documents.documentNumber === undefined ||
                 !this.documents.documentNumber)
         ) {
-            this.notify.error(this.l('Please fill either CR number or VAT ID to save.'));
+            this.notify.error(this.l('Please fill either CR number or VAT number to save.'));
         } else {
             if (this.type === 'Update') {
                 this.tenants.address = this.address;
@@ -343,6 +356,7 @@ export class IndividualTenantComponent extends AppComponentBase {
                     .pipe(finalize(() => (this.saving = false)))
                     .subscribe(() => {
                         this.notify.success(this.l('UpdatedSuccessfully'));
+                        window.location.reload();
                         this.state.emit();
                     });
             } else {
@@ -532,5 +546,17 @@ export class IndividualTenantComponent extends AppComponentBase {
 
     deleteItem(index: number) {
         this.Documentitems.splice(index, 1);
+    }
+    async isvatRegistered(){
+        //return false 
+        if(this.vatid != this.tenants.vatid)
+        {
+       var res = await firstValueFrom(this._tenantRegistrationService.checkIfVatExists(this.tenants.vatid,true))
+        return res
+        }
+        else
+        {
+            return false;
+        }
     }
 }

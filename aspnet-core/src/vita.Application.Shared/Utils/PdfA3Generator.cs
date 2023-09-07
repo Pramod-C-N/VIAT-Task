@@ -14,7 +14,7 @@ namespace vita.Utils
 {
     public class PdfA3Generator
     {
-        public static void CreatePdf(byte[] doc, byte[] embededFile, string baseUri, string dest, string invoiceno,string orientation)
+        public static void CreatePdf(byte[] doc, byte[] embededFile, string baseUri, string dest, string invoiceno,string orientation,bool isDraft=false)
         {
 
             //-------------important-----------------------------
@@ -26,7 +26,7 @@ namespace vita.Utils
             {
                 PdfWriter pdfwriter = new PdfWriter(dest);
                 PdfADocument document = null;
-                using (var stream = File.Open(@"wwwroot\ReportTemplate\sRGB_CS_profile.icm", FileMode.Open))
+                using (var stream = new FileStream(@"wwwroot\ReportTemplate\sRGB_CS_profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     document = new PdfADocument(pdfwriter, PdfAConformanceLevel.PDF_A_3A, new PdfOutputIntent("Custom", "",
                     "https://www.color.org", "sRGB IEC61966-2.1", stream));
@@ -50,16 +50,20 @@ namespace vita.Utils
 
                 parameters.Put(PdfName.ModDate, new PdfDate().GetPdfObject());
                 parameters.Put(PdfName.CreationDate, new PdfDate().GetPdfObject());
-                PdfFileSpec fileSpec = PdfFileSpec.CreateEmbeddedFileSpec(document, embededFile, "Invoice.xml", "Invoice.xml", parameters, PdfName.Data);
-                fileSpec.Put(new PdfName("AFRelationship"), new PdfName("Data"));
-                document.AddFileAttachment("Invoice", fileSpec);
+                if (!isDraft)
+                {
+                    PdfFileSpec fileSpec = PdfFileSpec.CreateEmbeddedFileSpec(document, embededFile, "Invoice.xml", "Invoice.xml", parameters, PdfName.Data);
+                    fileSpec.Put(new PdfName("AFRelationship"), new PdfName("Data"));
+                    document.AddFileAttachment("Invoice", fileSpec);
+                    PdfArray array = new PdfArray();
+                    array.Add(fileSpec.GetPdfObject().GetIndirectReference());
+                    document.GetCatalog().Put(new PdfName("AF"), array);
+                }
                 if (orientation == "L")
                 {
                     document.SetDefaultPageSize(PageSize.A3.Rotate());
                 }
-                PdfArray array = new PdfArray();
-                array.Add(fileSpec.GetPdfObject().GetIndirectReference());
-                document.GetCatalog().Put(new PdfName("AF"), array);
+                
                 ConverterProperties properties = new ConverterProperties();
                 properties.SetBaseUri(baseUri);
                 DefaultFontProvider fontProvider = new DefaultFontProvider(true, true, true);

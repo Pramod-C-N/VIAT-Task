@@ -7,7 +7,7 @@ namespace vita.Debit.Dtos
     public class CreateOrEditDebitNoteItemDto : EntityDto<long?>
     {
 
-        
+
         public string IRNNo { get; set; }
 
         public string Identifier { get; set; }
@@ -55,6 +55,12 @@ namespace vita.Debit.Dtos
         public string ExcemptionReasonCode { get; set; }
 
         public string ExcemptionReasonText { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+        public string AdditionalData2 { get; set; }
+
+        public bool isOtherCharges { get; set; }
+
 
     }
 }

@@ -33,57 +33,58 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetTransactionCategoryForViewDto>> GetAll(GetAllTransactionCategoryInput input)
         {
-
-            var filteredTransactionCategory = _transactionCategoryRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredTransactionCategory = _transactionCategoryRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredTransactionCategory = filteredTransactionCategory
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredTransactionCategory = filteredTransactionCategory
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var transactionCategory = from o in pagedAndFilteredTransactionCategory
-                                      select new
-                                      {
+                var transactionCategory = from o in pagedAndFilteredTransactionCategory
+                                          select new
+                                          {
 
-                                          o.Name,
-                                          o.Description,
-                                          o.Code,
-                                          o.IsActive,
-                                          Id = o.Id
-                                      };
+                                              o.Name,
+                                              o.Description,
+                                              o.Code,
+                                              o.IsActive,
+                                              Id = o.Id
+                                          };
 
-            var totalCount = await filteredTransactionCategory.CountAsync();
+                var totalCount = await filteredTransactionCategory.CountAsync();
 
-            var dbList = await transactionCategory.ToListAsync();
-            var results = new List<GetTransactionCategoryForViewDto>();
+                var dbList = await transactionCategory.ToListAsync();
+                var results = new List<GetTransactionCategoryForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetTransactionCategoryForViewDto()
+                foreach (var o in dbList)
                 {
-                    TransactionCategory = new TransactionCategoryDto
+                    var res = new GetTransactionCategoryForViewDto()
                     {
+                        TransactionCategory = new TransactionCategoryDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetTransactionCategoryForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetTransactionCategoryForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetTransactionCategoryForViewDto> GetTransactionCategoryForView(int id)

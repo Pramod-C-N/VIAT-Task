@@ -38,5 +38,9 @@ namespace vita.Credit
 
         public virtual string Type { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string Language { get; set; }
+
     }
 }

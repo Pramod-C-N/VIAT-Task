@@ -33,54 +33,56 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetTitleForViewDto>> GetAll(GetAllTitleInput input)
         {
-
-            var filteredTitle = _titleRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredTitle = _titleRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredTitle = filteredTitle
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredTitle = filteredTitle
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var title = from o in pagedAndFilteredTitle
-                        select new
+                var title = from o in pagedAndFilteredTitle
+                            select new
+                            {
+
+                                o.Name,
+                                o.Description,
+                                o.IsActive,
+                                Id = o.Id
+                            };
+
+                var totalCount = await filteredTitle.CountAsync();
+
+                var dbList = await title.ToListAsync();
+                var results = new List<GetTitleForViewDto>();
+
+                foreach (var o in dbList)
+                {
+                    var res = new GetTitleForViewDto()
+                    {
+                        Title = new TitleDto
                         {
 
-                            o.Name,
-                            o.Description,
-                            o.IsActive,
-                            Id = o.Id
-                        };
+                            Name = o.Name,
+                            Description = o.Description,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-            var totalCount = await filteredTitle.CountAsync();
+                    results.Add(res);
+                }
 
-            var dbList = await title.ToListAsync();
-            var results = new List<GetTitleForViewDto>();
+                return new PagedResultDto<GetTitleForViewDto>(
+                    totalCount,
+                    results
+                );
 
-            foreach (var o in dbList)
-            {
-                var res = new GetTitleForViewDto()
-                {
-                    Title = new TitleDto
-                    {
-
-                        Name = o.Name,
-                        Description = o.Description,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
-
-                results.Add(res);
             }
-
-            return new PagedResultDto<GetTitleForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetTitleForViewDto> GetTitleForView(int id)

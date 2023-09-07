@@ -1,0 +1,40 @@
+<div class="content d-flex flex-column flex-column-fluid" >
+    <sub-header [title]="'File Mapper' | localize">
+    </sub-header>
+    <div class="app-container container-fluid">
+        <div class="card">
+            <div class="card-body py-3">
+              <h3>Mappings</h3>
+                <table class="table table-striped">
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Name</th>
+                        <th>Transaction Type</th>
+                        <th>Active</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr *ngFor="let m of mappingList; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ m?.name }}</td>
+                        <td>{{ m?.transactionType }}</td>
+                        <td>
+                            <input type="checkbox"
+                            [(ngModel)]="mappingList[i].isActive"/>
+                        </td>
+                        <td><button class="btn btn-sm btn-primary" (click)="editMapping(m,i)">Edit</button></td>
+                        <td><button class="btn btn-sm btn-danger" (click)="deleteMapping(m)">Delete</button></td>
+                    </tr>
+                </table>
+                <hr />
+                <ng-file-mapper
+                *ngIf="!isLoading"
+                    (getMappings)="getMappings($event)"
+                    (getDefaultMappings)="getMappings($event)"
+                    [availableColumns]="availableColumns"
+                    [mappings]="mappings"
+                ></ng-file-mapper>
+            </div>
+        </div>
+    </div>
+</div>

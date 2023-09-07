@@ -34,6 +34,8 @@ import { TransactionsModule } from '@app/main/sales/transactions/transactions.mo
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { WidgetEinvcComponent } from './widgets/widget-Einvc-Tab/widget-Einvc-tab.component';
 import { DateTimeCustomService } from '@shared/customService/date-time-service';
+import { BradyTransactionsModule } from '@app/main/sales/bradyTransaction/bradytransactions.module';
+import { ViewInvoiceModule } from '@app/main/sales/ViewInvoice/viewInvoice.module';
 
 @NgModule({
     imports: [
@@ -55,7 +57,9 @@ import { DateTimeCustomService } from '@shared/customService/date-time-service';
         BsDatepickerModule,
         SubheaderModule,
         TransactionsModule,
-        NgApexchartsModule
+        ViewInvoiceModule,
+        NgApexchartsModule,
+        BradyTransactionsModule
     ],
 
     declarations: [

@@ -356,13 +356,13 @@
                 <div class="row   mb-1">
                     <div class="col-lg-6">
                     <label class="d-flex align-items-center">
-                        <span >VAT ID :</span>
+                        <span >VAT Number :</span>
                     </label>
                     <div [formGroup]="basicForm">
                         <input
                             type="text"
                             id="vatid"
-                            placeholder="VAT ID"
+                            placeholder="VAT Number"
                             class="form-control form-control-lg"
                             minlength="15"
                             maxlength="15"
@@ -374,8 +374,8 @@
                         *ngIf="basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
                         class="fv-plugins-message-container invalid-feedback"
                     >
-                        Please enter a valid VAT ID
-                        <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is required.</div>
+                        Please enter a valid VAT Number
+                        <div *ngIf="basicForm.controls['vatid'].errors.required">VAT Number is required.</div>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -704,21 +704,22 @@
                             </div>
                             <div class="col-lg-12">
                                 <label class="d-flex align-items-center">
-                                    <span >Invoice Type:</span>
+                                    <span >VAT Return Filing Frequency :</span>
                                 </label>
                                 <div >
                                     <select
-                                        type="text"
-                                        placeholder="Goods"
                                         class="form-control form-control-lg form-control-solid"
+                                        name="type"
+                                        [(ngModel)]="tenants.vatReturnFillingFrequency"
                                     >
-                                    <option value="">Select a Invoice Type...</option>
-                                    <option *ngFor="let c of invoicetype" [value]="c.invoiceType.name">
-                                        {{ c.invoiceType.name }}
-                                    </option>
-                                </select>
+                                    <option value="">Select a VAT Return Filing Frequency... </option>
+                                    <option value="Quarterly ">Quarterly  </option>
+                                    <option value="Monthly">Monthly </option>
+        
+                                    </select>
                                 </div>
                             </div>
+                        
                             <div class="col-lg-12">
                                 <label class="d-flex align-items-center">
                                     <span >Last Return Filed:</span>
@@ -804,23 +805,7 @@
                             </option></select>
                         </div>
                     </div>
-                    <div class="col-lg-12">
-                        <label class="d-flex align-items-center">
-                            <span >VAT Return Filing Frequency :</span>
-                        </label>
-                        <div >
-                            <select
-                                class="form-control form-control-lg form-control-solid"
-                                name="type"
-                                [(ngModel)]="tenants.vatReturnFillingFrequency"
-                            >
-                            <option value="">Select a VAT Return Filing Frequency... </option>
-                            <option value="Quarterly/Monthly">Quarterly/Monthly </option>
-                            <option value="Monthly">Monthly </option>
-
-                            </select>
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="separator separator-dashed my-1"></div>
             </div>

@@ -12,6 +12,7 @@ namespace vita.CreditNotePurchaseFileUpload.Importing
 {
     public interface ICreditNotePurchaseListExcelDataReader : ITransientDependency
     {
+        byte[] ConvertCsvToExcel(byte[] csvBytes);
         List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes);
     }
 }

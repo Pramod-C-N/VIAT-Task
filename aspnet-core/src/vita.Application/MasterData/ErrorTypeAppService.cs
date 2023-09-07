@@ -33,8 +33,10 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetErrorTypeForViewDto>> GetAll(GetAllErrorTypeInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredErrorType = _errorTypeRepository.GetAll()
+                var filteredErrorType = _errorTypeRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.ModuleName.Contains(input.Filter) || e.ErrorGroupId.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -43,55 +45,55 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.ErrorGroupIdFilter), e => e.ErrorGroupId.Contains(input.ErrorGroupIdFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredErrorType = filteredErrorType
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredErrorType = filteredErrorType
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var errorType = from o in pagedAndFilteredErrorType
-                            select new
-                            {
+                var errorType = from o in pagedAndFilteredErrorType
+                                select new
+                                {
 
-                                o.Name,
-                                o.Description,
-                                o.Code,
-                                o.ModuleName,
-                                o.ErrorGroupId,
-                                o.IsActive,
-                                Id = o.Id
-                            };
+                                    o.Name,
+                                    o.Description,
+                                    o.Code,
+                                    o.ModuleName,
+                                    o.ErrorGroupId,
+                                    o.IsActive,
+                                    Id = o.Id
+                                };
 
-            var totalCount = await filteredErrorType.CountAsync();
+                var totalCount = await filteredErrorType.CountAsync();
 
-            var dbList = await errorType.ToListAsync();
-            var results = new List<GetErrorTypeForViewDto>();
+                var dbList = await errorType.ToListAsync();
+                var results = new List<GetErrorTypeForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetErrorTypeForViewDto()
+                foreach (var o in dbList)
                 {
-                    ErrorType = new ErrorTypeDto
+                    var res = new GetErrorTypeForViewDto()
                     {
+                        ErrorType = new ErrorTypeDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        ModuleName = o.ModuleName,
-                        ErrorGroupId = o.ErrorGroupId,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            ModuleName = o.ModuleName,
+                            ErrorGroupId = o.ErrorGroupId,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetErrorTypeForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetErrorTypeForViewDto>(
-                totalCount,
-                results
-            );
-
         }
-
         public async Task<GetErrorTypeForViewDto> GetErrorTypeForView(int id)
         {
             var errorType = await _errorTypeRepository.GetAsync(id);

@@ -14,6 +14,7 @@ using static vita.Configuration.AppSettings.UiManagement;
 using MailKit;
 using iText.Layout.Element;
 using NPOI.SS.Formula.Functions;
+using Castle.MicroKernel.SubSystems.Conversion;
 
 namespace vita.DataExporting.Excel.NPOI
 {
@@ -457,7 +458,7 @@ namespace vita.DataExporting.Excel.NPOI
 
             rowNum++;
             var r = sheet.CreateRow(rowNum);
-            AddHeaderCustomReport(sheet, 0, rowNum, "MONTHLY WITHHOLDING TAX FORM", null, true);
+            AddHeaderCustomReport(sheet, 0, rowNum,"SCH - "+input.code+" WITHHOLDING TAX FORM", null, true);
             sheet.AddMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 0 + 7));
             var cellStyle = r.GetCell(0).CellStyle;
             cellStyle.Alignment = HorizontalAlignment.Center;
@@ -556,7 +557,7 @@ namespace vita.DataExporting.Excel.NPOI
             }
             else
             {
-                AddHeaderCustomReport(sheet, 0, rowNum, "From Date: " + fromdate + "     To Date: " + todate, null, true);
+                AddHeaderCustomReport(sheet, 0, rowNum, "From Date: " + fromdate.ToString("dd/MM/yyyy") + "     To Date: " + todate.ToString("dd/MM/yyyy"), null, true);
 
             }
 
@@ -651,7 +652,7 @@ namespace vita.DataExporting.Excel.NPOI
             }
         }
 
-        protected void AddHeaderSales(ISheet sheet, PurchaseExcelDto input, params string[] headerTexts)
+        protected void AddHeaderSales(ISheet sheet, PurchaseExcelDto input, string typeCode, string typeName, params string[] headerTexts)
         {
 
             var rowNum = 0;
@@ -703,7 +704,16 @@ namespace vita.DataExporting.Excel.NPOI
             //AddHeaderCustomReport(sheet, 0, rowNum, "Month: " + input.Month + "     Year: " + input.Year, null, true);
             if (input.Type == "Detailed")
             {
-                AddHeaderCustomReport(sheet, 0, rowNum, "Sales Detailed Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+                if(typeCode != "VATSAL000" &&  !string.IsNullOrEmpty(typeName))
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Sales Report ("+ typeName + ") for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
+                else
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Sales Detailed Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
                 excol = 12;
             }
             else
@@ -880,7 +890,7 @@ namespace vita.DataExporting.Excel.NPOI
 
 
 
-        protected void AddHeaderOverride(ISheet sheet, PurchaseExcelDto input, params string[] headerTexts)
+        protected void AddHeaderOverride(ISheet sheet, PurchaseExcelDto input,string code ,string typeName, params string[] headerTexts)
         {
 
             var rowNum = 0;
@@ -919,11 +929,17 @@ namespace vita.DataExporting.Excel.NPOI
             rowNum++;
             r = sheet.CreateRow(rowNum);
             //AddHeaderCustomReport(sheet, 0, rowNum, "Month: " + input.Month + "     Year: " + input.Year, null, true);
-
+            if(code != "VATCNS000" && !string.IsNullOrEmpty(typeName))
+            {               
+                 AddHeaderCustomReport(sheet, 0, rowNum, "Override Option Exercised Report for the (" + typeName + ") period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+           
+            }
+            else
+            {
                 AddHeaderCustomReport(sheet, 0, rowNum, "Override Option Exercised Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
-                excol = 7;
-      
-  
+               
+            }
+            excol = 7;
             //AddHeaderCustomReport(sheet, 0, rowNum, "From Date: " + input.FromDate + "     To Date: " + input.ToDate, null, true);
 
             sheet.AddMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, 0 + excol));
@@ -970,7 +986,7 @@ namespace vita.DataExporting.Excel.NPOI
 
 
 
-        protected void AddHeaderCredit(ISheet sheet, PurchaseExcelDto input, params string[] headerTexts)
+        protected void AddHeaderCredit(ISheet sheet, PurchaseExcelDto input,string code,string typecode, params string[] headerTexts)
         {
 
             var rowNum = 0;
@@ -1022,7 +1038,16 @@ namespace vita.DataExporting.Excel.NPOI
             //AddHeaderCustomReport(sheet, 0, rowNum, "Month: " + input.Month + "     Year: " + input.Year, null, true);
             if (input.Type == "Detailed")
             {
-                AddHeaderCustomReport(sheet, 0, rowNum, "Credit(Sales) Detailed Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+                if (code != "VATCNS000" && !string.IsNullOrEmpty(typecode))
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Credit Note Sales Report ("+ typecode + ") for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
+                else
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Credit Note Sales Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
                 excol = 12;
             }
             else
@@ -1185,7 +1210,7 @@ namespace vita.DataExporting.Excel.NPOI
         }
 
 
-        protected void AddHeaderPurchase(ISheet sheet, PurchaseExcelDto input, params string[] headerTexts)
+        protected void AddHeaderPurchase(ISheet sheet, PurchaseExcelDto input, string code, string typeName, params string[] headerTexts)
         {
 
             var rowNum = 0;
@@ -1228,8 +1253,18 @@ namespace vita.DataExporting.Excel.NPOI
             //AddHeaderCustomReport(sheet, 0, rowNum, "Month: " + input.Month + "     Year: " + input.Year, null, true);
             if (input.Type == "Detailed")
             {
-                AddHeaderCustomReport(sheet, 0, rowNum, "Purchase Entry Detailed Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
-               
+                if (code != "VATPUR000" && !string.IsNullOrEmpty(typeName))
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Purchase Entry Report ("+ typeName + ") for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
+                else
+                {
+                    AddHeaderCustomReport(sheet, 0, rowNum, "Purchase Entry Report for the period from :" + input.FromDate + " To: " + input.ToDate, null, true);
+
+                }
+
+
             }
             else
             {
@@ -1468,24 +1503,33 @@ namespace vita.DataExporting.Excel.NPOI
                 for (var i = 0; i < dt.Rows.Count; i++)
                 {
                     var row = sheet.CreateRow(i + 6);
-                    for (var j = 0; j < dt.Columns.Count; j++)
+                    for (var j = 0; j < dt.Columns.Count-1; j++)
                     {
                         var rInd = i + 7;
                         var c = row.CreateCell(j);
+                        var value1 = dt.Rows[i][dt.Columns.Count-1];
+                        ICellStyle cellStyle = sheet.Workbook.CreateCellStyle();
+                        IFont font = sheet.Workbook.CreateFont();
+                        if (value1.ToString() == "1")
+                        {
+                            font.IsBold = true;
+                        }
+                        cellStyle.SetFont(font);
                         var value = dt.Rows[i][j];
                         if (value != null)
                         {
                             c.SetCellValue(value.ToString());
+                            c.CellStyle = cellStyle;
                         }
                     }
-                    if (i == dt.Rows.Count - 1)
+/*                    if (i == dt.Rows.Count - 1)
                     {
                         var value = dt.Rows[i][0];
                         var c = row.GetCell(0);
                         c.SetCellValue("Total");
 
 
-                    }
+                    }*/
                 }
 
 
@@ -1562,7 +1606,7 @@ namespace vita.DataExporting.Excel.NPOI
 
 
                 //auto size all columns of the sheet
-                for (var i = 0; i < 10; i++)
+                for (var i = 0; i < 12; i++)
                 {
                     sheet.AutoSizeColumn(i);
                     sheet.SetColumnWidth(i, sheet.GetColumnWidth(i) + 512);
@@ -1578,7 +1622,7 @@ namespace vita.DataExporting.Excel.NPOI
             }
         }
 
-        protected void AddObjectsFromDatatablePurchase(ISheet sheet, DataTable dt, PurchaseExcelDto input,string code)
+        protected void AddObjectsFromDatatablePurchase(ISheet sheet, DataTable dt, PurchaseExcelDto input,string code, string typeName)
         {
             try
             {
@@ -1621,26 +1665,30 @@ namespace vita.DataExporting.Excel.NPOI
                         }
                         if (input.Type == "Detailed")
                         {
-                            if(code=="VATPUR000")
+                            if(code=="VATPUR000" || code == "VATPUR003" || code == "VATPUR004" || code == "VATPUR005" || code == "VATPUR007" || code == "VATPUR006" || code == "VATPUR009" || code == "VATPUR010")
                             {
-                                c = row.GetCell(6);
+                                //c = row.GetCell(7);
+                                //c.SetCellValue(" ");
+                                //c = row.GetCell(8);
+                                //c.SetCellValue(" ");
+                                //c = row.GetCell(12);
+                                //c.SetCellValue(" ");
+                                //c = row.GetCell(13);
+                                //c.SetCellValue(" ");
+                                c = row.GetCell(5);
                                 c.SetCellValue(" ");
-                                c = row.GetCell(7);
-                                c.SetCellValue(" ");
-                                c = row.GetCell(11);
-                                c.SetCellValue(" ");
-                                c = row.GetCell(12);
-                                c.SetCellValue(" ");
+                                //c = row.GetCell(12);
+                                //c.SetCellValue(" ");
                             }
                             else
                             {
-                                c = row.GetCell(7);
-                                c.SetCellValue(" ");
                                 c = row.GetCell(8);
                                 c.SetCellValue(" ");
-                                c = row.GetCell(12);
+                                c = row.GetCell(9);
                                 c.SetCellValue(" ");
                                 c = row.GetCell(13);
+                                c.SetCellValue(" ");
+                                c = row.GetCell(14);
                                 c.SetCellValue(" ");
                             }
 
@@ -1749,9 +1797,13 @@ namespace vita.DataExporting.Excel.NPOI
                             {
                                 c = row.GetCell(9);
                             }
+                            else if( code == "VATSAL005" || code == "VATSAL007")
+                            {
+                                c = row.GetCell(10);
+                            }
                             else
                             {
-                                c = row.GetCell(9);
+                                c = row.GetCell(4);
                             }
                             
                             c.SetCellValue(" ");
@@ -1970,11 +2022,11 @@ namespace vita.DataExporting.Excel.NPOI
                         {
                             if(code==string.Empty || code== "VATCNS000")
                             {
-                                c = row.GetCell(10);
+                                c = row.GetCell(5);
                             }
                             else
                             {
-                                c = row.GetCell(11);
+                                c = row.GetCell(10);
                             }
                             
                             c.SetCellValue(" ");
@@ -2070,7 +2122,7 @@ namespace vita.DataExporting.Excel.NPOI
                         }
                         if (input.Type == "Detailed")
                         {
-                            c = row.GetCell(10);
+                            c = row.GetCell(5);
                             c.SetCellValue(" ");
                         }
                         else
@@ -2164,17 +2216,17 @@ namespace vita.DataExporting.Excel.NPOI
                         }
                         if (input.Type == "Detailed")
                         {
-                            c = row.GetCell(9);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(10);
+                            //c.SetCellValue(" ");
 
-                            c = row.GetCell(10);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(11);
+                            //c.SetCellValue(" ");
 
 
-                            c = row.GetCell(11);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(12);
+                            //c.SetCellValue(" ");
 
-                            c = row.GetCell(15);
+                            c = row.GetCell(6);
                             c.SetCellValue(" ");
                         }
                         else
@@ -2182,15 +2234,15 @@ namespace vita.DataExporting.Excel.NPOI
                             //c = row.GetCell(1);
                             //c.SetCellValue(" ");
 
-                            c = row.GetCell(7);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(7);
+                            //c.SetCellValue(" ");
 
 
-                            c = row.GetCell(8);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(8);
+                            //c.SetCellValue(" ");
 
-                            c = row.GetCell(9);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(9);
+                            //c.SetCellValue(" ");
                         }
 
 
@@ -2277,17 +2329,17 @@ namespace vita.DataExporting.Excel.NPOI
                         }
                         if (input.Type == "Detailed")
                         {
-                            c = row.GetCell(9);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(9);
+                            //c.SetCellValue(" ");
 
-                            c = row.GetCell(10);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(10);
+                            //c.SetCellValue(" ");
 
 
-                            c = row.GetCell(11);
-                            c.SetCellValue(" ");
+                            //c = row.GetCell(11);
+                            //c.SetCellValue(" ");
 
-                            c = row.GetCell(15);
+                            c = row.GetCell(6);
                             c.SetCellValue(" ");
                         }
                         else

@@ -1,0 +1,94 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-9">
+            <sub-header [title]="'Reconciliation Report' | localize"></sub-header>
+        </div>
+
+        <div class="col-md-3">
+            <!--<input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
+                #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker 
+                [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                placement="bottom right" (bsValueChange)="getOverheadGapAnalysisReport()" /> -->
+        </div>
+    </div>
+    <div class="app-container container-fluid mt-3">
+        <div class="card px-0">
+            <div *ngIf="searched" class="card">
+                <div class="card-body py-3">
+                    <div class="row gx-10 mb-5 pt-5">
+                        <div class="col-lg-8">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label text-gray-800 fw-bold fs-2 mb-3">
+                                    Report on Overhead Absorption Gap for the Fin. Year {{ year1 }}
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="col-lg-2" style="text-align: right">
+                            <button type="button" class="btn btn-outline-success" (click)="exportExcel()"
+                                pTooltip="Export to excel" tooltipPosition="bottom" style="
+                                    text-align: center;
+                                    color: #58b241;
+                                    border-color: #58b241;
+                                    border: 1px solid;
+                                    background-color: #d9ffd8;
+                                    width: 100%;
+                                ">
+                                Download Report
+                            </button>
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-2" style="text-align: right">
+                            <button id="buttonstyle" type="button"
+                                class="btn btn-outline btn-outline-primary me-1 w-100" (click)="refreshVal()">
+                                <i class="fa fa-refresh btn-md-icon"></i>
+                                Refresh
+                            </button>
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-2 mb-3 mt-3">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label text-gray-800 fw-bold fs-5 mb-1">Previous Year %</span>
+                                </h3>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="px-1">
+                                    <input class="form form-control" pInputText type="number" disabled
+                                        [(ngModel)]="previousyear" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="scrollable-table-container" style="overflow-x: auto;">
+                            <table class="table table-striped align-middle " style="min-width: 200%;">
+                                <thead>
+                                    <tr>
+                                        <th><b class="fs-4" style="width:30%">Particulars</b></th>
+                                        <ng-container *ngFor="let month of months">
+                                            <th class="fs-4 fw-bold" style="width:4.5%;text-align: center;">{{ month }}
+                                                - {{ year }}</th>
+                                        </ng-container>
+                                        <th class="fs-4 fw-bold" style="width:4.5%;text-align: center;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of data">
+                                        <td [ngStyle]="getStyle(item.style)" style="width:5.5%">
+                                            {{ item.particulars }}</td>
+                                        <td *ngFor="let col of cols" style="text-align: center;width:4.5%">{{ item[col]
+                                            }}
+                                        </td>
+                                        <td style="text-align: center;">{{ item.amount }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

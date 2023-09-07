@@ -33,56 +33,59 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetInvoiceTypeForViewDto>> GetAll(GetAllInvoiceTypeInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredInvoiceType = _invoiceTypeRepository.GetAll()
+                var filteredInvoiceType = _invoiceTypeRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredInvoiceType = filteredInvoiceType
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredInvoiceType = filteredInvoiceType
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var invoiceType = from o in pagedAndFilteredInvoiceType
-                              select new
-                              {
+                var invoiceType = from o in pagedAndFilteredInvoiceType
+                                  select new
+                                  {
 
-                                  o.Name,
-                                  o.Description,
-                                  o.Code,
-                                  o.IsActive,
-                                  Id = o.Id
-                              };
+                                      o.Name,
+                                      o.Description,
+                                      o.Code,
+                                      o.IsActive,
+                                      Id = o.Id
+                                  };
 
-            var totalCount = await filteredInvoiceType.CountAsync();
+                var totalCount = await filteredInvoiceType.CountAsync();
 
-            var dbList = await invoiceType.ToListAsync();
-            var results = new List<GetInvoiceTypeForViewDto>();
+                var dbList = await invoiceType.ToListAsync();
+                var results = new List<GetInvoiceTypeForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetInvoiceTypeForViewDto()
+                foreach (var o in dbList)
                 {
-                    InvoiceType = new InvoiceTypeDto
+                    var res = new GetInvoiceTypeForViewDto()
                     {
+                        InvoiceType = new InvoiceTypeDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetInvoiceTypeForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetInvoiceTypeForViewDto>(
-                totalCount,
-                results
-            );
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 
 namespace vita.Debit.Dtos
@@ -36,6 +37,8 @@ namespace vita.Debit.Dtos
         public decimal AdvanceAmountwithoutVat { get; set; }
 
         public decimal AdvanceVat { get; set; }
+
+        public List<object> AdditionalData1 { get; set; }
 
     }
 }

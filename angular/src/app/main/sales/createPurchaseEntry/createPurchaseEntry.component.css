@@ -1,0 +1,11 @@
+.card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    min-height: 55px;
+    padding: 0 1.3rem;
+    color: var(--kt-card-cap-color);
+    background-color: var(--kt-card-cap-bg);
+    border-bottom: 1px solid var(--kt-card-border-color);
+  }

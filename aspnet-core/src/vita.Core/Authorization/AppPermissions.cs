@@ -6,6 +6,150 @@
     /// </summary>
     public static class AppPermissions
     {
+        public const string Pages_DraftVATDetails = "Pages.DraftVATDetails";
+        public const string Pages_DraftVATDetails_Create = "Pages.DraftVATDetails.Create";
+        public const string Pages_DraftVATDetails_Edit = "Pages.DraftVATDetails.Edit";
+        public const string Pages_DraftVATDetails_Delete = "Pages.DraftVATDetails.Delete";
+
+        public const string Pages_DraftSummaries = "Pages.DraftSummaries";
+        public const string Pages_DraftSummaries_Create = "Pages.DraftSummaries.Create";
+        public const string Pages_DraftSummaries_Edit = "Pages.DraftSummaries.Edit";
+        public const string Pages_DraftSummaries_Delete = "Pages.DraftSummaries.Delete";
+
+        public const string Pages_DraftPaymentDetails = "Pages.DraftPaymentDetails";
+        public const string Pages_DraftPaymentDetails_Create = "Pages.DraftPaymentDetails.Create";
+        public const string Pages_DraftPaymentDetails_Edit = "Pages.DraftPaymentDetails.Edit";
+        public const string Pages_DraftPaymentDetails_Delete = "Pages.DraftPaymentDetails.Delete";
+
+        public const string Pages_DraftParties = "Pages.DraftParties";
+        public const string Pages_DraftParties_Create = "Pages.DraftParties.Create";
+        public const string Pages_DraftParties_Edit = "Pages.DraftParties.Edit";
+        public const string Pages_DraftParties_Delete = "Pages.DraftParties.Delete";
+
+        public const string Pages_DraftItems = "Pages.DraftItems";
+        public const string Pages_DraftItems_Create = "Pages.DraftItems.Create";
+        public const string Pages_DraftItems_Edit = "Pages.DraftItems.Edit";
+        public const string Pages_DraftItems_Delete = "Pages.DraftItems.Delete";
+
+        public const string Pages_DraftDiscounts = "Pages.DraftDiscounts";
+        public const string Pages_DraftDiscounts_Create = "Pages.DraftDiscounts.Create";
+        public const string Pages_DraftDiscounts_Edit = "Pages.DraftDiscounts.Edit";
+        public const string Pages_DraftDiscounts_Delete = "Pages.DraftDiscounts.Delete";
+
+        public const string Pages_DraftContactPersons = "Pages.DraftContactPersons";
+        public const string Pages_DraftContactPersons_Create = "Pages.DraftContactPersons.Create";
+        public const string Pages_DraftContactPersons_Edit = "Pages.DraftContactPersons.Edit";
+        public const string Pages_DraftContactPersons_Delete = "Pages.DraftContactPersons.Delete";
+
+        public const string Pages_DraftAddresses = "Pages.DraftAddresses";
+        public const string Pages_DraftAddresses_Create = "Pages.DraftAddresses.Create";
+        public const string Pages_DraftAddresses_Edit = "Pages.DraftAddresses.Edit";
+        public const string Pages_DraftAddresses_Delete = "Pages.DraftAddresses.Delete";
+
+        public const string Pages_Drafts = "Pages.Drafts";
+        public const string Pages_Drafts_Create = "Pages.Drafts.Create";
+        public const string Pages_Drafts_Edit = "Pages.Drafts.Edit";
+        public const string Pages_Drafts_Delete = "Pages.Drafts.Delete";
+
+        public const string Pages_TenantConfiguration = "Pages.TenantConfiguration";
+        public const string Pages_TenantConfiguration_Create = "Pages.TenantConfiguration.Create";
+        public const string Pages_TenantConfiguration_Edit = "Pages.TenantConfiguration.Edit";
+        public const string Pages_TenantConfiguration_Delete = "Pages.TenantConfiguration.Delete";
+
+        public const string Pages_TenantBankDetails = "Pages.TenantBankDetails";
+        public const string Pages_TenantBankDetails_Create = "Pages.TenantBankDetails.Create";
+        public const string Pages_TenantBankDetails_Edit = "Pages.TenantBankDetails.Edit";
+        public const string Pages_TenantBankDetails_Delete = "Pages.TenantBankDetails.Delete";
+
+        public const string Pages_PurchaseDebitNoteDiscount = "Pages.PurchaseDebitNoteDiscount";
+        public const string Pages_PurchaseDebitNoteDiscount_Create = "Pages.PurchaseDebitNoteDiscount.Create";
+        public const string Pages_PurchaseDebitNoteDiscount_Edit = "Pages.PurchaseDebitNoteDiscount.Edit";
+        public const string Pages_PurchaseDebitNoteDiscount_Delete = "Pages.PurchaseDebitNoteDiscount.Delete";
+
+        public const string Pages_PurchaseDebitNoteVATDetail = "Pages.PurchaseDebitNoteVATDetail";
+        public const string Pages_PurchaseDebitNoteVATDetail_Create = "Pages.PurchaseDebitNoteVATDetail.Create";
+        public const string Pages_PurchaseDebitNoteVATDetail_Edit = "Pages.PurchaseDebitNoteVATDetail.Edit";
+        public const string Pages_PurchaseDebitNoteVATDetail_Delete = "Pages.PurchaseDebitNoteVATDetail.Delete";
+
+        public const string Pages_PurchaseDebitNoteContactPerson = "Pages.PurchaseDebitNoteContactPerson";
+        public const string Pages_PurchaseDebitNoteContactPerson_Create = "Pages.PurchaseDebitNoteContactPerson.Create";
+        public const string Pages_PurchaseDebitNoteContactPerson_Edit = "Pages.PurchaseDebitNoteContactPerson.Edit";
+        public const string Pages_PurchaseDebitNoteContactPerson_Delete = "Pages.PurchaseDebitNoteContactPerson.Delete";
+
+        public const string Pages_PurchaseDebitNoteItem = "Pages.PurchaseDebitNoteItem";
+        public const string Pages_PurchaseDebitNoteItem_Create = "Pages.PurchaseDebitNoteItem.Create";
+        public const string Pages_PurchaseDebitNoteItem_Edit = "Pages.PurchaseDebitNoteItem.Edit";
+        public const string Pages_PurchaseDebitNoteItem_Delete = "Pages.PurchaseDebitNoteItem.Delete";
+
+        public const string Pages_PurchaseDebitNotePaymentDetail = "Pages.PurchaseDebitNotePaymentDetail";
+        public const string Pages_PurchaseDebitNotePaymentDetail_Create = "Pages.PurchaseDebitNotePaymentDetail.Create";
+        public const string Pages_PurchaseDebitNotePaymentDetail_Edit = "Pages.PurchaseDebitNotePaymentDetail.Edit";
+        public const string Pages_PurchaseDebitNotePaymentDetail_Delete = "Pages.PurchaseDebitNotePaymentDetail.Delete";
+
+        public const string Pages_PurchaseDebitNoteAddress = "Pages.PurchaseDebitNoteAddress";
+        public const string Pages_PurchaseDebitNoteAddress_Create = "Pages.PurchaseDebitNoteAddress.Create";
+        public const string Pages_PurchaseDebitNoteAddress_Edit = "Pages.PurchaseDebitNoteAddress.Edit";
+        public const string Pages_PurchaseDebitNoteAddress_Delete = "Pages.PurchaseDebitNoteAddress.Delete";
+
+        public const string Pages_PurchaseDebitNoteParty = "Pages.PurchaseDebitNoteParty";
+        public const string Pages_PurchaseDebitNoteParty_Create = "Pages.PurchaseDebitNoteParty.Create";
+        public const string Pages_PurchaseDebitNoteParty_Edit = "Pages.PurchaseDebitNoteParty.Edit";
+        public const string Pages_PurchaseDebitNoteParty_Delete = "Pages.PurchaseDebitNoteParty.Delete";
+
+        public const string Pages_PurchaseDebitNoteSummary = "Pages.PurchaseDebitNoteSummary";
+        public const string Pages_PurchaseDebitNoteSummary_Create = "Pages.PurchaseDebitNoteSummary.Create";
+        public const string Pages_PurchaseDebitNoteSummary_Edit = "Pages.PurchaseDebitNoteSummary.Edit";
+        public const string Pages_PurchaseDebitNoteSummary_Delete = "Pages.PurchaseDebitNoteSummary.Delete";
+
+        public const string Pages_PurchaseDebitNote = "Pages.PurchaseDebitNote";
+        public const string Pages_PurchaseDebitNote_Create = "Pages.PurchaseDebitNote.Create";
+        public const string Pages_PurchaseDebitNote_Edit = "Pages.PurchaseDebitNote.Edit";
+        public const string Pages_PurchaseDebitNote_Delete = "Pages.PurchaseDebitNote.Delete";
+
+        public const string Pages_PurchaseCreditNoteDiscount = "Pages.PurchaseCreditNoteDiscount";
+        public const string Pages_PurchaseCreditNoteDiscount_Create = "Pages.PurchaseCreditNoteDiscount.Create";
+        public const string Pages_PurchaseCreditNoteDiscount_Edit = "Pages.PurchaseCreditNoteDiscount.Edit";
+        public const string Pages_PurchaseCreditNoteDiscount_Delete = "Pages.PurchaseCreditNoteDiscount.Delete";
+
+        public const string Pages_PurchaseCreditNoteItem = "Pages.PurchaseCreditNoteItem";
+        public const string Pages_PurchaseCreditNoteItem_Create = "Pages.PurchaseCreditNoteItem.Create";
+        public const string Pages_PurchaseCreditNoteItem_Edit = "Pages.PurchaseCreditNoteItem.Edit";
+        public const string Pages_PurchaseCreditNoteItem_Delete = "Pages.PurchaseCreditNoteItem.Delete";
+
+        public const string Pages_PurchaseCreditNoteVATDetail = "Pages.PurchaseCreditNoteVATDetail";
+        public const string Pages_PurchaseCreditNoteVATDetail_Create = "Pages.PurchaseCreditNoteVATDetail.Create";
+        public const string Pages_PurchaseCreditNoteVATDetail_Edit = "Pages.PurchaseCreditNoteVATDetail.Edit";
+        public const string Pages_PurchaseCreditNoteVATDetail_Delete = "Pages.PurchaseCreditNoteVATDetail.Delete";
+
+        public const string Pages_PurchaseCreditNotePaymentDetail = "Pages.PurchaseCreditNotePaymentDetail";
+        public const string Pages_PurchaseCreditNotePaymentDetail_Create = "Pages.PurchaseCreditNotePaymentDetail.Create";
+        public const string Pages_PurchaseCreditNotePaymentDetail_Edit = "Pages.PurchaseCreditNotePaymentDetail.Edit";
+        public const string Pages_PurchaseCreditNotePaymentDetail_Delete = "Pages.PurchaseCreditNotePaymentDetail.Delete";
+
+        public const string Pages_PurchaseCreditNoteContactPerson = "Pages.PurchaseCreditNoteContactPerson";
+        public const string Pages_PurchaseCreditNoteContactPerson_Create = "Pages.PurchaseCreditNoteContactPerson.Create";
+        public const string Pages_PurchaseCreditNoteContactPerson_Edit = "Pages.PurchaseCreditNoteContactPerson.Edit";
+        public const string Pages_PurchaseCreditNoteContactPerson_Delete = "Pages.PurchaseCreditNoteContactPerson.Delete";
+
+        public const string Pages_PurchaseCreditNoteAddress = "Pages.PurchaseCreditNoteAddress";
+        public const string Pages_PurchaseCreditNoteAddress_Create = "Pages.PurchaseCreditNoteAddress.Create";
+        public const string Pages_PurchaseCreditNoteAddress_Edit = "Pages.PurchaseCreditNoteAddress.Edit";
+        public const string Pages_PurchaseCreditNoteAddress_Delete = "Pages.PurchaseCreditNoteAddress.Delete";
+
+        public const string Pages_PurchaseCreditNoteParty = "Pages.PurchaseCreditNoteParty";
+        public const string Pages_PurchaseCreditNoteParty_Create = "Pages.PurchaseCreditNoteParty.Create";
+        public const string Pages_PurchaseCreditNoteParty_Edit = "Pages.PurchaseCreditNoteParty.Edit";
+        public const string Pages_PurchaseCreditNoteParty_Delete = "Pages.PurchaseCreditNoteParty.Delete";
+
+        public const string Pages_PurchaseCreditNoteSummary = "Pages.PurchaseCreditNoteSummary";
+        public const string Pages_PurchaseCreditNoteSummary_Create = "Pages.PurchaseCreditNoteSummary.Create";
+        public const string Pages_PurchaseCreditNoteSummary_Edit = "Pages.PurchaseCreditNoteSummary.Edit";
+        public const string Pages_PurchaseCreditNoteSummary_Delete = "Pages.PurchaseCreditNoteSummary.Delete";
+
+        public const string Pages_PurchaseCreditNote = "Pages.PurchaseCreditNote";
+        public const string Pages_PurchaseCreditNote_Create = "Pages.PurchaseCreditNote.Create";
+        public const string Pages_PurchaseCreditNote_Edit = "Pages.PurchaseCreditNote.Edit";
+        public const string Pages_PurchaseCreditNote_Delete = "Pages.PurchaseCreditNote.Delete";
         public const string Pages_Administration_Module = "Pages.Administration.Module";
         public const string Pages_Administration_Module_Create = "Pages.Administration.Module.Create";
         public const string Pages_Administration_Module_Edit = "Pages.Administration.Module.Edit";

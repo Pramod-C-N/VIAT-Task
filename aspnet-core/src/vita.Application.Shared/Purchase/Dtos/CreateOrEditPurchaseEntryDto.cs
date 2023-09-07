@@ -98,5 +98,7 @@ namespace vita.Purchase.Dtos
         public List<CreateOrEditPurchaseEntryVATDetailDto> VATDetails { get; set; }
         public List<CreateOrEditPurchaseEntryPaymentDetailDto> PaymentDetails { get; set; }
 
+        public string Additional_Data { get; set; }
+
     }
 }

@@ -25,3 +25,7 @@ tr.p-selectable-row:nth-child(even) {
     .table-row{
         width: 150px; text-align: end
     }
+    .salesCenter{
+      text-align: center;
+      width: 100px;
+  }

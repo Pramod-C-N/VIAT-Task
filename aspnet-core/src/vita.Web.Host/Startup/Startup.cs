@@ -45,6 +45,10 @@ using Owl.reCAPTCHA;
 using HealthChecksUISettings = HealthChecks.UI.Configuration.Settings;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using vita.Web.MultiTenancy;
+using vita.Web.Middleware;
+using Prometheus;
+using Hangfire.SqlServer;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace vita.Web.Startup
 {
@@ -74,7 +78,7 @@ namespace vita.Web.Startup
                 .AddNewtonsoftJson();
 
             services.AddSignalR();
-
+            services.AddApplicationInsightsTelemetry();
             //Configure CORS for angular2 UI
             services.AddCors(options =>
             {
@@ -135,6 +139,7 @@ namespace vita.Web.Startup
                 x.SiteKey = _appConfiguration["Recaptcha:SiteKey"];
                 x.SiteSecret = _appConfiguration["Recaptcha:SecretKey"];
             });
+            JobStorage.Current = new SqlServerStorage(_appConfiguration.GetConnectionString("Default"));
 
             if (WebConsts.HangfireDashboardEnabled)
             {
@@ -192,6 +197,7 @@ namespace vita.Web.Startup
                 options.UseAbpRequestLocalization = false; //used below: UseAbpRequestLocalization
             });
 
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -223,6 +229,14 @@ namespace vita.Web.Startup
             }
 
             app.UseAuthorization();
+            app.UseMetricServer();
+            app.UseHttpMetrics();
+            app.UseMiddleware<VitaAuthorization>();
+
+            app.UseMiddleware<VitaValidation>();
+           
+
+
 
             using (var scope = app.ApplicationServices.CreateScope())
             {
@@ -232,7 +246,6 @@ namespace vita.Web.Startup
                     app.UseAbpRequestLocalization();
                 }
             }
-
             if (WebConsts.HangfireDashboardEnabled)
             {
                 //Hangfire dashboard &server(Enable to use Hangfire instead of default job manager)

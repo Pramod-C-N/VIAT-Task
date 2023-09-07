@@ -2,6 +2,10 @@
     text-align: right;
     width: 100px;
 }
+.salesCenter{
+    text-align: center;
+    width: 100px;
+}
 tr.p-selectable-row:nth-child(even) {
     background-color: #ebf5ff;
 }  
@@ -28,4 +32,44 @@ tr.p-selectable-row:nth-child(even) {
 }
 .table-row{
     width: 150px; text-align: end
+}
+.dropdown-item{
+    background-color: #E4E6EF; 
+    font-size:medium;
+}
+.col-lg-10 dropdown-menu{
+    overflow-y:scroll ;
+    height: 300%; 
+    width:100% ;
+}
+#bordercolor{
+    border-color: #E4E6EF;
+}
+#bordercolorStyle{
+    border-color: #E4E6EF; 
+    text-align:left ;
+}
+#overflowy{
+    overflow-y:scroll ;
+    height: 300%; 
+    width:100% ;
+    color: blue;
+    font-size: medium;
+    border-color: #E4E6EF; 
+}
+#label{
+    background-color: #E4E6EF; font-size:medium ;
+}
+.ptable{
+    width: 100%;
+}
+#button{
+    border-color: #E4E6EF;
+     text-align:left ;
+}
+#select{
+    border-color: #E4E6EF;
+}
+.clickable-item{
+    color: rgb(32, 170, 248); font: bold;
 }

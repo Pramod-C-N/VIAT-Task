@@ -24,6 +24,15 @@ namespace vita.Credit.Dtos
         public string CustomerId { get; set; }
 
         public string Type { get; set; }
+
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+
+        public string OtherDocumentTypeId { get; set; }
+        public string FaxNo { get; set; }
+
+        public string Website { get; set; }
+
         public CreateOrEditCreditNoteAddressDto Address { get; set; }
         public CreateOrEditCreditNoteContactPersonDto ContactPerson { get; set; }
 

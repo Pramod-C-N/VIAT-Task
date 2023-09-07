@@ -1,0 +1,588 @@
+<div class="content d-flex flex-column flex-column-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <sub-header [title]="header">
+                <div role="actions"></div>
+            </sub-header>
+        </div>
+        <div class="col-md-10 p-6">
+            <div class="row">
+                <div class="col-md-1">
+                    <h2>
+                        <span class="text-muted">#{{ invoice.invoiceNumber }}</span>
+                    </h2>
+                </div>
+                <div class="col-md-5">
+                    <span class="text-muted">Dated:</span>
+                    <span class="px-2 text-decoration-underline">
+                        <strong>{{ dateofsupply }}</strong>
+                    </span>
+                    <span class="text-muted">With Reference No:</span>
+                    <span class="px-2 text-decoration-underline">
+                        <strong>{{ invoice.billingReferenceId }}</strong>
+                    </span>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted">Currency:</span>
+                    <span class="px-2 text-decoration-underline">
+                        <strong>{{ invoice.invoiceCurrencyCode }}</strong>
+                    </span>
+                    <span class="text-muted">Exchange Rate:</span>
+                    <span class="px-2 text-decoration-underline">
+                        <strong>{{ exchangeRateVal }}</strong>
+                    </span>
+                </div>
+                <div class="col-md-1" *ngIf="header == 'Draft'">
+                    <button type="button" class="btn btn-warning p-3">
+                        {{ 'Convert' | localize }}
+                    </button>
+                </div>
+                <div class="col-md-1" *ngIf="header =='Draft'">
+                    <a
+                        href="app/main/sales/editInvoice/{{type}}/{{theme}}/{{id}}" 
+                        >
+                    <button type="button" class="btn btn-success p-3">
+                        <i class="bi bi-pencil"></i>
+                    </button></a>
+                </div>
+            </div>
+        </div>
+        <div class="ng-tns-c327-6 app-container container-fluid">
+            <div class="row">
+                <div class="col-lg-6 p-2">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div style="display: inline-flex">
+                                    <span class="text-muted p-6"><h1>Customer</h1></span>
+                                    <span class="text-muted fs-5 py-7" *ngIf="customer.customerId != null">
+                                        ({{ customer.customerId }})
+                                    </span>
+                                </div>
+                                <ul style="list-style-type: none">
+                                    <li>
+                                        <h3>
+                                            <b>{{ customer.registrationName }}</b>
+                                        </h3>
+                                    </li>
+                                    <li class="text-muted">
+                                        <p>{{ Customeradd1 }}</p>
+                                    </li>
+                                    <!-- <li class="text-muted">{{ Customeradd1 }}</li>
+                                <li class="text-muted">{{ Customeradd2 }}</li>
+                                <li class="text-muted">{{ Customeradd3 }}</li>-->
+                                    <li class="fw-bolder">{{ Customeradd4 }}</li>
+                                    <li>
+                                        <span class="text-muted">Bill to Atn:</span>
+                                        <span class="fw-bolder">{{ billtoattn }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="text-muted">Buyer Type:</span>
+                                        <span class="fw-bolder">{{ customer.otherDocumentTypeId }}</span>
+                                    </li>
+                                    <li></li>
+                                    <li class="fw-bolder">
+                                        <img  [src]="'/assets/common/images/phone.svg'" />
+                                        {{ CuscontactNumber }}
+                                    </li>
+                                    <li class="fw-bolder">
+                                        <img  [src]="'/assets/common/images/email.svg'" />
+                                        {{ Cusemail }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted p-6 d-flex">
+                                    VAT no:
+                                    <h3>
+                                        <b>{{ customer.vatid }}</b>
+                                    </h3>
+                                </span>
+                                <div class="p-7">
+                                    <img class="pdf-md" [src]="'/assets/common/images/UserInfo.svg'" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 p-2">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <sub-header [title]="'Vendor/Supplier'">
+                                    <div role="actions"></div>
+                                </sub-header>
+
+                                <ul style="list-style-type: none">
+                                    <li>
+                                        <h3>
+                                            <b>{{ tenantName }}</b>
+                                        </h3>
+                                    </li>
+                                    <li class="text-muted">
+                                        <p>{{ tenantadd }}</p>
+                                    </li>
+                                    <li class="fw-bolder">{{ tenantadd2 }}</li>
+                                    <li>
+                                        <span class="text-muted">Vendor CR no:</span>
+                                        <span class="fw-bolder">{{ tenantcr }}</span>
+                                    </li>
+                                    <li></li>
+                                    <li class="fw-bolder">
+                                        <img  [src]="'/assets/common/images/phone.svg'" />
+                                        {{ tenantcontact }}
+                                    </li>
+                                    <li class="fw-bolder">
+                                        <img [src]="'/assets/common/images/email.svg'" />
+                                        {{ tenantemail }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted p-6 d-flex">
+                                    VAT no:
+                                    <h3>
+                                        <b>{{ tenantvat }}</b>
+                                    </h3>
+                                </span>
+                                <div class="p-7">
+                                    <img class="pdf-md" [src]="'/assets/common/images/UserInfo.svg'" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 p-2">
+                    <div class="card">
+                        <div class="row" *ngIf="shipment.length > 0">
+                            <div class="col-md-6">
+                                <!-- <sub-header [title]="'Shipment'+'('+shipment[0].crNumber+')'">
+                                <div role="actions"></div>
+                            </sub-header> -->
+                                <div style="display: inline-flex">
+                                    <span class="text-muted p-6"><h1>Shipment</h1></span>
+                                    <span class="text-muted fs-5 py-7" *ngIf="shipment[0].crNumber != null">
+                                        ({{ shipment[0].crNumber }})
+                                    </span>
+                                </div>
+                                <ul style="list-style-type: none">
+                                    <li>
+                                        <h3>
+                                            <b>{{ shipment[0].registrationName }}</b>
+                                        </h3>
+                                    </li>
+                                    <li class="text-muted">{{ shipmentAdd }}</li>
+                                    <li class="text-muted">{{ shipmentAdd1 }}</li>
+                                    <li class="text-muted">{{ shipmentAdd2 }}</li>
+                                    <li class="fw-bolder">{{ shipmentAdd3 }}</li>
+                                    <li>
+                                        <span class="text-muted">Bill to Atn:</span>
+                                        <span class="fw-bolder">{{ shipment[0].contactPerson.name }}</span>
+                                    </li>
+                                    <li class="text-muted">
+                                        <img  [src]="'/assets/common/images/phone.svg'" />
+                                        {{ shipment[0].contactPerson.contactNumber }}
+                                        <img  [src]="'/assets/common/images/email.svg'" />
+                                        {{ shipment[0].contactPerson.email }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted p-6 d-flex">
+                                    VAT no:
+                                    <h3>
+                                        <b>{{ shipment[0].vatid }}</b>
+                                    </h3>
+                                </span>
+                                <div>
+                                    <img class="pdf-md" [src]="'/assets/common/images/delivery.svg'" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 p-2">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-12">
+                                <sub-header [title]="'Additional Information'">
+                                    <div role="actions"></div>
+                                </sub-header>
+                            </div>
+                        </div>
+                        <div class="row px-4 pb-6 text-muted" *ngIf="additionalData.length > 0">
+                            <!-- <div class="col-md-6">
+                                <div *ngFor="let keyValuePair of additionalData[0]; let i = index" [ngClass]="{'': i % 2 === 0}">
+                                    <div class="bankInfo d-flex justify-content-between p-1">
+                                        <div>{{ keyValuePair.key }}</div>
+                                        <div>{{ keyValuePair.value }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div *ngFor="let keyValuePair of additionalData[0]; let i = index" [ngClass]="{'': i % 2 !== 0}">
+                                    <div class="bankInfo d-flex justify-content-between p-1">
+                                        <div>{{ keyValuePair.key }}</div>
+                                        <div>{{ keyValuePair.value }}</div>
+                                    </div>
+                                </div>
+                            </div> -->
+
+
+                            <!-- <div class="col-md-6">
+                                <div *ngFor="let keyValuePair of additionalData[0] | keyvalue; let even = even; let odd = odd;let i= index;" [ngClass]="{'': i % 2 !== 0}">
+                                    <div class="bankInfo d-flex justify-content-between p-1" *ngIf="i % 2 ==0">
+                                        <div>{{formatKey(keyValuePair.key) }}</div>
+                                        <div>{{ keyValuePair.value }}</div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="col-md-6">
+                                <div *ngFor="let keyValuePair of additionalData[0] | keyvalue; let even = even; let odd = odd; let i = index;">
+                                    <div class="bankInfo d-flex justify-content-between p-1" *ngIf="i % 2 === 0">
+                                        <ng-container *ngIf="keyValuePair.key !== 'bank_information'">
+                                            <div>{{ formatKey(keyValuePair.key) }}</div>
+                                            <div>{{ keyValuePair.value }}</div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div *ngFor="let keyValuePair of additionalData[0] | keyvalue; let even = even; let odd = odd;let i= index;" [ngClass]="{'': i % 2 !== 0}" >
+                                    <div class="bankInfo d-flex justify-content-between p-1" *ngIf="i % 2 !== 0">
+                                        <div>{{formatKey(keyValuePair.key) }}</div>
+                                        <div>{{ keyValuePair.value }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="card col-md-6">
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Delivery Date</div>
+                                    <div>{{ additionalData[0].delivery_date }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Invoicce Due Date</div>
+                                    <div>{{ additionalData[0].invoice_due_date }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Purchase Order No</div>
+                                    <div>{{ additionalData[0].purchase_order_no }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Original Order No</div>
+                                    <div>{{ additionalData[0].original_order_number }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Original Quote No</div>
+                                    <div>{{ additionalData[0].original_quote_number }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Buyer Type</div>
+                                    <div>{{ additionalData[0].buyer_type }}</div>
+                                </div>
+
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Order Place By</div>
+                                    <div>{{ additionalData[0].order_placed_by }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>We are Your Vendor#</div>
+                                    <div>{{ weareyourvendor }}</div>
+                                </div>
+                            </div>
+                            <div class="card col-md-6">
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Invoice Reference Date</div>
+                                    <div>{{ additionalData[0].invoice_reference_date }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Contract ID</div>
+                                    <div>{{ additionalData[0].contact_id }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Carrier And Services</div>
+                                    <div>{{ additionalData[0].carrier_and_services }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Delivery Term Description</div>
+                                    <div>{{ additionalData[0].delivery_terms_description }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Terms of Delivery</div>
+                                    <div>{{ additionalData[0].terms_of_delivery }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Payement Terms</div>
+                                    <div>{{ additionalData[0].payment_terms }}</div>
+                                </div>
+
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Payment Means</div>
+                                    <div>{{ additionalData[0].payment_means }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Delivery Document No.</div>
+                                    <div>{{ additionalData[0].delivery_document_no }}</div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <sub-header [title]="'Item Details' | localize">
+                    <div role="actions"></div>
+                </sub-header>
+                <div class="card">
+                    <div class="card-body py-3">
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead style="text-align: center">
+                                    <tr class="fw-bolder text-muted">
+                                        <th class="min-w-50px">Sl No</th>
+                                        <th class="min-w-100px">Line # Origin</th>
+                                        <th class="min-w-150px">Part Number Description</th>
+                                        <th class="min-w-100px">Quantity</th>
+                                        <th class="min-w-100px">Price</th>
+                                        <th class="min-w-100px">Discount %</th>
+                                        <th class="min-w-100px">VAT %</th>
+                                        <th class="min-w-100px" [hidden]="invoice.invoiceCurrencyCode == 'SAR'">
+                                            Total ({{ invoice.invoiceCurrencyCode }})
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody style="text-align: center">
+                                    <tr *ngFor="let it of invoiceItems; let i = index">
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ it.name }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ it.description }}
+                                            </span>
+                                            <br />
+                                            <span
+                                                *ngIf="it.vatCode != 'S'"
+                                                class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6"
+                                            >
+                                                {{ it.excemptionReasonCode }} : {{ it.excemptionReasonText }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ it.quantity }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ (it.unitPrice.toFixed(2) / exchangeRateVal).toFixed(2) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ it.discountPercentage.toFixed(2) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{ it.vatRate.toFixed(2) }}
+                                            </span>
+                                        </td>
+                                        <td [hidden]="invoice.invoiceCurrencyCode == 'SAR'">
+                                            <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                                {{
+                                                    (it.lineAmountInclusiveVAT.toFixed(2) / exchangeRateVal).toFixed(2)
+                                                }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="separator separator-dashed my-1"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 p-2">
+                    <div class="card p-2">
+                        <sub-header [title]="'Notes'">
+                            <div role="actions"></div>
+                        </sub-header>
+                        <textarea
+                            id="notes"
+                            [(ngModel)]="invoice.invoiceNotes"
+                            name="Notes"
+                            class="form-control form-control-solid"
+                            rows="10"
+                            maxlength="500"
+                            disabled
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="col-md-4 p-2">
+                    <div class="card">
+                        <sub-header [title]="'Bank Information'">
+                            <div role="actions"></div>
+                        </sub-header>
+                        <div class="px-4 pt-1 pb-4">
+                            <textarea
+                                id="bankinfo"
+                                name="bankinfo"
+                                [(ngModel)]="bankinfo"
+                                class="form-control form-control-solid"
+                                rows="10"
+                                placeholder="Bank Details"
+                                maxlength="500"
+                                disabled
+                            ></textarea>
+                            <!-- <div class="bankInfo d-flex justify-content-between p-1 p-2">
+                            <div>Bank</div>
+                            <div>1</div>
+                        </div>
+                        <div class="bankInfo d-flex justify-content-between p-1 p-2">
+                            <div>Account Name</div>
+                            <div>1</div>
+                        </div>
+                        <div class="bankInfo d-flex justify-content-between p-1 p-2">
+                            <div>SAR Account</div>
+                            <div>1</div>
+                        </div>
+                        <div class="bankInfo d-flex justify-content-between p-1 p-2">
+                            <div>IBAN</div>
+                            <div>1</div>
+                        </div>
+                        <div class="bankInfo d-flex justify-content-between p-1 p-2">
+                            <div>Swift</div>
+                            <div>1</div>
+                        </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 p-2" *ngIf="totalcharge != 0">
+                    <div class="row p-2">
+                        <div class="card">
+                            <sub-header [title]="'Other Charges'"></sub-header>
+                            <div class="px-4 pt-1 pb-4 text-muted">
+                                <div
+                                    class="bankInfo d-flex justify-content-between p-1"
+                                    *ngFor="let oc of othercharges; let i = index"
+                                >
+                                    <div>{{ oc.name }}</div>
+                                    <div>{{ oc.unitPrice }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="card pt-2 px-4 text-muted">
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>Total Before VAT</div>
+                                <div>{{ invoiceSummary.totalAmountWithoutVAT / exchangeRateVal | number: '.2-2' }}</div>
+                            </div>
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>Total Discount</div>
+                                <div>{{ discount | number: '.2-2' }}</div>
+                            </div>
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>Total Other Charges</div>
+                                <div>{{ totalcharge | number: '.2-2' }}</div>
+                            </div>
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>Final Total Amount Before VAT</div>
+                                <div>
+                                    {{
+                                        invoiceSummary.totalAmountWithoutVAT / exchangeRateVal + totalcharge
+                                            | number: '.2-2'
+                                    }}
+                                </div>
+                            </div>
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>VAT Amount</div>
+                                <div>
+                                    {{
+                                        invoiceSummary.totalVATAmount / exchangeRateVal + totalChargeVATAmount
+                                            | number: '.2-2'
+                                    }}
+                                </div>
+                            </div>
+                            <div class="bankInfo d-flex justify-content-between p-1">
+                                <div>Invoice Amount</div>
+                                <div>
+                                    {{
+                                        invoiceSummary.totalAmountWithVAT / exchangeRateVal +
+                                            totalcharge +
+                                            totalChargeVATAmount | number: '.2-2'
+                                    }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 p-2" *ngIf="totalcharge == 0">
+                    <div class="card">
+                        <div class="row p-2">
+                            <div class="card pt-2 px-4 text-muted">
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Total Before VAT</div>
+                                    <div>
+                                        {{ invoiceSummary.totalAmountWithoutVAT / exchangeRateVal | number: '.2-2' }}
+                                    </div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Total Discount</div>
+                                    <div>{{ discount | number: '.2-2' }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Total Other Charges</div>
+                                    <div>{{ totalcharge | number: '.2-2' }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Final Total Amount Before VAT</div>
+                                    <div>
+                                        {{ invoiceSummary.totalAmountWithoutVAT / exchangeRateVal | number: '.2-2' }}
+                                    </div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>VAT Amount</div>
+                                    <div>{{ invoiceSummary.totalVATAmount / exchangeRateVal | number: '.2-2' }}</div>
+                                </div>
+                                <div class="bankInfo d-flex justify-content-between p-1">
+                                    <div>Invoice Amount</div>
+                                    <div>
+                                        {{ invoiceSummary.totalAmountWithVAT / exchangeRateVal | number: '.2-2' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="justify-content: center">
+                <div class="card col-lg-6" style="text-align: center">
+                    <ul style="list-style: none">
+                        <li>
+                            <h3>
+                                <b>
+                                    VAT Amount (SAR):{{
+                                        (invoiceSummary.totalVATAmount / exchangeRateVal + totalChargeVATAmount) *
+                                            exchangeRateVal | number: '.2-2'
+                                    }}
+                                </b>
+                            </h3>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

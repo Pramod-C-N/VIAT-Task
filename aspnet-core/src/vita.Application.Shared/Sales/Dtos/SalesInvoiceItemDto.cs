@@ -53,5 +53,9 @@ namespace vita.Sales.Dtos
 
         public string ExcemptionReasonText { get; set; }
 
+        public string AdditionalData2 { get; set; }
+
+        public string Language { get; set; }
+
     }
 }

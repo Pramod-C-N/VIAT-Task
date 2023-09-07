@@ -5,6 +5,14 @@ using System.Collections.Generic;
 
 namespace vita.Sales.Dtos
 {
+    public class FileMappingPost
+    {
+        public string json { get; set; }
+        public string type { get; set; }
+        public int? id { get; set; }
+        public bool isActive { get; set; }  
+        public string name { get; set; }
+    }
     public class CreateOrEditSalesInvoiceDto : EntityDto<long?>
     {
 
@@ -73,9 +81,18 @@ namespace vita.Sales.Dtos
         public string BusinessProcessType { get; set; }
 
         public string InvoiceNotes { get; set; }
+        public string XmlUuid { get; set; }
+        public string InvoiceTypeCode { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+        public string AdditionalData2 { get; set; }
+        public string AdditionalData3 { get; set; }
+        public string AdditionalData4 { get; set; }
+        public List<CreateOrEditSalesInvoicePartyDto> Supplier { get; set; } = new List<CreateOrEditSalesInvoicePartyDto>();
+        public List<CreateOrEditSalesInvoicePartyDto> Buyer { get; set; } = new List<CreateOrEditSalesInvoicePartyDto>();
 
-        public CreateOrEditSalesInvoicePartyDto Supplier { get; set; }
-        public CreateOrEditSalesInvoicePartyDto Buyer { get; set; }
+        public List<CreateOrEditSalesInvoicePartyDto> Delivery { get; set; } = new List<CreateOrEditSalesInvoicePartyDto>();
+
         public List<CreateOrEditSalesInvoiceItemDto> Items { get; set; }
         public CreateOrEditSalesInvoiceSummaryDto InvoiceSummary { get; set; }
         public List<CreateOrEditSalesInvoiceDiscountDto> Discount { get; set; }

@@ -56,3 +56,31 @@ tr.p-selectable-row:nth-child(even) {
   .div10{
     display: flex; justify-content: start
 }
+.table-record-center {
+    width: 100%;
+    text-align: center;
+  }
+  .table-record-right{
+    width: 100%;
+    text-align: right;   
+  }
+  .footerright{
+    justify-content: end;
+  }
+  .table-record-left{
+    width: 100%;
+    text-align: left;   
+  }
+  #bordercolor{
+    border-color: #E4E6EF;
+  }
+  .stylecolor{
+    color:rgb(32, 170, 248);
+  }
+  .div13{
+    width: '100%' 
+  }
+
+.footercenter{
+    justify-content: center;
+  }

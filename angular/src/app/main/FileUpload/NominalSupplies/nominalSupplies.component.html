@@ -1,0 +1,75 @@
+<style>
+    .ui-autocomplete .inputTest {
+        background-color: red;
+    }
+
+    .panelTest .ui-autocomplete-items .ui-state-highlight {
+        background-color: blue;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Configuration' | localize">
+        <div role="actions">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Nominal Supplies
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <!-- <a class="dropdown-item" href="app/main/customers/createCustomers">Nominal Supplies</a> -->
+                    <a class="dropdown-item" href="app/main/FileUpload/OverHeadApportionment">Overhead Apportionment</a>
+                    <a class="dropdown-item" href="app/main/FileUpload/MasterConfiguration">Master Validation</a>
+                    <a class="dropdown-item" href="app/main/FileUpload/clearBatchSummery">Batch Delete</a>
+                </div>
+            </div>
+        </div>
+    </sub-header>
+    <div class="ng-tns-c327-6 app-container container-fluid">
+        <div class="card">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-body py-3">
+                        <div class="row">
+                            <div class="gx-10 mb-2 col-lg-12">
+                                <div class="px-1 mt-3">
+                                    <span class="card-label fw-bold mb-1">Total Monthly Nominal Supplies Made
+                                        &nbsp;</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                            <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                                <div>
+                                    <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                                    <input class="form form-control" type="number" name="input{{index}}"
+                                    [ngModel]="OverHeadApportionmentList[index].taxableSupplies" 
+                                    (ngModelChange)="calculate($event,index,'taxableSupplies')"
+                                        [readonly]="index > currentMonthIndex"
+                                        [style.background-color]="index > currentMonthIndex ? '#f2f2f2' : 'white'" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="gx-10 mb-2 col-lg-9">
+                    </div>
+                    <div class="gx-10 mb-2 col-lg-2">
+                        <div class="px-1 mt-3">
+                            <button type="button" class="btn btn-outline btn-outline-primary me-1 w-100"
+                            (click)="onSaveData()" >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

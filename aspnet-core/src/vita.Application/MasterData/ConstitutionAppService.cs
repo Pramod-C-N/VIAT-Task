@@ -33,57 +33,60 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetConstitutionForViewDto>> GetAll(GetAllConstitutionInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredConstitution = _constitutionRepository.GetAll()
+                var filteredConstitution = _constitutionRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredConstitution = filteredConstitution
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredConstitution = filteredConstitution
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var constitution = from o in pagedAndFilteredConstitution
-                               select new
-                               {
+                var constitution = from o in pagedAndFilteredConstitution
+                                   select new
+                                   {
 
-                                   o.Name,
-                                   o.Description,
-                                   o.Code,
-                                   o.IsActive,
-                                   Id = o.Id
-                               };
+                                       o.Name,
+                                       o.Description,
+                                       o.Code,
+                                       o.IsActive,
+                                       Id = o.Id
+                                   };
 
-            var totalCount = await filteredConstitution.CountAsync();
+                var totalCount = await filteredConstitution.CountAsync();
 
-            var dbList = await constitution.ToListAsync();
-            var results = new List<GetConstitutionForViewDto>();
+                var dbList = await constitution.ToListAsync();
+                var results = new List<GetConstitutionForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetConstitutionForViewDto()
+                foreach (var o in dbList)
                 {
-                    Constitution = new ConstitutionDto
+                    var res = new GetConstitutionForViewDto()
                     {
+                        Constitution = new ConstitutionDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetConstitutionForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetConstitutionForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetConstitutionForViewDto> GetConstitutionForView(int id)

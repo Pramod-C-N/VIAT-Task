@@ -1,115 +1,55 @@
-<!-- <style>
-  #table-wrapper {
-  position:relative;
-}
-#table-scroll {
-  width:100%;
-  overflow:auto;  
-}
-#table-wrapper table {
-  width:100%;
-
-}
-
-</style> -->
-
 <div class="content d-flex flex-column flex-column-fluid">
-  <sub-header [title]="'Custom Report' | localize" >
-    
-  </sub-header>
+  <div class="row col-md-12 mt-3">
+    <div class="col-md-6">
+      <sub-header [title]="'Custom Report' | localize" ></sub-header>
+  </div>
+  <div class="col-md-3">
+    <select  [(ngModel)]="reportName"
+        class="form-select form-select-solid form-select-lg fw-bold " style="border-color: #E4E6EF;">
+        <option value="">Select a Report...</option>
+        <option *ngFor="let r of reports.items" [value]=" r.customReport.storedProcedureName">
+                    {{ r.customReport.reportName }}
+                </option>
+    </select>
+</div>
+<div class="col-md-3">
 
-  <div class="card">
+  <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
+      readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+      placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
+</div>
+  </div>
+  
+  <div class="app-container container-fluid">
+  <div class="card px-0">
     <!-- <div class="card-header border-0 pt-5">
         <h3 class="card-title align-items-start flex-column">
           <span class="card-label fw-bolder fs-3 mb-1">Tenant: {{tenantName}} (Id:{{tenantId}})</span>
         </h3>
       </div> -->
-      <div class="card-body py-3">
-      
-    
-  
-
-
-  
-        <div class="row gx-10 mb-5" style="text-align:center">
-          <div class="row gx-10 mb-5" style="text-align:center">
-            <div class="col-lg-4">
-                <label class="d-flex align-items-center">
-                    <span class="">&nbsp;</span>
-                </label>
-              <label class="d-flex align-items-center">
-                <span class="card-label fw-bolder fs-3 mb-1">Tenant: {{tenantName}} (Id:{{tenantId}})</span>
-            </label>
-              
+      <div class="card-body px-4 py-4">
+        <div class="row">
+          <div class="col-lg-3 mb-3 px-5">
+          </div>
+          <div class="col-lg-2"></div>
+          <div class="col-lg-7 mb-3">
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <span>
+                  <input class="form form-control" pInputText type="text"
+                     placeholder="Search Keyword" />
+                </span>
               </div>
-
+              <div class="col-lg-6">
+                <button type="button" class="btn btn-outline btn-outline-success w-100" (click)="exportToCsv()">
+                  <i class="far fa-file-excel btn-md-icon"></i>
+                  Download Report
+                </button>
               </div>
-              <div class="row gx-10 mb-5" style="text-align:center">
-
-              <div class="col-lg-3">
-                <label class="d-flex align-items-center">
-                  <span class="">Report Name</span>
-                </label>
-
-
-                <select 
-                [(ngModel)]="reportName"
-                class="form-control" style="width: 100%;">
-                <option value="">Select a Report...</option>
-               
-
-                <option *ngFor="let r of reports.items" [value]=" r.customReport.storedProcedureName">
-                    {{ r.customReport.reportName }}
-                </option>
-                <!-- <option  value="GetSalesDetailedReport">
-                   Get Sales  Report
-              </option> -->
-                </select>
-              </div>
-
-
-            <div class="col-lg-3">
-              
-            <label class="d-flex align-items-center">
-              <span class="">Date Range</span>
-            </label>
-            <input
-                                                            class="form-control"
-                                                            id="StartEndRange"
-                                                            name="StartEndRange"
-                                                            #drp="bsDaterangepicker"
-                                                            readonly="readonly"
-                                                            bsDaterangepicker
-                                                            dateRangePickerLuxonModifier
-                                                            [(date)]="dateRange"
-                                                        />
-            
-            <div class="fv-plugins-message-container invalid-feedback"></div>
             </div>
-            
-        
-            <div class="col-lg-2">
-              <label class="d-flex align-items-center">
-                  <span class="">&nbsp;</span>
-              </label>
-        <button (click)="getSalesDetailedReport()" style="width:100% ;" class="btn btn-primary" [disabled]="isdisable">Search</button>
-        
-              <div class="fv-plugins-message-container invalid-feedback"></div>
-            </div>
-            <div class="col-lg-2">
-              <label class="d-flex align-items-center">
-                <span class="">&nbsp;</span>
-            </label>
-      <button (click)="exportToCsv()" style="width:100% ;" class="btn btn-success" [disabled]="isdisable">Export CSV</button>
-      
-            <div class="fv-plugins-message-container invalid-feedback"></div>
-            </div>
-            </div>
-  
+          </div>
       </div>
-      <div class="separator separator-dashed my-1"></div>
-  
-  </div>
+
   
 
   <div id="table-wrapper">
@@ -170,5 +110,7 @@ style="overflow-x: scroll;overflow-y: scroll;"
                                 <!--<Primeng-TurboTable-End>-->
     </div>
   </div>
-
+</div>
+                                  </div>
+                                  </div>
                                   </div>

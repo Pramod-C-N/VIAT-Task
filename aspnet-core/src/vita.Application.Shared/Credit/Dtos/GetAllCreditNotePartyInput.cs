@@ -23,5 +23,11 @@ namespace vita.Credit.Dtos
 
         public string TypeFilter { get; set; }
 
+        public string AdditionalData1Filter { get; set; }
+
+        public string LanguageFilter { get; set; }
+
+        public string OtherDocumentTypeIdFilter { get; set; }
+
     }
 }

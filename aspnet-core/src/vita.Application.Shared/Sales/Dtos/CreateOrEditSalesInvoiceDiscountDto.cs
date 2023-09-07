@@ -19,5 +19,8 @@ namespace vita.Sales.Dtos
 
         public string TaxSchemeId { get; set; }
 
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+
     }
 }

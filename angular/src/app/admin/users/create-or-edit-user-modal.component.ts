@@ -19,6 +19,7 @@ import {
 import { map as _map, filter as _filter } from 'lodash-es';
 import { finalize } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import { Password } from 'primeng/password';
 
 @Component({
     selector: 'createOrEditUserModal',
@@ -51,7 +52,7 @@ export class CreateOrEditUserModalComponent extends AppComponentBase {
     allOrganizationUnits: OrganizationUnitDto[];
     memberedOrganizationUnits: string[];
     userPasswordRepeat = '';
-
+    
     constructor(
         injector: Injector,
         private _userService: UserServiceProxy,

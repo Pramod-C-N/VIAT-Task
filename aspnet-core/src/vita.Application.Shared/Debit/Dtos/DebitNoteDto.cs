@@ -69,5 +69,17 @@ namespace vita.Debit.Dtos
 
         public string InvoiceNotes { get; set; }
 
+        public string XmlUuid { get; set; }
+
+        public string InvoiceTypeCode { get; set; }
+
+        public string Language { get; set; }
+
+        public string AdditionalData2 { get; set; }
+
+        public string AdditionalData3 { get; set; }
+
+        public string AdditionalData4 { get; set; }
+
     }
 }

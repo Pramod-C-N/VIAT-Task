@@ -34,5 +34,9 @@ namespace vita.Sales
 
         public virtual string CurrencyCode { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string Language { get; set; }
+
     }
 }

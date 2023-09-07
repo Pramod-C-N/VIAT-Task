@@ -125,14 +125,14 @@ namespace vita.Sales
 
         public async Task CreateOrEdit(CreateOrEditSalesInvoiceAddressDto input)
         {
-                await Create(input);
+            await Create(input);
         }
 
         [AbpAuthorize(AppPermissions.Pages_SalesInvoiceAddresses_Create)]
         protected virtual async Task Create(CreateOrEditSalesInvoiceAddressDto input)
         {
             var salesInvoiceAddress = ObjectMapper.Map<SalesInvoiceAddress>(input);
-            salesInvoiceAddress.UniqueIdentifier= Guid.NewGuid();
+            salesInvoiceAddress.UniqueIdentifier = Guid.NewGuid();
             if (AbpSession.TenantId != null)
             {
                 salesInvoiceAddress.TenantId = (int?)AbpSession.TenantId;

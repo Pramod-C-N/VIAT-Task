@@ -37,6 +37,8 @@ import * as rtlDetect from 'rtl-detect';
 import { Subject, forkJoin } from 'rxjs';
 import { GuidGeneratorService } from '@shared/utils/guid-generator.service';
 import { DateTime } from 'luxon';
+import { AppSessionService } from '@shared/common/session/app-session.service';
+import { DateTimeCustomService } from '@shared/customService/date-time-service';
 
 export const WIDGETONRESIZEEVENTHANDLERTOKEN = new InjectionToken<WidgetOnResizeEventHandler>(
     'WidgetOnResizeEventHandlerToken'
@@ -60,18 +62,19 @@ export class CustomizableDashboardComponent extends AppComponentBase implements 
     @ViewChild('filterModal', { static: true }) modal: ModalDirective;
     @ViewChild('dropdownRenamePage') dropdownRenamePage: BsDropdownDirective;
     @ViewChild('dropdownAddPage') dropdownAddPage: BsDropdownDirective;
+    selectedDate:[DateTime, DateTime]=[DateTime.local().startOf('month'), DateTime.local().endOf('month')];
+
     loadintdashboard = false;
     loaddashboard = true;
     loading = true;
     busy = true;
     editModeEnabled = false;
-
     //gridster options. all gridster needs its options. In our scenario, they are all same.
     options: GridsterConfig[] = [];
 
     dashboardDefinition: DashboardOutput;
     userDashboard: any;
-
+    tenantId: Number;
     selectedPage = {
         id: '',
         name: '',
@@ -80,7 +83,7 @@ export class CustomizableDashboardComponent extends AppComponentBase implements 
     renamePageInput = '';
     addPageInput = '';
     selectedDateString = '';
-
+    tenancyname:string;
     widgetSubjects: { [key: string]: { handler: WidgetOnResizeEventHandler; injector: Injector } } = {};
 
     myinjector: Injector;
@@ -89,7 +92,9 @@ export class CustomizableDashboardComponent extends AppComponentBase implements 
         private _injector: Injector,
         private _dashboardViewConfiguration: DashboardViewConfigurationService,
         private _dashboardCustomizationServiceProxy: DashboardCustomizationServiceProxy,
-        private _guidGenerator: GuidGeneratorService
+        private _guidGenerator: GuidGeneratorService,
+        private _dateTimeCustomService:DateTimeCustomService,
+        private _sessionService: AppSessionService,
     ) {
         super(_injector);
     }
@@ -97,6 +102,7 @@ export class CustomizableDashboardComponent extends AppComponentBase implements 
     ngOnInit() {
         this.loading = true;
         this.onDateChange();
+        this.tenancyname=this._sessionService.tenancyName;
         forkJoin([
             this._dashboardCustomizationServiceProxy.getUserDashboard(
                 this.dashboardName,
@@ -153,9 +159,17 @@ export class CustomizableDashboardComponent extends AppComponentBase implements 
 
     private onDateChange(): void {
         abp.event.on('app.dashboardFilters.dateRangePicker.onDateChange', (selectedDate) => {
-            this.selectedDateString =
-                this.formatDate(selectedDate[0].toString()) + ' - ' + this.formatDate(selectedDate[1].toString());
         });
+        this._dateTimeCustomService.data$.subscribe(e=>{
+            if(e)
+            this.selectedDate = e;
+            this.tenantId =  this._sessionService.tenantId;
+            if(this.selectedDate[1]!= undefined)
+            {
+            this.selectedDateString =
+         this.formatDate(this.selectedDate[0].toString()) + ' - ' + this.formatDate(this.selectedDate[1].toString());
+            }
+        })
     }
     //format date
     private formatDate(date) {

@@ -110,7 +110,7 @@ namespace vita.Debit
 
         public async Task CreateOrEdit(CreateOrEditDebitNoteContactPersonDto input)
         {
-                await Create(input);
+            await Create(input);
         }
 
         [AbpAuthorize(AppPermissions.Pages_DebitNoteContactPersons_Create)]

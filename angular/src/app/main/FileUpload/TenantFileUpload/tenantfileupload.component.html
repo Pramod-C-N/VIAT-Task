@@ -9,7 +9,6 @@
             </a>
         </div>
     </sub-header>
-
     <div class="app-container container-fluid">
         <div class="card">
             <div class="card-body py-3">
@@ -18,8 +17,7 @@
                         <div class="btn-group" style="float: right;" dropdown placement="button right">
                             <button id="dropdownButtonExcelOperations" dropdownToggle type="button"
                                 class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                aria-controls="dropdownMenuExcelOperations">
+                                aria-haspopup="true" aria-expanded="false" aria-controls="dropdownMenuExcelOperations">
                                 <i class="far fa-file-excel btn-md-icon"></i>
                                 <span class="d-none d-md-inline-block">
                                     {{ 'ExcelOperations' | localize }}
@@ -81,7 +79,7 @@
                             {{ 'Invalid Records' | localize }}
                         </th>
                         <th>
-                            {{ 'Einvoice (Dashboard)' | localize }}
+                            {{ 'Batch Summary' | localize }}
                         </th>
                     </tr>
                     <tr>
@@ -123,7 +121,7 @@
                         <td>
                             <span class="p-column-title">{{ 'Exempt' | localize
                                 }}</span>
-                            <button type="button" class="dwnldBtn btn"
+                            <button type="button" class="btn btn-success" [disabled]="record.failedRecords==0"
                                 (click)="exportToExcel(record.batchId)">Download</button>
                         </td>
                         <td>

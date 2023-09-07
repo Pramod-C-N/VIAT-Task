@@ -35,14 +35,18 @@
                     class="nav-link w-100 btn btn-flex btn-light-primary btn-filter"
                     (click)="filterModal.show()"
                 >
-                    <i class="fa fa-filter"></i>
-                    {{ 'Select Date' | localize }}
+                    {{ selectedDateString | localize }}
                 </a>
                 </li>
             </ul>
         </div>
     </div>
-    <div [class]="containerClass" *ngIf="loaddashboard == true">
+    <div [class]="containerClass" *ngIf="loaddashboard == true && tenancyname != 'Brady'">
+        <app-widget-top-stats></app-widget-top-stats>
+        <br>
+        <transactions [hideHeader]="true"></transactions>
+    </div>
+    <div [class]="containerClass" *ngIf="loaddashboard == true  && tenancyname == 'Brady'">
         <app-widget-top-stats></app-widget-top-stats>
         <br>
         <transactions [hideHeader]="true"></transactions>

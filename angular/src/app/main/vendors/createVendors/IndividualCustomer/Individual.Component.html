@@ -50,29 +50,6 @@
               </div>
             </div>
           </div>
-          <div class="row gx-10 mb-5">
-            <div class="col-lg-12">
-              <label class="d-flex align-items-center">
-                <span class="required">VAT ID :</span>
-              </label>
-              <div [formGroup]="basicForm">
-                <input type="text" placeholder="VAT ID" class="form-control form-control-lg form-control-solid"
-                  id="vatid" minlength="15" maxlength="15" [(ngModel)]="vatid" formControlName="vatid" />
-                <div *ngIf=" basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
-                  class="fv-plugins-message-container invalid-feedback">
-                  <div *ngIf="basicForm.controls['vatid'].errors.minlength">
-                    VAT ID should be minimum 15 digits
-                  </div>
-                  <div *ngIf="basicForm.controls['vatid'].errors.pattern">
-                    VAT ID is invalid.
-                  </div>
-                  <div *ngIf="basicForm.controls['vatid'].errors.required">
-                    VAT ID is required.
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="row gx-10 mb-1">
             <div class="col-lg-12">
               <label class="d-flex align-items-center">
@@ -231,10 +208,12 @@
               </label>
               <div [formGroup]="basicForm">
                 <input type="text" placeholder="Mobile No" class="form-control form-control-lg form-control-solid"
-                  required [(ngModel)]="customer.contactNumber" formControlName="ContactNo" />
-                <div *ngIf=" basicForm.controls['ContactNo'].invalid && basicForm.controls['ContactNo'].touched"
-                  class="fv-plugins-message-container invalid-feedback">
-                  <div *ngIf="basicForm.controls['ContactNo'].errors.required">
+                  required [(ngModel)]="customer.contactNumber" formControlName="ContactNo" pattern="^(?!([0-9])\1+$)[0-9]{12}$" minlength="12" maxlength="12"/>
+                <div *ngIf=" basicForm.controls['ContactNo'].invalid && basicForm.controls['ContactNo'].touched" class="fv-plugins-message-container invalid-feedback">
+                   <div *ngIf="basicForm.controls['ContactNo'].errors.minlength || basicForm.controls['ContactNo'].errors.pattern">
+                    Contact No. is Invalid.
+                   </div>
+                   <div *ngIf="basicForm.controls['ContactNo'].errors.required">
                     Contact No. is required.
                   </div>
                 </div>
@@ -246,9 +225,14 @@
               <label class="d-flex align-items-center">
                 <span>Email Id :</span>
               </label>
-              <div>
+              <div [formGroup]="basicForm">
                 <input type="text" placeholder="Email" class="form-control form-control-lg form-control-solid"
-                  [(ngModel)]="customer.emailID" />
+                  [(ngModel)]="customer.emailID" formControlName="Email" pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"  minlength="3" maxlength="100"/>
+                  <div *ngIf="basicForm.controls['Email'].invalid && basicForm.controls['Email'].touched" class="fv-plugins-message-container invalid-feedback">
+                  <div *ngIf="basicForm.controls['Email'].errors.minlength || basicForm.controls['Email'].errors.pattern">
+                      Email Id is Invalid.
+                  </div>
+              </div>
               </div>
             </div>
           </div>
@@ -340,120 +324,154 @@
 </div>
 <div *ngIf="loadIndividualReg" class="card">
   <div class="card">
-    <div class="card-body py-0">
-      <div class="row gx-1" style="text-align: center">
-        <div class="col-lg-3">
-          <label class="d-flex align-items-center">
-            <span>Select Document Type :</span>
-          </label>
-          <select [(ngModel)]="Documentitem.documentTypeCode"
-            class="form-select form-select-solid form-select-lg fw-bold" name="type">
-            <option value=" " disabled selected>Select a Document Type...</option>
-            <option *ngFor="let c of doctype" [value]="c.documentMaster.name">
-              {{ c.documentMaster.name }}
-            </option>
-          </select>
-        </div>
-        <div class="col-lg-2">
-          <label class="d-flex align-items-center">
-            <span>Document Name:</span>
-          </label>
-          <div class="form-group input-field">
-            <input [(ngModel)]="Documentitem.documentName" type="text"
-              class="form-control form-control-lg form-control-solid" id="schemeId" name="schemeId"
-              placeholder="Document Name" value="" autocomplete="off" />
-          </div>
-          <div class="fv-plugins-message-container invalid-feedback"></div>
+    <div class="card-body py-0 pt-5">
+        <div class="row gx-1 text-center" >
+            <div class="col-lg-3" [formGroup]="documentrequiredform">
+                <label class="d-flex align-items-center">
+                    <span>Select Document Type :</span>
+                </label>
+                <select
+                    [(ngModel)]="Documentitem.documentTypeCode"
+                    class="form-select form-select-solid form-select-lg fw-bold"
+                    name="type"
+                    formControlName="doctype"
+                >
+                    <option value=" " disabled selected>Select a Document Type...</option>
+                    <option *ngFor="let c of doctype" [value]="c.documentMaster.name">
+                        {{ c.documentMaster.name }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-2">
+                <label class="d-flex align-items-center">
+                    <span>Document Name:</span>
+                </label>
+                <div class="form-group input-field">
+                    <input
+                        [(ngModel)]="Documentitem.documentName"
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="schemeId"
+                        name="schemeId"
+                        placeholder="Document Name"
+                        value=""
+                        autocomplete="off"
+                    />
+                </div>
+                <div class="fv-plugins-message-container invalid-feedback"></div>
+            </div>
+
+            <div class="col-lg-3">
+                <label class="d-flex align-items-center" >
+                    <span>Registration Number :</span>
+                </label>
+                <div class="form-group input-field" [formGroup]="documentrequiredform">
+                    <input
+                        [(ngModel)]="Documentitem.documentNumber"
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="schemeId"
+                        name="schemeId"
+                        placeholder="Registration no"
+                        formControlName="registrationnum"
+                        value=""
+                        autocomplete="off"
+                    />
+                </div>
+                <div *ngIf=" documentrequiredform.controls['registrationnum'].invalid && documentrequiredform.controls['registrationnum'].touched" class="fv-plugins-message-container invalid-feedback">
+
+                    <div *ngIf="documentrequiredform.controls['registrationnum'].errors.minlength || documentrequiredform.controls['registrationnum'].errors.maxlength || documentrequiredform.controls['registrationnum'].errors.pattern">
+                        Registration Number is Invalid.
+                    </div>
+                    <div *ngIf="documentrequiredform.controls['registrationnum'].errors.required">
+                        Registration Number is Required.
+                    </div>
+                  </div>
+            </div>
+
+            <div class="col-lg-2">
+                <label class="d-flex align-items-center">
+                    <span>Registration Date</span>
+                </label>
+                <input
+                    [(ngModel)]="Documentitem.doumentDate"
+                    class="form-control form-control-lg form-control-solid"
+                    type="date"
+                />
+
+                <div class="fv-plugins-message-container invalid-feedback"></div>
+            </div>
+
+            <div class="col-lg-1 gx-1 pt-6">
+                <div class="d-flex justify-content-end flex-shrink-0">
+                    <a id="addrow" class="btn btn-primary btn-active-color-warning" (click)="additem()">Add</a>
+                </div>
+            </div>
+            <div class="col-lg-1 gx-1 pt-6">
+                <div class="d-flex justify-content-end flex-shrink-0">
+                    <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearitem()">
+                        Clear
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class="col-lg-3">
-          <label class="d-flex align-items-center">
-            <span>Registration Number :</span>
-          </label>
-          <div class="form-group input-field">
-            <input [(ngModel)]="Documentitem.documentNumber" type="text"
-              class="form-control form-control-lg form-control-solid" id="schemeId" name="schemeId"
-              placeholder="Registration no" value="" autocomplete="off" />
-          </div>
-          <div class="fv-plugins-message-container invalid-feedback"></div>
-        </div>
-        <div class="col-lg-2">
-          <label class="d-flex align-items-center">
-            <span>Registration Date</span>
-          </label>
-          <input [(ngModel)]="Documentitem.doumentDate" class="form-control form-control-lg form-control-solid"
-            type="date" />
-          <div class="fv-plugins-message-container invalid-feedback"></div>
-        </div>
-        <div class="col-lg-1 gx-1" style="padding-top: 25px">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <a id="addrow" class="btn btn-primary blue" (click)="additem()">
-              Add
-            </a>
-          </div>
-        </div>
-        <div class="col-lg-1 gx-1" style="padding-top: 25px">
-          <div class="d-flex justify-content-end flex-shrink-0">
-            <a id="clearrow" class="btn btn-secondary btn-active-color-white" (click)="clearitem()">
-              Clear
-            </a>
-          </div>
-        </div>
-      </div>
+        <div class="separator separator-dashed my-1"></div>
     </div>
+
     <div class="card pt-5">
-      <div class="card-body py-3">
-        <div class="table-responsive">
-          <table class="table table-striped align-middle">
-            <thead style="text-align: center">
-              <tr class="fw-bolder text-muted">
-                <th class="min-w-50px">Sl No</th>
-                <th class="min-w-100px">Document Type</th>
-                <th class="min-w-150px">Document Name</th>
-                <th class="min-w-100px">Registration Number</th>
-                <th class="min-w-100px">Registration Date</th>
-                <th class="min-w-100px"></th>
-              </tr>
-            </thead>
-            <tbody style="text-align: center">
-              <tr *ngFor="let it of Documentitems; let i = index">
-                <td>
-                  <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
-                    {{ i + 1 }}
-                  </span>
-                </td>
-                <td>
-                  <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
-                    {{ it.documentTypeCode }}
-                  </span>
-                </td>
-                <td>
-                  <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
-                    {{ it.documentName }}
-                  </span>
-                </td>
-                <td>
-                  <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
-                    {{ it.documentNumber }}
-                  </span>
-                </td>
-                <td>
-                  <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
-                    {{ it.doumentDate }}
-                  </span>
-                </td>
-                <td>
-                  <button class="btn btn-primary btn-sm" (click)="deleteItem(i)">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="card-body py-3">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="text-center">
+                        <tr class="fw-bolder text-muted">
+                            <th class="min-w-50px">Sl No</th>
+                            <th class="min-w-100px">Document Type</th>
+                            <th class="min-w-150px">Document Name</th>
+                            <th class="min-w-100px">Registration Number</th>
+                            <th class="min-w-100px">Registration Date</th>
+                            <th class="min-w-100px"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        <tr *ngFor="let it of Documentitems; let i = index">
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ i + 1 }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ it.documentTypeCode }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ it.documentName }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ it.documentNumber }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-bolder text-hover-primary d-block mb-1 fs-6">
+                                    {{ it.doumentDate  | date: 'dd-MM-yyyy'}}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" (click)="deleteItem(i)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
+        <div class="separator separator-dashed my-1"></div>
     </div>
-  </div>
+</div>
 </div>
 <div class="card-footer" style="padding: 1rem 1.25rem">
   <div class="col-lg-12 h-40px">

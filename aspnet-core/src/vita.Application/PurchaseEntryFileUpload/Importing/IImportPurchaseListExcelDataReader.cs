@@ -15,6 +15,8 @@ namespace vita.PurchaseFileUpload.Importing
     {
         //List<CreateOrEditImportBatchDataDto> GetInvoiceFromExcel(byte[] fileBytes);
         List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes);
+        byte[] ConvertCsvToExcel(byte[] csvBytes);
+
 
     }
 }

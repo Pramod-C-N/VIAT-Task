@@ -1,0 +1,124 @@
+﻿<style>
+    .ui-autocomplete .inputTest {
+        background-color: red;
+    }
+
+    .panelTest .ui-autocomplete-items .ui-state-highlight {
+        background-color: blue;
+    }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Configuration' | localize">
+        <div role="actions">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Master Validation
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="app/main/FileUpload/NominalSupplies">Nominal Supplies</a>
+                    <a class="dropdown-item" href="app/main/FileUpload/OverHeadApportionment">Overhead Apportionment</a>
+                    <!-- <a class="dropdown-item" href="app/main/FileUpload/MasterConfiguration">Master Validation</a> -->
+                    <a class="dropdown-item" href="app/main/FileUpload/clearBatchSummery">Batch Delete</a>
+                </div>
+            </div>
+        </div>
+    </sub-header>
+    <div class="ng-tns-c327-6 app-container container-fluid">
+        <div class="card">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-header  border-0 pt-5 col-lg-12">
+                        <h3 class="card-title align-items-start flex-column col-lg-6">
+                            <span class="card-label fw-bolder fs-3 mb-1">Other Configuration &nbsp;</span>
+                        </h3>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="row" style="border-bottom: solid; border-color: #f5f8fa;">
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-3">
+                                    <span class="card-label fw-bold mb-1" style="color: #8389A4;"><b
+                                            class="card-label fw-bold fs-5 mb-1">Financial Year</b>
+                                        &nbsp;</span>
+                                </div>
+                            </div>
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <select (change)="updateFinYear($event.target.value)"
+                                    class="form-select form-select-solid form-select-lg fw-bold "
+                                    style="border-color: #E4E6EF;"
+                                    [ngModel]="activeFinYear">
+                                    <option *ngFor="let type of FinYearData" [value]="type.activeYear">
+                                        {{ type.finYear }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="gx-10 mb-2 col-lg-3"></div>
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-3 radio-toolbar">
+                                    <p class="card-label fw-bold fs-5 mb-1" style="margin-left: 30%;">Active Year:
+                                        <span>
+                                            {{ activeFinYear }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border-bottom: solid; border-color: #f5f8fa;">
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-5">
+                                    <span class="card-label fw-bold mb-1" style="color: #8389A4;"><b
+                                            class="card-label fw-bold fs-5 mb-1">Validate File Upload Transactions With
+                                            Masters</b>
+                                        &nbsp;</span>
+                                </div>
+                            </div>
+                            <div class="gx-10 mb-2 col-lg-6">
+                                <div class="px-1 mt-3 radio-toolbar">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <button type="button" class="btn btn-light-success"
+                                                [ngClass]="{ 'active': selectedOption === 'Active' }"
+                                                (click)="handleButtonClick('Active')" style="width: 100%;">
+                                                Activate
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button type="button" class="btn btn-light-danger ml-3"
+                                                [ngClass]="{ 'active': selectedOption === 'Inactive' }"
+                                                (click)="handleButtonClick('Inactive')" style="width: 90%;">
+                                                Deactivate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-3 radio-toolbar">
+                                    <p class="card-label fw-bold fs-5 mb-1" style="margin-left: 30%;">Current Status:
+                                        <span class="badge"
+                                            [ngClass]="{ 'badge-success': selectedOption === 'Active', 'badge-danger': selectedOption === 'Inactive' }">
+                                            {{ selectedOption }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border-bottom: solid; border-color: #f5f8fa;">
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-3">
+                                    <span class="card-label fw-bold mb-1" style="color: #8389A4;"><b
+                                            class="card-label fw-bold fs-5 mb-1">Transactions Computerization Date</b>
+                                        &nbsp;</span>
+                                </div>
+                            </div>
+                            <div class="gx-10 mb-2 col-lg-3">
+                                <div class="px-1 mt-3">
+                                    <input class="form form-control" pInputText type="date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

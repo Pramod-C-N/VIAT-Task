@@ -16,8 +16,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="7.4.0" />
+    <PackageReference Include="DbDataReaderMapper" Version="1.1.1" />
     <PackageReference Include="JsonFlatten" Version="1.0.2" />
     <PackageReference Include="NPOI" Version="2.5.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="UblSharp" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>

@@ -32,7 +32,14 @@ export class CreditNoteComponent extends AppComponentBase {
 ];
  exportColumns: any[] = this.columns.map(col => ({title: col.header, dataKey: col.field}));
  _selectedColumns: any[] = this.columns;
-
+ status= false;
+ shippedToCode: String;
+ buyerCode: String;
+ ReferenceNumber: String;
+ purchaseOrderNo: String;
+ salesOrderNo: String;
+ customerName: String;
+ creationDate: String;
 
   @Input() get selectedColumns(): any[] {
     return this._selectedColumns;
@@ -44,7 +51,7 @@ export class CreditNoteComponent extends AppComponentBase {
   }
   constructor(
     injector: Injector,
-    private _creditNoteProxy: CreditNoteServiceProxy,
+    private _creditServiceProxy: CreditNoteServiceProxy,
     private _sessionService: AppSessionService,
     private _dateTimeService: DateTimeService
     ) {
@@ -57,17 +64,22 @@ export class CreditNoteComponent extends AppComponentBase {
   ngOnInit(): void {
     this.tenantId = this._sessionService.tenantId==null?0:this._sessionService.tenantId;
     this.tenantName =  this._sessionService.tenancyName
-   this.getcreditdata();
+   //this.getcreditdata();
   }
 
-  getcreditdata(){
-    this._creditNoteProxy.getCreditData(this.parseDate(this.dateRange[0].toString()),this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
-      console.log(result)
-      this.invoices = result;
-      // this.invoices.forEach(element => {
-      //   element.invoiceheader.issueDate = new Date(element.invoiceheader.issueDate).toLocaleDateString();
-      // });
-    });
+   getcreditdata(){
+  //   this._creditServiceProxy
+  //           .getCreditData(this.parseDate(this.dateRange[0].toString()), 
+  //           this.parseDate(this.dateRange[1].toString()),
+  //           null,this.customerName,
+  //           this.salesOrderNo,this.purchaseOrderNo,
+  //           this.ReferenceNumber,this.buyerCode,this.shippedToCode).subscribe((result) => {
+  //     console.log(result)
+  //     this.invoices = result;
+  //     // this.invoices.forEach(element => {
+  //     //   element.invoiceheader.issueDate = new Date(element.invoiceheader.issueDate).toLocaleDateString();
+  //     // });
+  //   });
 
   }
   parseDate(dateString: string): DateTime {

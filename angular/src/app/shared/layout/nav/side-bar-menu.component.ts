@@ -18,6 +18,7 @@ import { FormattedStringValueExtracter } from '@shared/helpers/FormattedStringVa
 import * as objectPath from 'object-path';
 import { AppMenuItem } from './app-menu-item';
 import { MenuComponent, DrawerComponent, ToggleComponent, ScrollComponent } from '@metronic/app/kt/components';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
 
 @Component({
     templateUrl: './side-bar-menu.component.html',
@@ -39,13 +40,20 @@ export class SideBarMenuComponent extends AppComponentBase implements OnInit, Af
         private router: Router,
         public permission: PermissionCheckerService,
         private _appNavigationService: AppNavigationService,
+        private _globalConstsCustomService: GlobalConstsCustomService,
         private render: Renderer2
     ) {
         super(injector);
     }
 
     ngOnInit() {
-        this.menu = this._appNavigationService.getMenu();
+        this._globalConstsCustomService.data$.subscribe((e)=>{
+            this.menu = this._appNavigationService.getMenu();
+        })
+
+        this._globalConstsCustomService.tenantType$.subscribe((e)=>{
+            this.menu = this._appNavigationService.getMenu();
+        })
 
         this.currentRouteUrl = this.router.url.split(/[?#]/)[0];
 

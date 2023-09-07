@@ -16,6 +16,8 @@ using static Z.EntityFramework.Extensions.BatchUpdate;
 using vita.ImportBatch;
 using vita.ImportBatch.Dtos;
 using vita.ImportBatch.Importing;
+using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace vita.PurchaseFileUpload.Importing
 {
@@ -49,6 +51,45 @@ namespace vita.PurchaseFileUpload.Importing
         public List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes)
         {
             return ProcessExcelFileCustom(fileBytes, ProcessExcelRowCustom);
+        }
+
+        public byte[] ConvertCsvToExcel(byte[] csvBytes)
+        {
+            using (MemoryStream csvStream = new MemoryStream(csvBytes))
+            {
+                // Read CSV using StreamReader
+                using (StreamReader csvReader = new StreamReader(csvStream))
+                {
+                    // Create a new Excel workbook
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("Sheet1");
+
+                    int rowIndex = 0;
+                    string line;
+                    while ((line = csvReader.ReadLine()) != null)
+                    {
+                        string[] values = line.Split(',');
+
+                        // Create a new Excel row
+                        IRow row = sheet.CreateRow(rowIndex);
+
+                        for (int colIndex = 0; colIndex < values.Length; colIndex++)
+                        {
+                            // Set cell values for each column in the row
+                            row.CreateCell(colIndex).SetCellValue(values[colIndex]);
+                        }
+
+                        rowIndex++;
+                    }
+
+                    // Convert Excel data to byte array
+                    using (MemoryStream excelStream = new MemoryStream())
+                    {
+                        workbook.Write(excelStream);
+                        return excelStream.ToArray();
+                    }
+                }
+            }
         }
 
         public Dictionary<string, string> ProcessExcelRowCustom(ISheet worksheet, int row)

@@ -1,55 +1,46 @@
 <div class="content d-flex flex-column flex-column-fluid">
-    <div class="d-flex flex-stack mt-3 col-lg-12">
-        <sub-header [title]="'Override Option Exercised Report' | localize"></sub-header>
-        <div class="d-flex align-items-center mb-2" id="alignitems">
-            <div class="nav-item px-2 col-md-7">
-                <label class="d-flex align-items-center">
-                    <span class="">Transaction Type</span>
-                </label>
-                <select [(ngModel)]="code" class="form-control"  id="formcontrol">
-                    <option value="" disabled>Select a Type...</option>
-                    <option value="OVRSAL001">Sales Invoice</option>
-                    <option value="OVRSCN002">Sales Credit Note</option>
-                    <option value="OVRSDN003">Sales Debit Note</option>
-                    <option value="OVRPUR004">Purchase Entry</option>
-                    <option value="OVRPDN005">Purchase Debit Note</option>
-                    <option value="OVRPCN006">Purchase Credit Note</option>
-                    <option value="OVRTEN007">Tenants</option>
-                    <option value="OVRCUS008">Customer</option>
-                    <option value="OVRVEN009">Vendor</option>
-                </select>
-            </div>
-            <div class="nav-item col-md-6" >
-                <label class="d-flex align-items-center">
-                    <span class="">Date Range</span>
-                </label>
-                <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
-                    #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
-                    [(date)]="dateRange" placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
-            </div>
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-6">
+            <sub-header [title]="'Override Option Exercised Report' | localize"></sub-header>
+        </div>
+        <div class="col-md-3">
+            <select [(ngModel)]="code" (change)="getSalesDetailedReport()"  class="form-select form-select-solid form-select-lg fw-bold" id="bordercolor">
+                <option value="VATSAL000">Select a Type...</option>
+                <option *ngFor="let type of reportType" [value]="type.code">
+                    {{ type.reportName }}
+                </option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
+                #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker 
+                [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
         </div>
     </div>
-    <div class="app-container container-fluid">
+    <div class="app-container container-fluid mt-3">
         <div class="card px-0">
             <div class="card-body px-4 py-4">
                 <div class="row">
-                    <div class="col-md-12">
-                        <div id="display">
-                            <span class="col-lg-6"></span>
-                            <span class="col-lg-4">
-                                <input class="form form-control" pInputText type="text"
-                                    (input)="dataTableAuditLogs.filterGlobal($event.target.value, 'contains')"
-                                    placeholder="Search Keyword" />
-                            </span>
-                            <span id="textalign" class="col-lg-2">
-                                <button type="button" class="btn btn-outline btn-outline-success btn-"
+                    <div class="col-lg-3 mb-3 px-5">
+                    </div>
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-7 mb-3">
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <span>
+                                    <input class="form form-control" pInputText type="text"
+                                        (input)="dataTableAuditLogs.filterGlobal($event.target.value, 'contains')"
+                                        placeholder="Search Batch Number" />
+                                </span>
+                            </div>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-outline btn-outline-success me-1 w-100"
                                     (click)="downloadExcel(dataTableAuditLogs.value)">
                                     <i class="far fa-file-excel btn-md-icon"></i>
-                                    <span class="d-none d-md-inline-block">
-                                        {{ 'Download Report' | localize }}
-                                    </span>
+                                    Download Report
                                 </button>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,10 +63,10 @@
                                     <ng-template pTemplate="body" let-record="$implicit">
                                         <tr [pSelectableRow]="record">
                                             <td class="tdwidth" *ngFor="let c of columns">
-                                                <span *ngIf="c.field != 'status' && c.field != 'errormessage'">
+                                                <span *ngIf="c.field != 'status' && c.field != 'errorMessage'">
                                                     {{ record[c.field] }}
                                                 </span>
-                                                <span  id="spanalign" *ngIf="c.field == 'errormessage'">
+                                                <span id="spanalign" *ngIf="c.field == 'errorMessage'">
                                                     <ul *ngFor="let em of record[c.field].split(';')">
                                                         <li>
                                                             {{ em }}
@@ -86,7 +77,7 @@
                                         </tr>
                                     </ng-template>
                                     <ng-template pTemplate="footer">
-                                        <tr  id="trstyle"></tr>
+                                        <tr id="trstyle"></tr>
                                     </ng-template>
                                     <ng-template pTemplate="paginatorleft"></ng-template>
                                 </p-table>

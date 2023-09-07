@@ -8,6 +8,7 @@ import { ImpersonationService } from '@app/admin/users/impersonation.service';
 import { AppConsts } from '@shared/AppConsts';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { Router } from '@angular/router';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
 
 @Component({
     selector: 'user-menu',
@@ -30,6 +31,7 @@ export class UserMenuComponent extends ThemesLayoutBaseComponent implements OnIn
     tenancyName = '';
     userName = '';
     emailAddress = '';
+    isVita = false;
 
     recentlyLinkedUsers: LinkedUserDto[];
     isImpersonatedLogin = false;
@@ -47,6 +49,7 @@ export class UserMenuComponent extends ThemesLayoutBaseComponent implements OnIn
         private _authService: AppAuthService,
         private _impersonationService: ImpersonationService,
         private _abpSessionService: AbpSessionService,
+        private _globalConstsCustomService: GlobalConstsCustomService,
         _dateTimeService: DateTimeService
     ) {
         super(injector, _dateTimeService);
@@ -59,7 +62,25 @@ export class UserMenuComponent extends ThemesLayoutBaseComponent implements OnIn
         this.getProfilePicture();
         this.getRecentlyLinkedUsers();
         this.registerToEvents();
+        const temp = localStorage.getItem('isVita');
+        if (temp == null) {
+            this.changeToggle(false)
+        }
+        else {
+            if (temp == 'false')
+                this.changeToggle(false)
+            else
+                this.changeToggle(true)
+        }
         this.usernameFirstLetter = this.appSession.user.userName.substring(0, 1).toUpperCase();
+        this._globalConstsCustomService.data$.subscribe((e) => {
+            this.isVita = e.isVita;
+        });
+    }
+
+    changeToggle(event: any) {
+        localStorage.setItem('isVita', event.toString());
+        this._globalConstsCustomService.setData({ isVita: event });
     }
 
     setCurrentLoginInformations(): void {

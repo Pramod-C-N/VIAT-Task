@@ -8,7 +8,7 @@ namespace vita.Debit.Dtos
 {
     public class CreateOrEditDebitNoteDto : EntityDto<long?>
     {
-        
+
         public string IRNNo { get; set; }
 
         public string InvoiceNumber { get; set; }
@@ -72,8 +72,17 @@ namespace vita.Debit.Dtos
         public string BusinessProcessType { get; set; }
 
         public string InvoiceNotes { get; set; }
-        public CreateOrEditDebitNotePartyDto Supplier { get; set; }
-        public CreateOrEditDebitNotePartyDto Buyer { get; set; }
+
+        public string XmlUuid { get; set; }
+        public string InvoiceTypeCode { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+        public string AdditionalData2 { get; set; }
+        public string AdditionalData3 { get; set; }
+        public string AdditionalData4 { get; set; }
+        public List<CreateOrEditDebitNotePartyDto> Supplier { get; set; } = new List<CreateOrEditDebitNotePartyDto>();
+        public List<CreateOrEditDebitNotePartyDto> Buyer { get; set; } = new List<CreateOrEditDebitNotePartyDto>();
+        public List<CreateOrEditDebitNotePartyDto> Delivery { get; set; } = new List<CreateOrEditDebitNotePartyDto>();
         public List<CreateOrEditDebitNoteItemDto> Items { get; set; }
         public CreateOrEditDebitNoteSummaryDto InvoiceSummary { get; set; }
         public List<CreateOrEditDebitNoteDiscountDto> Discount { get; set; }

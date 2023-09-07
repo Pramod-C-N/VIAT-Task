@@ -80,8 +80,8 @@ namespace vita.ImportBatch.Exporting
                    {
 
                        var sheet = excelPackage.CreateSheet("Sheet1");
-                       string[] row = new string[dt.Columns.Count];
-                       for (var i = 0; i < dt.Columns.Count; i++)
+                       string[] row = new string[dt.Columns.Count-1];
+                       for (var i = 0; i < dt.Columns.Count-1; i++)
                            row[i] = dt.Columns[i].ColumnName;
 
                        AddHeaderWht(sheet, input, row);
@@ -89,7 +89,7 @@ namespace vita.ImportBatch.Exporting
                        AddObjectsFromDatatableWht(sheet, dt, input);
                    });
         }
-        public FileDto ExportToFilePurchase(DataTable dt, string fileName, PurchaseExcelDto input,string code)
+        public FileDto ExportToFilePurchase(DataTable dt, string fileName, PurchaseExcelDto input,string code,string typeName)
         {
             return CreateExcelPackage(
                    fileName + ".xlsx",
@@ -101,9 +101,9 @@ namespace vita.ImportBatch.Exporting
                        for (var i = 0; i < dt.Columns.Count; i++)
                            row[i] = dt.Columns[i].ColumnName;
 
-                       AddHeaderPurchase(sheet, input, row);
+                       AddHeaderPurchase(sheet, input,code,typeName, row);
 
-                       AddObjectsFromDatatablePurchase(sheet, dt, input,code);
+                       AddObjectsFromDatatablePurchase(sheet, dt, input,code, typeName);
                    });
         }
 
@@ -142,7 +142,7 @@ namespace vita.ImportBatch.Exporting
                        AddObjectsFromDatatableDebitPurchase(sheet, dt, input);
                    });
         }
-        public FileDto ExportToFileSales(DataTable dt, string fileName, PurchaseExcelDto input, string code)
+        public FileDto ExportToFileSales(DataTable dt, string fileName, PurchaseExcelDto input, string code,string typeName)
         {
             return CreateExcelPackage(
                    fileName + ".xlsx",
@@ -154,7 +154,7 @@ namespace vita.ImportBatch.Exporting
                        for (var i = 0; i < dt.Columns.Count; i++)
                            row[i] = dt.Columns[i].ColumnName;
 
-                       AddHeaderSales(sheet, input, row);
+                       AddHeaderSales(sheet, input, code, typeName, row);
 
                        AddObjectsFromDatatableSales(sheet, dt, input, code);
                    });
@@ -176,7 +176,7 @@ namespace vita.ImportBatch.Exporting
             AddObjectsFromDatatableMaster(sheet, dt, input);
         });
         }
-    public FileDto ExportToFileOverride(DataTable dt, string fileName, PurchaseExcelDto input)
+    public FileDto ExportToFileOverride(DataTable dt, string fileName, PurchaseExcelDto input, string code, string typeName)
         {
             return CreateExcelPackage(
                    fileName + ".xlsx",
@@ -188,12 +188,12 @@ namespace vita.ImportBatch.Exporting
                        for (var i = 0; i < dt.Columns.Count; i++)
                            row[i] = dt.Columns[i].ColumnName;
 
-                       AddHeaderOverride(sheet, input, row);
+                       AddHeaderOverride(sheet, input,code, typeName, row);
 
                        AddObjectsFromDatatableOverride(sheet, dt, input);
                    });
         }
-        public FileDto ExportToFileCredit(DataTable dt, string fileName, PurchaseExcelDto input,string code)
+        public FileDto ExportToFileCredit(DataTable dt, string fileName, PurchaseExcelDto input,string code,string typecode)
         {
             return CreateExcelPackage(
                    fileName + ".xlsx",
@@ -205,7 +205,7 @@ namespace vita.ImportBatch.Exporting
                        for (var i = 0; i < dt.Columns.Count; i++)
                            row[i] = dt.Columns[i].ColumnName;
 
-                       AddHeaderCredit(sheet, input, row);
+                       AddHeaderCredit(sheet, input, code, typecode, row);
 
                        AddObjectsFromDatatableCredit(sheet, dt, input,code);
                    });

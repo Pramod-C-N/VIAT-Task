@@ -15,10 +15,15 @@ using vita.MultiTenancy.Accounting;
 using vita.ImportBatch;
 using vita.ImportBatch.Dtos;
 using vita.ImportBatch.Importing;
+using System.IO;
+using NPOI.XSSF.UserModel;
+using ICU4N.Impl;
+using NPOI.SS.Formula.Functions;
+using static iText.Svg.SvgConstants;
 
 namespace vita.CreditNoteFileUpload.Importing
 {
-    internal class CreditNoteListExcelDataReader : NpoiExcelImporterBase<CreateOrEditImportBatchDataDto>, ICreditNoteListExcelDataReader
+    internal class IntegrationListExcelDataReader : NpoiExcelImporterBase<CreateOrEditImportBatchDataDto>, IIntegrationListExcelDataReader
     {
         private readonly ILocalizationSource _localizationSource;
         public string[] uom = { "LTRS", "PCS", "NOS", "GMS", "KGS", "PACKS" };
@@ -41,10 +46,56 @@ namespace vita.CreditNoteFileUpload.Importing
         private List<string> invoices = new List<string>();
         private Dictionary<string, string> buyervat = new Dictionary<string, string>();
 
-        public CreditNoteListExcelDataReader(ILocalizationManager localizationManager)
+        public IntegrationListExcelDataReader(ILocalizationManager localizationManager)
         {
             _localizationSource = localizationManager.GetSource(vitaConsts.LocalizationSourceName);
         }
+
+        private IEnumerable<string[]> ReadSV(StreamReader reader, params string[] separators)
+        {
+            var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(reader);
+            parser.SetDelimiters(separators);
+            parser.HasFieldsEnclosedInQuotes=true;
+            while (!parser.EndOfData)
+                yield return parser.ReadFields();
+        }
+        public byte[] ConvertCsvToExcel(byte[] csvBytes)
+        {
+            using (MemoryStream csvStream = new MemoryStream(csvBytes))
+            {
+                // Read CSV using StreamReader
+                using (StreamReader csvReader = new StreamReader(csvStream))
+                {
+                    var li  = ReadSV(csvReader,new string[] { "," });
+                    // Create a new Excel workbook
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("Sheet1");
+                    int rowIndex = 0;
+                    foreach (var csvRow in li)
+                    {
+                        // Create a new Excel row
+                        IRow row = sheet.CreateRow(rowIndex);
+
+                        for (int colIndex = 0; colIndex < csvRow.Length; colIndex++)
+                        {
+                            // Set cell values for each column in the row
+                            row.CreateCell(colIndex).SetCellValue(csvRow[colIndex]);
+                        }
+
+                        rowIndex++;
+                    }
+
+
+                    // Convert Excel data to byte array
+                    using (MemoryStream excelStream = new MemoryStream())
+                    {
+                        workbook.Write(excelStream);
+                        return excelStream.ToArray();
+                    }
+                }
+            }
+        }
+
 
         public List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes)
         {
@@ -111,7 +162,7 @@ namespace vita.CreditNoteFileUpload.Importing
 
                 for (int i =0; i < properties.Count; i++)
                 {
-                    objResult.Add(properties[i], csv[i]);
+                    objResult.Add(properties[i].Trim(), csv[i]);
                 }
                 objResult.Add("xml_uuid", Guid.NewGuid().ToString());
             }

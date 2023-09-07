@@ -10,8 +10,9 @@ using vita.ImportBatch.Dtos;
 
 namespace vita.CreditNoteFileUpload.Importing
 {
-    public interface ICreditNoteListExcelDataReader : ITransientDependency
+    public interface IIntegrationListExcelDataReader : ITransientDependency
     {
         List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes);
+        byte[] ConvertCsvToExcel(byte[] csvBytes);
     }
 }

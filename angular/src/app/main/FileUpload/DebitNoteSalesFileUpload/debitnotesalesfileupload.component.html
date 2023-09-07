@@ -15,13 +15,26 @@
                 <div class="row gx-10 text-center">
                     <div class="col-lg-12 text-end">
                         <div class="dteContainer">
+                            <select
+                            class="form-control form-control-lg"
+                            name="BuyerType"
+                            id="BuyerType"
+                            style="margin-right: 5px;"
+                            [(ngModel)]="mappingId"
+                        >
+                            <option [ngValue]="null" disabled selected>Select Mapping</option>
+
+                            <option *ngFor="let item of mappingList" [ngValue]="item.id">
+                                {{ item.name }}
+                            </option>
+                        </select>
                             <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
-                                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
-                                [(date)]="dateRange" />
+                                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}"
+                                dateRangePickerLuxonModifier [(date)]="dateRange" />
                             <div class="btn-group px-3" style="float: right;" dropdown placement="button right">
                                 <button id="dropdownButtonExcelOperations" dropdownToggle type="button"
                                     class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    aria-haspopup="true" aria-expanded="false"
                                     aria-controls="dropdownMenuExcelOperations">
                                     <i class="far fa-file-excel btn-md-icon"></i>
                                     <span class="d-none d-md-inline-block">
@@ -86,7 +99,7 @@
                             {{ 'Invalid Records' | localize }}
                         </th>
                         <th>
-                            {{ 'Einvoice (Dashboard)' | localize }}
+                            {{ 'Batch Summary' | localize }}
                         </th>
                     </tr>
                     <tr>
@@ -128,7 +141,7 @@
                         <td>
                             <span class="p-column-title">{{ 'Exempt' | localize
                                 }}</span>
-                            <button type="button" class="dwnldBtn btn"
+                            <button type="button" class="btn btn-success" [disabled]="record.failedRecords==0"
                                 (click)="exportToExcel(record.batchId)">Download</button>
                         </td>
                         <td>

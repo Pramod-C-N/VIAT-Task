@@ -48,5 +48,7 @@ namespace vita.Debit
 
         public virtual decimal AdvanceVat { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
     }
 }

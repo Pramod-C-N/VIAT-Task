@@ -33,8 +33,10 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetDocumentMasterForViewDto>> GetAll(GetAllDocumentMasterInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredDocumentMaster = _documentMasterRepository.GetAll()
+                var filteredDocumentMaster = _documentMasterRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.Validformat.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -42,53 +44,54 @@ namespace vita.MasterData
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.ValidformatFilter), e => e.Validformat.Contains(input.ValidformatFilter));
 
-            var pagedAndFilteredDocumentMaster = filteredDocumentMaster
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredDocumentMaster = filteredDocumentMaster
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var documentMaster = from o in pagedAndFilteredDocumentMaster
-                                 select new
-                                 {
+                var documentMaster = from o in pagedAndFilteredDocumentMaster
+                                     select new
+                                     {
 
-                                     o.Name,
-                                     o.Description,
-                                     o.Code,
-                                     o.IsActive,
-                                     o.Validformat,
-                                     Id = o.Id
-                                 };
+                                         o.Name,
+                                         o.Description,
+                                         o.Code,
+                                         o.IsActive,
+                                         o.Validformat,
+                                         Id = o.Id
+                                     };
 
-            var totalCount = await filteredDocumentMaster.CountAsync();
+                var totalCount = await filteredDocumentMaster.CountAsync();
 
-            var dbList = await documentMaster.ToListAsync();
-            var results = new List<GetDocumentMasterForViewDto>();
+                var dbList = await documentMaster.ToListAsync();
+                var results = new List<GetDocumentMasterForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetDocumentMasterForViewDto()
+                foreach (var o in dbList)
                 {
-                    DocumentMaster = new DocumentMasterDto
+                    var res = new GetDocumentMasterForViewDto()
                     {
+                        DocumentMaster = new DocumentMasterDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Validformat = o.Validformat,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Validformat = o.Validformat,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetDocumentMasterForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
 
-            return new PagedResultDto<GetDocumentMasterForViewDto>(
-                totalCount,
-                results
-            );
-
         }
-
         public async Task<GetDocumentMasterForViewDto> GetDocumentMasterForView(int id)
         {
             var documentMaster = await _documentMasterRepository.GetAsync(id);
@@ -124,7 +127,7 @@ namespace vita.MasterData
         protected virtual async Task Create(CreateOrEditDocumentMasterDto input)
         {
             var documentMaster = ObjectMapper.Map<DocumentMaster>(input);
-
+            documentMaster.UniqueIdentifier = new Guid();
             if (AbpSession.TenantId != null)
             {
                 documentMaster.TenantId = (int?)AbpSession.TenantId;

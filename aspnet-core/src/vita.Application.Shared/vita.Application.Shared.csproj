@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Abp.Web.Common" Version="7.4.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.17.0-beta.1" />
     <PackageReference Include="itext7" Version="7.2.4" />
     <PackageReference Include="itext7.licensekey" Version="3.1.5" />
     <PackageReference Include="itext7.pdfcalligraph" Version="3.0.1" />

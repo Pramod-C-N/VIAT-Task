@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
 import { finalize } from 'rxjs/operators';
 import { FileDownloadService } from '@shared/utils/file-download.service';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
 
 @Component({
   templateUrl: './purchaseDetailedReport.component.html',
@@ -29,26 +30,30 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
   code: string;
   reportType: any;
   tab = 'Detailed';
+  vitamenu: boolean = AppConsts.vitaMenu;
   checkboxValue: any;
 
   detailedColumns: any[] = [
-    { field: 'invoiceDate', header: 'Purchase Date' },
     { field: 'invoiceNumber', header: 'Purchase Number' },
+    { field: 'vendorName', header: 'Vendor Name' },
+    { field: 'invoiceDate', header: 'Purchase Date' },
+    { field: 'purchaseCategory', header: 'Purchase Category' },
     { field: 'taxableAmount', header: 'Taxable Amount' },
+    { field: 'vatrate', header: 'VAT Rate' },
+    { field: 'vatAmount', header: 'VAT Amount' },
+    { field: 'totalAmount', header: 'Total Amount' },
     { field: 'zeroRated', header: 'Zero Rated' },
     { field: 'exempt', header: 'Exempt' },
     { field: 'outofScope', header: 'Out of Scope' },
-    { field: 'importsatCustoms', header: 'Imports At Customs' },
-    { field: 'importsatRCM', header: 'Imports at RCM' },
-    { field: 'purchaseCategory', header: 'Purchase Category' },
+    //{ field: 'importsatCustoms', header: 'Imports At Customs' },
+    { field: 'importVATCustoms', header: 'Import VAT Customs' },
     { field: 'vatDeffered', header: 'VAT Deffered' },
-    { field: 'rcmApplicable', header: 'RCM Applicable' },
+    { field: 'importsatRCM', header: 'Imports at RCM' },
     { field: 'customsPaid', header: 'Customs Paid' },
+   // { field: 'rcmApplicable', header: 'RCM Applicable' },
     { field: 'exciseTaxPaid', header: 'Excise Tax Paid' },
     { field: 'otherChargesPaid', header: 'Other Charges Paid' },
-    { field: 'vatAmount', header: 'VAT Amount' },
-    { field: 'totalAmount', header: 'Total Amount' },
-  ];
+    {field: 'chargesIncludingVAT', header: 'Charges Including VAT'}];
   daywiseColumns: any[] = [
     { field: 'invoiceDate', header: 'Purchase Date' },
     { field: 'invoiceNumber', header: 'Purchase Count' },
@@ -66,18 +71,19 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
     { field: 'rcmApplicable', header: 'RCM Applicable' },
     { field: 'vatAmount', header: 'VAT Amount' },
     { field: 'totalAmount', header: 'Total Amount' },
-
   ];
 
   detailedDescriptionColumns: any[] = [
     { field: 'invoiceDate', header: 'Purchase Date' },
     { field: 'description', header: 'Description' },
+    { field: 'vendorName', header: 'Vendor Name' },
     { field: 'invoiceNumber', header: 'Purchase Number' },
     { field: 'taxableAmount', header: 'Taxable Amount' },
     { field: 'zeroRated', header: 'Zero Rated' },
     { field: 'exempt', header: 'Exempt' },
     { field: 'outofScope', header: 'Out of Scope' },
-    { field: 'importsatCustoms', header: 'Imports At Customs' },
+  //  { field: 'importsatCustoms', header: 'Imports At Customs' },
+    { field: 'importVATCustoms', header: 'Imports At Customs' },
     { field: 'importsatRCM', header: 'Imports at RCM' },
     { field: 'purchaseCategory', header: 'Purchase Category' },
     { field: 'vatDeffered', header: 'VAT Deffered' },
@@ -114,6 +120,8 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
     exempt: 0,
     zero: 0,
     outofscope: 0,
+    chargesIncludingVAT: 0,
+    vatDeffered: 0
   };
   columns: any[] = this.detailedColumns;
   constructor(
@@ -122,6 +130,7 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
     private _sessionService: AppSessionService,
     private _dateTimeService: DateTimeService,
     private _fileDownloadService: FileDownloadService,
+    private _GlobalConstsCustomService: GlobalConstsCustomService,
 
   ) {
     super(injector);
@@ -139,6 +148,8 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
       exempt: 0,
       zero: 0,
       outofscope: 0,
+      chargesIncludingVAT: 0,
+      vatDeffered:0
     };
     this.daywiseFooter = {
       custom: 0,
@@ -162,6 +173,9 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
     this.tenantName = this._sessionService.tenancyName;
     this.getReportType();
     //this.getPurchaseDetailedReport();
+    this._GlobalConstsCustomService.data$.subscribe(e=>{
+      this.vitamenu=e.isVita;
+  })
   }
 
   getPurchaseDetailedReport() {
@@ -181,15 +195,18 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
           this.detailedwiseFooter.customPaid += element.customsPaid;
           this.detailedwiseFooter.other += element.otherChargesPaid;
           this.detailedwiseFooter.rcm += element.importsatRCM;
-          this.detailedwiseFooter.import += element.importsatCustoms;
+          this.detailedwiseFooter.vatDeffered += element.vatDeffered;
+        //  this.detailedwiseFooter.import += element.importsatCustoms;
+          this.detailedwiseFooter.import += element.importVATCustoms;
           this.detailedwiseFooter.excisetax += element.exciseTaxPaid;
           this.detailedwiseFooter.exempt += element.exempt;
           this.detailedwiseFooter.zero += element.zeroRated;
           this.detailedwiseFooter.outofscope += element.outofScope;
+          this.detailedwiseFooter.chargesIncludingVAT += element.chargesIncludingVAT;
+
         });
       });
   }
-
 
   getPurchaseDayReport() {
     this.ResetData();
@@ -211,7 +228,6 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
           this.daywiseFooter.exempt += element.exempt;
           this.daywiseFooter.zero += element.zeroRated;
           this.daywiseFooter.OutofScope += element.outofScope;
-
         });
       });
   }
@@ -229,14 +245,14 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
   downloadExcel(li: any[]) {
     if (this.tab === 'Detailed') {
       this._PurchaseEntryServiceProxy.getPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, 'PurchaseEntryDetailedReport', this.tenantName, false)
-      .subscribe((result) => {
-        this._fileDownloadService.downloadTempFile(result);
-      });
+        .subscribe((result) => {
+          this._fileDownloadService.downloadTempFile(result);
+        });
     } else {
       this._PurchaseEntryServiceProxy.getDaywisePurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), 'PurchaseEntryDaywiseReport', this.tenantName, false)
-      .subscribe((result) => {
+        .subscribe((result) => {
           this._fileDownloadService.downloadTempFile(result);
-      });
+        });
     }
   }
 
@@ -261,13 +277,12 @@ export class PurchaseDetailedReportComponent extends AppComponentBase {
       this.columns = this.daywiseColumns;
       this.getPurchaseDayReport();
     } else if (tab === 'Detailed') {
-      if (this.code === 'VATPUR000'){
-        this.columns = this.detailedColumns;
-    } else{
+      if (this.code === 'VATPUR002' || this.code === 'VATPUR008') {
         this.columns = this.detailedDescriptionColumns;
-    }
+      } else {
+        this.columns = this.detailedColumns;
+      }
       this.getPurchaseDetailedReport();
-
     }
   }
   searchData() {

@@ -221,7 +221,8 @@
             <div class="d-flex align-items-center justify-content-center">
                 <div id="createbutton">
                     <a
-                        href="/app/main/sales/createSalesInvoice"
+                        
+                    [attr.href]="salescreateUrl"
                         [ngClass]="{
                             'nav-link  btn btn-primary': true
                         }"
@@ -472,7 +473,7 @@
             <div class="d-flex align-items-center justify-content-center">
                 <div id="createbutton">
                     <a
-                        href="/app/main/sales/createCreditNote"
+                    [attr.href]="creditcreateUrl"
                         [ngClass]="{
                             'nav-link  btn btn': true
                         }"
@@ -723,7 +724,7 @@
             <div class="d-flex align-items-center justify-content-center">
                 <div id="createbutton">
                     <a
-                        href="/app/main/sales/createDebitNote"
+                         [attr.href]="debitcreateUrl"
                         [ngClass]="{
                             'nav-link btn btn': true
                         }"

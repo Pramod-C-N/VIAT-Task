@@ -9,12 +9,10 @@
         <div class="row gx-10 text-center">
           <div class="col-lg-12 text-end">
             <div class="dteContainer">
-              <!-- <label class="d-flex align-items-center">
-              <span class="">Date Range</span>
-            </label> -->
               <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
-                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
-                placement="bottom right" (bsValueChange)="searchData()" />
+                readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}"
+                dateRangePickerLuxonModifier [(date)]="dateRange" placement="bottom right"
+                (bsValueChange)="searchData()" />
             </div>
           </div>
         </div>
@@ -83,7 +81,7 @@
             </td>
             <td>
               <span class="p-column-title">{{ 'Exempt' | localize }}</span>
-              <button type="button" class="dwnldBtn btn"
+              <button type="button" class="btn btn-success" [disabled]="record.failedRecords==0"
                 (click)="exportToExcel(record.fileName,record.batchId)">Download</button>
             </td>
             <td>

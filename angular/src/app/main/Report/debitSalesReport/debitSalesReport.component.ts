@@ -24,16 +24,16 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
     templateUrl: './debitSalesReport.component.html',
     encapsulation: ViewEncapsulation.None,
     animations: [appModuleAnimation()],
-    styleUrls:['./debitSalesReport.component.css']
+    styleUrls: ['./debitSalesReport.component.css']
 })
 export class DebitSalesReportComponent extends AppComponentBase {
     public dateRange: DateTime[] = [this._dateTimeService.getStartOfDay(), this._dateTimeService.getEndOfDay()];
     invoices: ReportDto[] = [];
     tenantId: Number;
-    code:string;
+    code: string;
     tenantName: String;
     pdfUrl = AppConsts.pdfUrl + '/InvoiceFiles';
-    tab: string = 'Detailed';
+    tab = 'Detailed';
     checkboxValue: any;
 
 
@@ -41,30 +41,31 @@ export class DebitSalesReportComponent extends AppComponentBase {
         { field: 'invoiceDate', header: 'Debit Note Date' },
         { field: 'invoicenumber', header: 'Debit Note Count' },
         { field: 'taxableAmount', header: 'Taxable Amount' },
-        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
+        { field: 'vatAmount', header: 'VAT Amount' },
         { field: 'zeroRated', header: 'Zero Rated' },
         { field: 'exempt', header: 'Exempt' },
         { field: 'exports', header: 'Exports' },
         { field: 'outofScope', header: 'Out of Scope' },
-        { field: 'vatAmount', header: 'VAT Amount' },
+        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
         { field: 'totalAmount', header: 'Total Amount' },
     ];
 
     detailedColumns: any[] = [
-        { field: 'invoiceDate', header: 'Debit Note Date' },
         { field: 'irnNo', header: 'Debit Note Number' },
+        { field: 'customerName', header: 'Customer Name' },
+        { field: 'invoiceDate', header: 'Debit Note Date' },
         { field: 'invoicenumber', header: 'Invoice Number' },
         { field: 'taxableAmount', header: 'Taxable Amount' },
-        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
-        { field: 'outofScope', header: 'Out of Scope' },
-        { field: 'zeroRated', header: 'Zero Rated' },
-        { field: 'exports', header: 'Exports' },
-        { field: 'exempt', header: 'Exempt' },
         { field: 'vatRate', header: 'VAT Rate' },
         { field: 'vatAmount', header: 'VAT Amount' },
-        { field: 'totalAmount', header: 'Total Amount' },
+        { field: 'totalAmount', header: 'Total Amount' },        
+        { field: 'zeroRated', header: 'Zero Rated' },
+        { field: 'exempt', header: 'Exempt' },
+        { field: 'exports', header: 'Exports' },
+        { field: 'outofScope', header: 'Out of Scope' },
+        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
     ];
-    isdisable: boolean = false;
+    isdisable = false;
 
     daywiseFooter: any = {
         vatAmount: 0,
@@ -73,7 +74,7 @@ export class DebitSalesReportComponent extends AppComponentBase {
         taxable: 0,
         zeroRated: 0,
         health: 0,
-        Gov:0,
+        Gov: 0,
         export: 0,
         exempt: 0,
         OutofScope: 0,
@@ -90,6 +91,7 @@ export class DebitSalesReportComponent extends AppComponentBase {
         Gov: 0,
         OutofScope: 0,
         vatrate: 0,
+        customerName: ''
     };
 
     columns: any[] = this.detailedColumns;
@@ -109,7 +111,7 @@ export class DebitSalesReportComponent extends AppComponentBase {
     //ngoninit
 
     ngOnInit(): void {
-        this.code='DNSAL000'
+        this.code = 'DNSAL000';
         this.tenantId = this._sessionService.tenantId == null ? 0 : this._sessionService.tenantId;
         this.tenantName = this._sessionService.tenant.name;
        // this.getDebitDetailedReport();
@@ -123,7 +125,7 @@ export class DebitSalesReportComponent extends AppComponentBase {
             taxable: 0,
             zeroRated: 0,
             health: 0,
-            Gov:0,
+            Gov: 0,
             export: 0,
             exempt: 0,
             OutofScope: 0,
@@ -140,12 +142,15 @@ export class DebitSalesReportComponent extends AppComponentBase {
             Gov: 0,
             OutofScope: 0,
             vatrate: 0,
+            customerName: ''
         };
     }
 
     getDebitSalesDaywiseReport(handleDisable: boolean = false) {
-        
-        if (handleDisable) this.isdisable = true;
+
+        if (handleDisable) {
+this.isdisable = true;
+}
         this._reportService
             .getDebitSalesDaywiseReport(
                 this.parseDate(this.dateRange[0].toString()),
@@ -172,8 +177,10 @@ export class DebitSalesReportComponent extends AppComponentBase {
     }
 
     getDebitDetailedReport(handleDisable: boolean = false) {
-        
-        if (handleDisable) this.isdisable = true;
+
+        if (handleDisable) {
+this.isdisable = true;
+}
         this._reportService
             .getDebitNotePeriodicalReport(
                 this.parseDate(this.dateRange[0].toString()),
@@ -195,6 +202,7 @@ export class DebitSalesReportComponent extends AppComponentBase {
                     this.detailedFooter.Gov += element.govtTaxableAmt;
                     this.detailedFooter.OutofScope += element.outofScope;
                     this.detailedFooter.vatrate += element.vatrate;
+                    this.detailedFooter.customerName += element.customerName;
                 });
             });
     }
@@ -207,28 +215,29 @@ export class DebitSalesReportComponent extends AppComponentBase {
     }
     //format date
     formatDate(date) {
-        var d = new Date(date),
+        let d = new Date(date),
             month = '' + (d.getMonth() + 1),
             day = '' + d.getDate(),
             year = d.getFullYear();
 
-        if (month.length < 2) month = '0' + month;
-        if (day.length < 2) day = '0' + day;
+        if (month.length < 2) {
+month = '0' + month;
+}
+        if (day.length < 2) {
+day = '0' + day;
+}
 
         return [year, month, day].join('-');
     }
 
 
     changeEvent(event: any) {
-        if(this.tab=='Detailed')
-        {
+        if (this.tab == 'Detailed') {
             this.changeTab('Daywise');
-            this.tab='Daywise';
-        }
-        else
-        {
+            this.tab = 'Daywise';
+        } else {
             this.changeTab('Detailed');
-            this.tab='Detailed';
+            this.tab = 'Detailed';
         }
           }
     changeTab(tab: string) {
@@ -272,6 +281,6 @@ export class DebitSalesReportComponent extends AppComponentBase {
         }
     }
     searchData(){
-        this.changeTab(this.tab)
+        this.changeTab(this.tab);
     }
 }

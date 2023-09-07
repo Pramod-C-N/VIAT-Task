@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using Abp;
+using Abp.Dependency;
+using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.Notifications;
 using vita.Authorization.Users;
@@ -9,13 +12,16 @@ using vita.MultiTenancy;
 
 namespace vita.Notifications
 {
-    public class AppNotifier : vitaDomainServiceBase, IAppNotifier
+    public class AppNotifier : vitaDomainServiceBase, IAppNotifier, ITransientDependency
     {
         private readonly INotificationPublisher _notificationPublisher;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public AppNotifier(INotificationPublisher notificationPublisher)
+
+        public AppNotifier(INotificationPublisher notificationPublisher, IUnitOfWorkManager unitOfWorkManager)
         {
             _notificationPublisher = notificationPublisher;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task WelcomeToTheApplicationAsync(User user)
@@ -115,13 +121,17 @@ namespace vita.Notifications
             IDictionary<string, object> localizableMessageData = null,
             NotificationSeverity severity = NotificationSeverity.Info)
         {
-            return SendNotificationAsync(AppNotificationNames.SimpleMessage, user, localizableMessage,
+
+                return SendNotificationAsync(AppNotificationNames.SimpleMessage, user, localizableMessage,
                 localizableMessageData, severity);
+
         }
 
         protected async Task SendNotificationAsync(string notificationName, UserIdentifier user,
             LocalizableString localizableMessage, IDictionary<string, object> localizableMessageData = null,
             NotificationSeverity severity = NotificationSeverity.Info)
+        {
+        using (var uow = _unitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
         {
             var notificationData = new LocalizableMessageNotificationData(localizableMessage);
             if (localizableMessageData != null)
@@ -133,7 +143,9 @@ namespace vita.Notifications
             }
 
             await _notificationPublisher.PublishAsync(notificationName, notificationData, severity: severity,
-                userIds: new[] {user});
+                userIds: new[] { user });
+           await     uow.CompleteAsync();
+        }
         }
 
         public Task TenantsMovedToEdition(UserIdentifier user, string sourceEditionName, string targetEditionName)

@@ -7,7 +7,7 @@ namespace vita.Debit.Dtos
     public class CreateOrEditDebitNoteContactPersonDto : EntityDto<long?>
     {
 
-        
+
         public string IRNNo { get; set; }
 
         public string Name { get; set; }
@@ -25,6 +25,9 @@ namespace vita.Debit.Dtos
         public string Location { get; set; }
 
         public string Type { get; set; }
+
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
 
     }
 }

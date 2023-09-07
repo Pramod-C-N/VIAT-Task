@@ -32,6 +32,9 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
   exempt = 0;
   isdisable = false;
   outofScope = 0;
+  importVATCustoms = 0;
+  vatDeffered = 0;
+  importsatRCM = 0;
   vatrate = 0;
   export = 0;
   Gov = 0;
@@ -53,7 +56,12 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
     Gov: 0,
     customs: 0,
     exise: 0,
-    otherChargesPaid: 0
+    otherChargesPaid: 0,
+    chargesIncludingVAT: 0,
+    importVATCustoms: 0,
+    vatDeffered: 0,
+    importsatRCM: 0
+
   };
   daywiseFooter: any = {
     vatAmount: 0,
@@ -67,41 +75,46 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
     outofScope: 0,
     exise: 0,
     customs: 0,
-    otherChargesPaid: 0
+    otherChargesPaid: 0,
+    importVATCustoms: 0,
+    vatDeffered: 0,
+    importsatRCM: 0
   };
 
 
   detailedColumns: any[] = [
-    { field: 'irnNo', header: 'IRN No' },
-    { field: 'invoicenumber', header: 'CN Number' },
-    { field: 'referenceNo', header: 'Reference No' },
-    { field: 'invoiceDate', header: 'CN Date ' },
+    // { field: 'irnNo', header: 'IRN No' },
+    { field: 'invoicenumber', header: 'Credit Note Number' },
+    { field: 'vendorName', header: 'Vendor Name' },
+    { field: 'invoiceDate', header: 'Credit Note Date ' },
+    { field: 'invoiceCreditReferenceNumber', header: 'Invoice Credit Reference Number' },
     { field: 'purchasecategory', header: 'Purchase Category' },
     { field: 'taxableAmount', header: 'Taxable Amount' },
+    { field: 'vatrate', header: 'VAT Rate' },
+    { field: 'vatAmount', header: 'VAT Amount' },
+    { field: 'totalAmount', header: 'Total Amount' },
     { field: 'zeroRated', header: 'Zero Rated' },
     { field: 'exempt', header: 'Exempt' },
     { field: 'outofScope', header: 'Out of Scope' },
-    { field: 'importVATCustoms', header: 'Import Subject to VAT paid at Customs' },
-    { field: 'vatDeffered', header: 'Import Subject to Deferred VAT' },
-    { field: 'importsatRCM', header: 'Import Subject to RCM' },
+    { field: 'importVATCustoms', header: 'Import VAT Customs' },
+    { field: 'vatDeffered', header: 'VAT Deffered' },
+    { field: 'importsatRCM', header: 'Imports at RCM' },
     { field: 'customsPaid', header: 'Customs Paid' },
     { field: 'exciseTaxPaid', header: 'Excise Tax Paid' },
     { field: 'otherChargesPaid', header: 'Other Charges Paid' },
-    { field: 'vatrate', header: 'VAT Rate' },
-    { field: 'vatAmount', header: 'VAT Amount' },
-    { field: 'totalAmount', header: 'Total Amount' }];
+    {field: 'chargesIncludingVAT', header: 'Charges Including VAT'}];
 
   daywiseColumns: any[] = [
-    { field: 'invoiceDate', header: 'CN Date ' },
-    { field: 'invoicecount', header: 'CN Number' },
+    { field: 'invoiceDate', header: 'Credit Note Date ' },
+    { field: 'invoicecount', header: 'Credit Note Number' },
     { field: 'purchasecategory', header: 'Purchase Category' },
     { field: 'taxableAmount', header: 'Taxable Amount' },
     { field: 'zeroRated', header: 'Zero Rated' },
     { field: 'exempt', header: 'Exempt' },
     { field: 'outofScope', header: 'Out of Scope' },
-    { field: 'importVATCustoms', header: 'Import Subject to VAT paid at Customs' },
-    { field: 'vatDeffered', header: 'Import Subject to Deferred VAT' },
-    { field: 'importsatRCM', header: 'Import Subject to RCM' },
+    { field: 'importVATCustoms', header: 'Import VAT Customs' },
+    { field: 'vatDeffered', header: 'VAT Deffered' },
+    { field: 'importsatRCM', header: 'Imports at RCM' },
     { field: 'customsPaid', header: 'Customs Paid' },
     { field: 'exciseTaxPaid', header: 'Excise Tax Paid' },
     { field: 'otherChargesPaid', header: 'Other Charges Paid' },
@@ -119,7 +132,6 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
   ) {
     super(injector);
   }
-    //ngoninit
 
   ngOnInit(): void {
     this.tenantId = this._sessionService.tenantId;
@@ -141,6 +153,10 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
       customs: 0,
       exise: 0,
       otherChargesPaid: 0,
+      chargesIncludingVAT: 0,
+      importVATCustoms: 0,
+      vatDeffered: 0,
+      importsatRCM: 0
     };
     this.daywiseFooter = {
       vatAmount: 0,
@@ -155,17 +171,18 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
       exise: 0,
       customs: 0,
       otherChargesPaid: 0,
+      importVATCustoms: 0,
+      vatDeffered: 0,
+      importsatRCM: 0
     };
   }
 
   getCreditNotePurchaseDetailedReport() {
-
     this.ResetData();
     this.isdisable = true;
     this._creditNoteProxy.getCreditPurchaseDetailedReport(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
       .pipe(finalize(() => this.isdisable = false))
       .subscribe((result) => {
-
         this.invoices = result;
         this.ResetData();
         this.invoices.forEach(element => {
@@ -175,13 +192,16 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
           this.detailedwiseFooter.exempt += element.exempt;
           this.detailedwiseFooter.totalAmount += element.totalAmount;
           this.detailedwiseFooter.outofScope += element.outofScope;
+          this.detailedwiseFooter.importVATCustoms += element.importVATCustoms;
+          this.detailedwiseFooter.vatDeffered += element.vatDeffered;
+          this.detailedwiseFooter.importsatRCM += element.importsatRCM;
           this.detailedwiseFooter.vatrate += element.vatrate;
           this.detailedwiseFooter.export += element.exports;
           this.detailedwiseFooter.Gov += element.govtTaxableAmt;
           this.detailedwiseFooter.exise += element.exciseTaxPaid;
           this.detailedwiseFooter.customs += element.customsPaid;
           this.detailedwiseFooter.otherChargesPaid += element.otherChargesPaid;
-
+          this.detailedwiseFooter.chargesIncludingVAT += element.chargesIncludingVAT;
         });
 
       });
@@ -203,19 +223,20 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
           this.daywiseFooter.exempt += element.exempt;
           this.daywiseFooter.export += element.exports;
           this.daywiseFooter.outofScope += element.outofScope;
+          this.daywiseFooter.importVATCustoms += element.importVATCustoms;
+          this.daywiseFooter.vatDeffered += element.vatDeffered;
+          this.daywiseFooter.importsatRCM += element.importsatRCM;
           this.daywiseFooter.exise += element.exciseTaxPaid;
           this.daywiseFooter.customs += element.customsPaid;
           this.daywiseFooter.otherChargesPaid += element.otherChargesPaid;
           this.daywiseFooter.count += parseInt(element.invoicecount);
         });
-
       });
   }
 
   parseDate(dateString: string): DateTime {
     if (dateString) {
       return DateTime.fromISO(new Date(dateString).toISOString());
-
     }
     return null;
   }
@@ -264,10 +285,17 @@ export class CreditNotePurchaseDetailedReportComponent extends AppComponentBase 
     return li;
   }
   downloadExcel(li: any[]) {
-    this._creditNoteProxy.getCreditPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, 'CreditNote(Purchase)DetailedReport', this.tenantName, false)
-      .subscribe((result) => {
-        this._fileDownloadService.downloadTempFile(result);
-      });
-  }
 
+    if (this.tab === 'Detailed') {
+      this._creditNoteProxy.getCreditPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, 'CreditNote(Purchase)DetailedReport', this.tenantName, false)
+        .subscribe((result) => {
+          this._fileDownloadService.downloadTempFile(result);
+        });
+    } else {
+      this._creditNoteProxy.getDaywiseCreditPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), 'CreditNote(Purchase)DaywiseReport', this.tenantName, false)
+        .subscribe((result) => {
+          this._fileDownloadService.downloadTempFile(result);
+        });
+    }
+  }
 }

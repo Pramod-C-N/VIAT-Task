@@ -17,7 +17,7 @@ using vita.Storage;
 using Abp.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using vita.EntityFrameworkCore;
-
+using System.Text.Json;
 
 using System.Data;
 using vita.ImportBatch.Exporting;
@@ -51,10 +51,11 @@ namespace vita.ImportBatch
 
         }
 
-        public async Task<bool> OverrideErrors(string json, int batchId)
+        public async Task<bool> OverrideErrors(List<OverRideDto> uniqueId, int batchId)
         {
             try
             {
+                var json = JsonSerializer.Serialize(uniqueId);
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
@@ -73,7 +74,7 @@ namespace vita.ImportBatch
 
                         //System.Diagnostics.Debug.WriteLine(reader.GetValue(0))
 
-                        cmd.ExecuteNonQuery();
+                        await cmd.ExecuteNonQueryAsync();
                         conn.Close();
 
 
@@ -90,10 +91,11 @@ namespace vita.ImportBatch
         }
 
 
-        public async Task<bool> OverrideErrorsMasters(string json, int batchId)
+        public async Task<bool> OverrideErrorsMasters(List<OverRideDto> uniqueId, int batchId)
         {
             try
             {
+                var json = JsonSerializer.Serialize(uniqueId);
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
@@ -374,7 +376,7 @@ namespace vita.ImportBatch
             //var dt = await _salesInvoicesAppService.GetSalesBatchData(fileName);
             var dt = await execgetdataSP(batchid,para);
 
-            return _salesFIleExcelExporter.ExportToFile(dt, "Invalid_" + fileName);
+            return _salesFIleExcelExporter.ExportToFile(dt, fileName);
         }
 
         public async Task<FileDto> GetMasterErrorListToExcel(string fileName, int batchid,int para)
@@ -385,13 +387,13 @@ namespace vita.ImportBatch
             var dt = await GetMasterReportDataByID(batchid,para);
             string masterType = await GetMasterTypeFromBatchId(batchid);
             if (masterType == "CustomerData")
-                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt, "Invalid_" + fileName, "CUSTOMER MASTER FILE UPLOAD - INVALID RECORDS FOR CORRECTION");
+                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt, fileName, "CUSTOMER MASTER FILE UPLOAD - VALID & INVALID RECORDS FOR CORRECTION");
             else if(masterType == "TenantData")
-                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt, "Invalid_" + fileName, "TENANT MASTER FILE UPLOAD - INVALID RECORDS FOR CORRECTION");
+                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt,  fileName, "TENANT MASTER FILE UPLOAD - VALID & INVALID  RECORDS FOR CORRECTION");
             else if (masterType == "VendorData")
-                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt, "Invalid_" + fileName, "VENDOR MASTER FILE UPLOAD - INVALID RECORDS FOR CORRECTION");
+                return _salesFIleExcelExporter.ExportToFileWithCustomHeader(dt,  fileName, "VENDOR MASTER FILE UPLOAD - VALID & INVALID  RECORDS FOR CORRECTION");
             else
-                return _salesFIleExcelExporter.ExportToFile(dt, "Invalid_" + fileName);
+                return _salesFIleExcelExporter.ExportToFile(dt,  fileName);
         }
 
         public async Task<PagedResultDto<GetImportBatchDataForViewDto>> GetAll(GetAllImportBatchDatasInput input)
@@ -715,6 +717,77 @@ e.VendorConstitution.Contains(input.Filter))
         {
             await _importBatchDataRepository.DeleteAsync(input.Id);
         }
+
+
+        public async Task<DataTable> getBatchNumber(string irrno)
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getInvoiceSuggestions";
+                        cmd.Parameters.AddWithValue("@irrno", irrno);
+                        cmd.Parameters.AddWithValue("@refNo", null);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<int> DeleteBatchSummary(int batchId, int mastTrans)
+        {
+            int masterType = 0;
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "BatchDelete";
+
+                        cmd.Parameters.AddWithValue("@batchno", batchId);
+                        cmd.Parameters.AddWithValue("@MastTrans", mastTrans);
+                        cmd.Parameters.AddWithValue("@tenantid", AbpSession.TenantId);
+
+                        masterType = cmd.ExecuteNonQuery();
+
+                        conn.Close();
+
+
+                    }
+
+
+                    return masterType;
+                }
+            }
+            catch (Exception e)
+            {
+                return masterType;
+            }
+        }
+
 
     }
 }

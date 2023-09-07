@@ -15,5 +15,8 @@ namespace vita.Sales.Dtos
 
         public string PaymentTerms { get; set; }
 
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+
     }
 }

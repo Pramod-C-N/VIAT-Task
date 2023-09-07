@@ -15,33 +15,34 @@
                 <div class="row gx-10 text-center">
                     <div class="col-lg-12 text-end ">
                         <div class="dteContainer">
-                        <div class="btn-group" style="float: right;" dropdown placement="button right">
-                            <button id="dropdownButtonExcelOperations" dropdownToggle type="button"
-                                class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                aria-controls="dropdownMenuExcelOperations">
-                                <i class="far fa-file-excel btn-md-icon"></i>
-                                <span class="d-none d-md-inline-block">
-                                    {{ 'ExcelOperations' | localize }}
-                                </span>
-                            </button>
-                            <ul id="dropdownMenuExcelOperations"
-                                class="dropdown-menu dropdown-menu-right dropdown-excel-operations" role="menu"
-                                *dropdownMenu aria-labelledby="dropdownButtonExcelOperations">
-                                <li role="menuitem">
-                                    <a href="javascript:;" class="no-padding">
-                                        <span class="fileinput-button">
-                                            <p-fileUpload customUpload="true" name="ExcelFileUpload" #ExcelFileUpload
-                                                maxFileSize="10000000" auto="auto" accept=".csv,.xls,.xlsx"
-                                                (uploadHandler)="uploadExcel($event)" (onError)="onUploadExcelError()"
-                                                chooseLabel="{{ 'ImportFromExcel' | localize }}"></p-fileUpload>
-                                        </span>
-                                    </a>
-                                </li>
-                                <li class="divider dropdown-divider"></li>
-                                <li role="menuitem">
-                                    <span class="dropdown-item-text text-muted pl-3" href="#">
-                                        <small [innerHTML]="
+                            <div class="btn-group" style="float: right;" dropdown placement="button right">
+                                <button id="dropdownButtonExcelOperations" dropdownToggle type="button"
+                                    class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
+                                    aria-haspopup="true" aria-expanded="false"
+                                    aria-controls="dropdownMenuExcelOperations">
+                                    <i class="far fa-file-excel btn-md-icon"></i>
+                                    <span class="d-none d-md-inline-block">
+                                        {{ 'ExcelOperations' | localize }}
+                                    </span>
+                                </button>
+                                <ul id="dropdownMenuExcelOperations"
+                                    class="dropdown-menu dropdown-menu-right dropdown-excel-operations" role="menu"
+                                    *dropdownMenu aria-labelledby="dropdownButtonExcelOperations">
+                                    <li role="menuitem">
+                                        <a href="javascript:;" class="no-padding">
+                                            <span class="fileinput-button">
+                                                <p-fileUpload customUpload="true" name="ExcelFileUpload"
+                                                    #ExcelFileUpload maxFileSize="10000000" auto="auto"
+                                                    accept=".csv,.xls,.xlsx" (uploadHandler)="uploadExcel($event)"
+                                                    (onError)="onUploadExcelError()"
+                                                    chooseLabel="{{ 'ImportFromExcel' | localize }}"></p-fileUpload>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li class="divider dropdown-divider"></li>
+                                    <li role="menuitem">
+                                        <span class="dropdown-item-text text-muted pl-3" href="#">
+                                            <small [innerHTML]="
                                 l(
                                     'ImportToExcelSampleFileDownloadInfo',
                                     '<a href=/assets/sampleFiles/VendorsUploadSampleData.xlsx>' +
@@ -49,13 +50,13 @@
                                         '</a>'
                                 )
                             "></small>
-                                    </span>
-                                </li>
-                            </ul>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
             <div class="separator separator-dashed my-1"></div>
         </div>
@@ -82,7 +83,7 @@
                             {{ 'Invalid Records' | localize }}
                         </th>
                         <th>
-                            {{ 'Einvoice (Dashboard)' | localize }}
+                            {{ 'Batch Summary' | localize }}
                         </th>
                     </tr>
                     <tr>
@@ -124,7 +125,7 @@
                         <td>
                             <span class="p-column-title">{{ 'Exempt' | localize
                                 }}</span>
-                            <button type="button" class="dwnldBtn btn"
+                            <button type="button" class="btn btn-success" [disabled]="record.failedRecords==0"
                                 (click)="exportToExcel(record.batchId)">Download</button>
                         </td>
                         <td>

@@ -1,3 +1,4 @@
+
 <div *ngIf="!fromOnboardingPage">
     <div
         [class]="fromOnboardingPage ? '' : 'w-lg-1000px'"
@@ -498,6 +499,46 @@
                                             <!-- <validation-messages [formCtrl]="contactNumber"></validation-messages> -->
                                         </div>
                                     </div>
+                                    <div class="row gx-10 mb-0">
+                                        <div class="col-lg-6 px-1 mb-1">
+                                            <div >
+                                                <input
+                                                    class="
+                                                        form-control form-control-solid
+                                                        h-auto
+                                                        py-7
+                                                        px-6
+                                                        rounded-lg
+                                                        fs-h6
+                                                    "
+                                                    type="text"
+                                                    placeholder="{{ 'Website' | localize }} "
+                                                    [(ngModel)]="tenants.website"
+                                                    name="website"
+                                                />
+                                            </div>
+                                            <!-- <validation-messages [formCtrl]="state"></validation-messages> -->
+                                        </div>
+                                        <div class="col-lg-6 px-1 mb-1">
+                                            <div >
+                                                <input
+                                                    class="
+                                                        form-control form-control-solid
+                                                        h-auto
+                                                        py-7
+                                                        px-6
+                                                        rounded-lg
+                                                        fs-h6
+                                                    "
+                                                    type="text"
+                                                    placeholder="{{ 'Fax Number' | localize }} "
+                                                    [(ngModel)]="tenants.faxNo"
+                                                    name="faxNo"
+                                                />
+                                            </div>
+                                            <!-- <validation-messages [formCtrl]="state"></validation-messages> -->
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <h5 class="mt-2">
@@ -531,10 +572,10 @@
                                                 basicForm.controls['vatid'].errors.minlength
                                             "
                                         >
-                                            VAT ID is Invalid
+                                            VAT Number is Invalid
                                         </div>
                                         <div *ngIf="basicForm.controls['vatid'].errors.required">
-                                            VAT ID is Required.
+                                            VAT Number is Required.
                                         </div>
                                     </div>
                                 </div>
@@ -1895,6 +1936,42 @@
                                 <!-- <validation-messages [formCtrl]="contactNumber"></validation-messages> -->
                             </div>
                         </div>
+                        <div class="row gx-10 mb-0">
+                            <div class="col-lg-6 px-1 mb-1">
+                                <div >
+                                    <input
+                                        class="
+                                            form-control form-control-solid
+                                            h-auto
+                                            rounded-lg
+                                            fs-h6
+                                        "
+                                        type="text"
+                                        placeholder="{{ 'Website' | localize }} "
+                                        [(ngModel)]="tenants.website"
+                                        name="website"
+                                    />
+                                </div>
+                                <!-- <validation-messages [formCtrl]="state"></validation-messages> -->
+                            </div>
+                            <div class="col-lg-6 px-1 mb-1">
+                                <div >
+                                    <input
+                                        class="
+                                            form-control form-control-solid
+                                            h-auto
+                                            rounded-lg
+                                            fs-h6
+                                        "
+                                        type="text"
+                                        placeholder="{{ 'Fax Number' | localize }} "
+                                        [(ngModel)]="tenants.faxNo"
+                                        name="faxNo"
+                                    />
+                                </div>
+                                <!-- <validation-messages [formCtrl]="state"></validation-messages> -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <h5 class="mt-2">
@@ -1926,9 +2003,9 @@
                                     basicForm.controls['vatid'].errors.minlength
                                 "
                             >
-                                VAT ID is Invalid
+                                VAT Number is Invalid
                             </div>
-                            <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is Required.</div>
+                            <div *ngIf="basicForm.controls['vatid'].errors.required">VAT Number is Required.</div>
                         </div>
                     </div>
 

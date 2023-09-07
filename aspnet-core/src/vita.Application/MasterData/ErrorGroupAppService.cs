@@ -33,57 +33,59 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetErrorGroupForViewDto>> GetAll(GetAllErrorGroupInput input)
         {
-
-            var filteredErrorGroup = _errorGroupRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredErrorGroup = _errorGroupRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredErrorGroup = filteredErrorGroup
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredErrorGroup = filteredErrorGroup
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var errorGroup = from o in pagedAndFilteredErrorGroup
-                             select new
-                             {
+                var errorGroup = from o in pagedAndFilteredErrorGroup
+                                 select new
+                                 {
 
-                                 o.Name,
-                                 o.Description,
-                                 o.Code,
-                                 o.IsActive,
-                                 Id = o.Id
-                             };
+                                     o.Name,
+                                     o.Description,
+                                     o.Code,
+                                     o.IsActive,
+                                     Id = o.Id
+                                 };
 
-            var totalCount = await filteredErrorGroup.CountAsync();
+                var totalCount = await filteredErrorGroup.CountAsync();
 
-            var dbList = await errorGroup.ToListAsync();
-            var results = new List<GetErrorGroupForViewDto>();
+                var dbList = await errorGroup.ToListAsync();
+                var results = new List<GetErrorGroupForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetErrorGroupForViewDto()
+                foreach (var o in dbList)
                 {
-                    ErrorGroup = new ErrorGroupDto
+                    var res = new GetErrorGroupForViewDto()
                     {
+                        ErrorGroup = new ErrorGroupDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetErrorGroupForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetErrorGroupForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetErrorGroupForViewDto> GetErrorGroupForView(int id)

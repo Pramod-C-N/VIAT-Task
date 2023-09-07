@@ -33,57 +33,58 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetAffiliationForViewDto>> GetAll(GetAllAffiliationInput input)
         {
-
-            var filteredAffiliation = _affiliationRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredAffiliation = _affiliationRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredAffiliation = filteredAffiliation
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredAffiliation = filteredAffiliation
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var affiliation = from o in pagedAndFilteredAffiliation
-                              select new
-                              {
+                var affiliation = from o in pagedAndFilteredAffiliation
+                                  select new
+                                  {
 
-                                  o.Name,
-                                  o.Description,
-                                  o.Code,
-                                  o.IsActive,
-                                  Id = o.Id
-                              };
+                                      o.Name,
+                                      o.Description,
+                                      o.Code,
+                                      o.IsActive,
+                                      Id = o.Id
+                                  };
 
-            var totalCount = await filteredAffiliation.CountAsync();
+                var totalCount = await filteredAffiliation.CountAsync();
 
-            var dbList = await affiliation.ToListAsync();
-            var results = new List<GetAffiliationForViewDto>();
+                var dbList = await affiliation.ToListAsync();
+                var results = new List<GetAffiliationForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetAffiliationForViewDto()
+                foreach (var o in dbList)
                 {
-                    Affiliation = new AffiliationDto
+                    var res = new GetAffiliationForViewDto()
                     {
+                        Affiliation = new AffiliationDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetAffiliationForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetAffiliationForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetAffiliationForViewDto> GetAffiliationForView(int id)

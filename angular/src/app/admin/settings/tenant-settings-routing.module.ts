@@ -8,6 +8,7 @@ const routes: Routes = [
         component: TenantSettingsComponent,
         pathMatch: 'full',
     },
+    
 ];
 
 @NgModule({

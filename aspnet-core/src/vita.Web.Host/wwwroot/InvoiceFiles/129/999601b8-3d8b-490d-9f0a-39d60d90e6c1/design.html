@@ -1,0 +1,549 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        #T9 {
+            border: 1px teal solid;
+        }
+
+        body {
+            font-size: 10px;
+            color: teal;
+        }
+
+        .column {
+            float: left;
+            width: 15%;
+            padding: 10px;
+            height: 100px;
+        }
+
+        .column1 {
+            float: right;
+            width: 40%;
+            paddingLeft: 30px;
+            height: 110px;
+        }
+
+        .column2 {
+            text-align: center;
+            width: 100%;
+            paddingLeft: 10px;
+        }
+
+        .black {
+            color: black;
+        }
+
+        table {
+            border-collapse: collapse
+        }
+
+        td {
+            border-bottom: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+            font-size: 10px;
+        }
+
+        .table-container {
+            display: flex;
+        }
+
+        .table-container table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+
+        #T4 td {
+            border: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+        }
+
+        #T5 td {
+            border: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+        }
+
+        #T6 td {
+            border: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+        }
+
+        #T10 td {
+            border: 1px teal solid;
+            margin: 0;
+            padding: 2px;
+        }
+
+        .firstRow {
+            background-color: lightgray;
+            border-top: 1px teal solid !important;
+        }
+
+        .table1 {
+            border-top: 1px teal solid;
+            border-left: 1px teal solid;
+        }
+
+        .firstCol {
+            border-left: 1px teal solid;
+        }
+
+        .lastCol {
+            border-right: 1px teal solid;
+        }
+
+        span {
+            font-size: 10px;
+            padding: 2px;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial; font-size: 10px;">
+    <table style="width: 100%;">
+        <tr style="width: 100%;">
+            <td style="width: 35%; border-bottom: 0px;">
+                <table id="T1">
+                    <tr>
+                        <td style="width: 40%; text-align: left; border-bottom: 0px;">Invoice Number</td>
+                        <td class="black" style="width: 40%; text-align: center;"> <span id="T12INVNO">68</span> </td>
+                        <td style="width: 30%; text-align: right; border-bottom: 0px;">رقم الفاتورة</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align: left; border-bottom: 0px;">Invoice Date</td>
+                        <td class="black" style="width: 40%; text-align: center;">06-09-2023 </td>
+                        <td style="width: 30%; text-align: right; border-bottom: 0px;">تاريخ الفاتورة</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align: left; border-bottom: 0px;">Currency</td>
+                        <td class="black" style="width: 40%; text-align: center;">SAR</td>
+                        <td style="width: 30%; text-align: right; border-bottom: 0px;">العملة</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 40%; text-align: left; border-bottom: 0px;">Invoice Type</td>
+                        <td class="black" style="width: 40%; text-align: center;"><span
+                                id="T12IRVNO">0100100</span> </td>
+                        <td style="width: 30%; text-align: right; border-bottom: 0px;">نوع الفاتورة</td>
+                    </tr>
+                </table>
+            </td>
+            <td style="width: 40%; border-bottom: 0px;">
+                <p style="width: 100%; text-align: center; font-weight: bolder; font-size: 14px;"> <img src="data:image/png;base64,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"
+                        id="logo"
+                        style="width: 100px; height: 50px; display: block; margin-left: auto; margin-right: auto; margin-top: -50px;" />
+                </p>
+                <p style="width: 100%; text-align: center; font-weight: bolder; font-size: 14px;"> <span
+                        style="font-size: 16px;" id="headE">Tax Invoice</span> <br /> <span style="font-size: 16px;"
+                        id="headA">الفاتورة الضريبية</span> </p>
+            </td>
+            <td style="width: 25%; border-bottom: 0px;"> <img src="wwwroot\InvoiceFiles\129\999601b8-3d8b-490d-9f0a-39d60d90e6c1\999601b8-3d8b-490d-9f0a-39d60d90e6c1_68.png" id="Barcode1" style="width: 100px; height: 100px; float: initial; vertical-align: top; margin: 0px 50px;" /> </td>
+        </tr>
+    </table> <br /> <br />
+    <!-- <table id="T2" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller</td>
+            <td class="black" style="width: 30%; text-align: left;">
+            <td class="black" style="width: 30%; text-align: right;"></td>
+            <td class="lastCol" style="width: 30%; text-align: right;">تاجر</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller Name</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T2R1V1">BBIT</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V1A">الأعمال المباركة لتقنية المعلومات</span></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">البائع اسم</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller Address</td>
+            <td class="black" style="width: 50%; text-align: left;"> <span id="T2R1V2">Prince Saud Al Faisal Al Khalidiyah 2652 Jeddah Western Province 23422 SA Contact No: 966509873135</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V2A">الأمير سعود الفيصل2652
+ 7490 الخالدية جدة المنطقة الغربية المملكة العربية السعودية 23422</span> <span> رقم الاتصال:966509873135</span></td>
+            <td class="lastCol" style="width: 30%; text-align: right;">عنوان البائع</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller VAT Registration No.</td>
+            <td class="black" style="width: 50%; text-align: left;"> <span id="T2R1V3">311269226600003</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V3A">311269226600003</span></td>
+            <td class="lastCol" style="width: 30%; text-align: right;">رقم تسجيل ضريبة القيمة المضافة للبائع</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller CR Number</td>
+            <td class="black" style="width: 50%; text-align: left;"> <span id="T2R1V4">4030494599</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V4A">4030494599</span></td>
+            <td class="lastCol" style="width: 30%; text-align: right;">رقم السجل التجاري للبائع</td>
+        </tr>
+    </table> <br /> -->
+    <table id="T2" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller</td>
+            <td class="black" style="width: 30%; text-align: left;">
+                <td class="black" style="width: 30%; text-align: right;"></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">تاجر</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller Name</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T2R1V1">BBIT</span></td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V1a">الأعمال المباركة لتقنية المعلومات</span></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">البائع اسم</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller Address</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T2R1V2">Prince Saud Al Faisal Al Khalidiyah 2652 Jeddah Western Province 23422 SA Contact No: 966509873135</span> </td>
+			<td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V2A">الأمير سعود الفيصل2652
+			 7490 الخالدية جدة المنطقة الغربية المملكة العربية السعودية 23422</span> <span> رقم الاتصال:966509873135</span></td>            
+			<td class="lastCol" style="width: 20%; text-align: right;">عنوان البائع</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller VAT Registration No.</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T2R1V3">311269226600003</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V3a">311269226600003</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">رقم تسجيل ضريبة القيمة المضافة للبائع</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Seller CR Number</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T2R1V4">4030494599</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T2R1V4a">4030494599</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">رقم السجل التجاري للبائع</td>
+        </tr>
+    </table> <br />
+    <!-- <table id="T3" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer</td>
+            <td class="black" style="width: 50%; text-align: right;"></td>
+            <td class="lastCol" style="width: 30%; text-align: right;">العميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Contact Person</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V7">45</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">الشخص الذي يمكن الاتصال به</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer Name</td>
+            <td class="black" id="T3R2V1" style="width: 50%; text-align: right;"> <span id="T3R1V1">Technoval  information Systems (TIS)</span>
+            </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">اسم الزبون</td>
+        </tr>
+        <tr style="display:none">
+            <td class="firstCol" style="width: 20%; text-align: left;">Designation</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V6">Manager</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">تعيين</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer Address</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V2">234234 AL JARN RD asdad NAPA COMPOUND asdad 31982 SA</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">عنوان للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Contact Number</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V3">65746546474644</span>
+            </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">هاتف للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">VAT Registration No.</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V4">300213779700003</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">مرجع ضريبة القيمة المضافة للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Email</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V5">raj@gmail.com</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">البريد الإلكتروني</td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 20%; text-align: left;">CR Number</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V6"></span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">رقم السجل التجاري للعميل</td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 20%; text-align: left;">Bill To Attention</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V7">45</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;"></td>
+        </tr>
+    </table> <br /> -->
+    <table id="T3" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer</td>
+            <td class="black" style="width: 30%; text-align: right;"></td>
+            <td class="black" style="width: 30%; text-align: right;"></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">العميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Contact Person</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V7">45</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T3R1V7">45</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">الشخص الذي يمكن الاتصال به</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer Name</td>
+            <td class="black" id="T3R2V1" style="width: 30%; text-align: left;"> <span id="T3R1V1">Technoval  information Systems (TIS)</span></td>
+            <td class="black" id="T3R2V2" style="width: 30%; text-align: right;"> <span id="T3R1V2">Technoval  information Systems (TIS)</span></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">اسم الزبون</td>
+        </tr>
+        <tr style="display:none">
+            <td class="firstCol" style="width: 20%; text-align: left;">Designation</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V6"></span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T3R1V7"></span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">تعيين</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Customer Address</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V2">234234 AL JARN RD asdad NAPA COMPOUND asdad 31982 SA</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T3R1V3">234234 AL JARN RD asdad NAPA COMPOUND asdad 31982 Saudi Arabia</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">عنوان للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Contact Number</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V3">65746546474644</span>
+                <td class="black" style="width: 30%; text-align: right;"><span id="T3R1V4">65746546474644</span></td>
+            <td class="lastCol" style="width: 20%; text-align: right;">هاتف للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">VAT Registration No.</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V4">300213779700003</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T3R1V5">300213779700003</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">مرجع ضريبة القيمة المضافة للعميل</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 20%; text-align: left;">Email</td>
+            <td class="black" style="width: 30%; text-align: left;"> <span id="T3R1V5">raj@gmail.com</span> </td>
+            <td class="black" style="width: 30%; text-align: right;"> <span id="T3R1V6">raj@gmail.com</span> </td>
+            <td class="lastCol" style="width: 20%; text-align: right;">البريد الإلكتروني</td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 20%; text-align: left;">CR Number</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V6"></span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;">رقم السجل التجاري للعميل</td>
+        </tr>
+        <tr style="display: none;">
+            <td class="firstCol" style="width: 20%; text-align: left;">Bill To Attention</td>
+            <td class="black" style="width: 50%; text-align: right;"> <span id="T3R1V7">45</span> </td>
+            <td class="lastCol" style="width: 30%; text-align: right;"></td>
+        </tr>
+    </table> <br />
+    <table id="T6" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow" style="border-bottom: 0px;">
+            <td class="firstCol" style="width: 5%; text-align: center">Sl No <br />رقم </td>
+            <td style="width: 25%; text-align: center;">Description <br />وصف الم بيع </td>
+            <td style="width: 8%; text-align: center;display: none;">Qty <br /> كمية </td>
+            <td style="width: 10%; text-align: center;display:none">Unit Price <br /> سعر الوحدة (ر.س) </td>
+            <td style="width: 10%; text-align: center;">Taxable Amount <br /> سعر خاضع للضريبة </td>
+            <td style="width: 7%; text-align: center;">Discount <br /> Amount <br /> مبلغ الخصم </td>
+            <td style="width: 10%; text-align: center;">Tax Rate % <br /> النسبة المئوية لضريبة القيمة المضافة </td>
+            <td style="width: 10%; text-align: center;">Tax Amount <br /> <br /> <span>ضريبة القيمة المضافة</span> </td>
+            <td style="width: 10%; text-align: center;display : none">Total Including Tax (SAR) <br /> <span>ضريبة
+                    القيمة المضافة</span> </td>
+            <td class="lastCol" style="width: 15%; text-align: center;">Total Including Tax (SAR) <br /> الاجمالي
+                شاملا الضريبة(ر.س) </td>
+        </tr>  <tr style="text-align:right;font-size:10px;">
+    <td class="firstCol" style="padding-right:5px;">1</td>
+    <td style="padding-right:5px;text-align:left;"> gold </br> <span
+            style="display : none">:</span> </td>
+    <td style="text-align:center;padding-right:5px;display:none;">1  PC</td>
+    <td style="padding-right:5px;display:none;">5,000.00</td>
+    <td style="padding-right:5px;">5,000.00</td>
+    <td style="padding-right:5px;">0.00</td>
+    <td style="padding-right:5px;">15.00</td>
+    <td style="padding-right:5px;">750.00</td>
+    <td style="padding-right:5px;display : none;">5,750.00</td>
+    <td class="lastCol" style="padding-right:5px;">5,750.00</td>
+</tr> <tr style="text-align:right;font-size:10px;">
+    <td class="firstCol" style="padding-right:5px;">Total</td>
+    <td style="padding-right:5px;text-align:left;">   </br> <span
+            style="@showreason"> </span> </td>
+    <td style="text-align:center;padding-right:5px;display:none;">1</td>
+    <td style="padding-right:5px;display:none;"></td>
+    <td style="padding-right:5px;">5,000.00</td>
+    <td style="padding-right:5px;">0.00</td>
+    <td style="padding-right:5px;"> </td>
+    <td style="padding-right:5px;">750.00</td>
+    <td style="padding-right:5px;display : none;">5,750.00</td>
+    <td class="lastCol" style="padding-right:5px;">5,750.00</td>
+</tr>
+    </table> <br />
+    <table id="T7" style="width: 100%;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 30%; text-align: left;">Invoice Summary</td>
+            <td style="width: 15%; text-align: right;display : none;"> <span id="T7R1V0">SAR</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V0">SAR</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">ملخص الفاتورة</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;">Total Before VAT</td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V1">5,000.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V1">5,000.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">الإجمالي قبل ضريبة القيمة المضافة <span></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;">Total Discount</td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V2">0.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V2">0.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">اجمالي خصم</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;display: none;">Total Other Charges/Income</td>
+            <td style="width: 20%; text-align: right;display: none;"> <span id="T7R1V5">0.00</span> </td>
+            <td style="width: 15%; text-align: right;display: none;"> <span id="T7R1V5">0.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;display: none;">الاجمالي بدون ضريبة القيمة المضافة
+            </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;">Final Total Before VAT</td>
+            <td style="width: 20%; text-align: right;display : none"> <span id="T7R1V5">5,000.00</span>
+            </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V5">5,000.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">الاجمالي بدون ضريبة القيمة المضافة</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;">Total VAT</td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V3">750.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V3">750.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">إجمالي ضريبة القيمة المضافة <span></span> </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 30%; text-align: left;">Total with VAT</td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V4">5,750.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V4">5,750.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">الاجمالي شاملا الضريبة</td>
+        </tr>
+        <tr style="display : none;display: none;">
+            <td class="firstCol" style="width: 30%; text-align: left;"></td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V6">0.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V6">0.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;"></td>
+        </tr>
+        <tr style="display : none;display: none; ">
+            <td class="firstCol" style="width: 30%; text-align: left;"></td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V6">0.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V6">0.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;"></td>
+        </tr>
+        <tr style="display : none;display: none; ">
+            <td class="firstCol" style="width: 30%; text-align: left;">Invoice Total</td>
+            <td style="width: 15%; text-align: right;display : none"> <span id="T7R1V6">5750.00</span> </td>
+            <td style="width: 15%; text-align: right;"> <span id="T7R1V6">5750.00</span> </td>
+            <td class="lastCol" style="width: 40%; text-align: right;">إجمالي الفاتورة</td>
+        </tr>
+    </table>
+    <table id="T8" style="width: 100%; margin-top: 15px;border: 1px teal solid;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 25%; text-align: left;">VAT Summary</td>
+            <td style="width: 25%; text-align: right;"> <span>Taxable Amount(SAR)</span> </td>
+            <td style="width: 25%; text-align: right; font-weight: bold;"> <span>Tax Amount(SAR)</span> </td>
+            <td style="width: 12%; text-align: right;display:none;"> <span>Total Amount</span> </td>
+            <td style="width: 12%; text-align: right;display:none;"> <span>Total Amount(SAR)</span> </td>
+            <td class="lastCol" style="width: 25%; text-align: right;">ملخص ضريبة القيمة المضافة</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 25%; text-align: left;">Standard Rated Supplies/Services @ 15%</td>
+            <td style="width: 25%; text-align: right;"> <span id="T8R1V6">5,000.00</span> </td>
+            <td style="width: 25%; text-align: right; font-weight: bold;"> <span id="T8R1V7">750.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V2">5,750.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V2">5,750.00</span> </td>
+            <td class="lastCol" style="width: 25%; text-align: right;">خدمات/ سلع خاضعة لنسبة أساسية</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 25%; text-align: left;">Zero Rated Supplies/Services</td>
+            <td style="width: 25%; text-align: right;"> <span id="T8R1V8">0.00</span> </td>
+            <td style="width: 25%; text-align: right; font-weight: bold;"> <span id="T8R1V9">0.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V3">0.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V3">0.00</span> </td>
+            <td class="lastCol" style="width: 25%; text-align: right;">خدمات/ سلع خاضعة لنسبة صفرية</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 25%; text-align: left;">Exempt Supplies/Services</td>
+            <td style="width: 25%; text-align: right;"> <span id="T8R1V10">0.00</span> </td>
+            <td style="width: 25%; text-align: right; font-weight: bold;"> <span id="T8R1V11">0.00</span>
+            </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V4">0.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V4">0.00</span> </td>
+            <td class="lastCol" style="width: 25%; text-align: right;">خدمات/ سلع معفاة</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 25%; text-align: left;">Out of Scope Supplies/Services</td>
+            <td style="width: 25%; text-align: right;"> <span id="T8R1V12">0.00</span> </td>
+            <td style="width: 25%; text-align: right; font-weight: bold;"> <span id="T8R1V15">0.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V5">0.00</span> </td>
+            <td style="width: 10%; text-align: right;display:none;"> <span id="T8R1V5">0.00</span> </td>
+            <td class="lastCol" style="width: 25%; text-align: right;">خدمات/ سلع خارج نطاق الضريبة</td>
+        </tr>
+    </table>
+    <table id="T6" style="width: 100%; margin-top:10px;">
+        <tr class="firstRow">
+            <td class="firstCol" style="width: 40%; text-align:left;">Kindly remit the above amount to our following
+                account:</td>
+            <td class="black" style="width:30%; text-align:right;"></td>
+            <td class="lastCol" style="width:30%; text-align:right;">يرجى تحويل المبلغ أعلاه إلى حسابنا التالي</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left; ">Name of the account</td>
+            <td class="black" style="width: 30%; text-align:right;">Blessed Business For Information Technology</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">اسم الحساب</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left; ">Account Number</td>
+            <td class="black" style="width: 30%; text-align:right;">13300001705609</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">رقم الحساب </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left; ">IBAN</td>
+            <td class="black" style="width: 30%; text-align:right;">SA121000013300001705609</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">الايبان</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left; ">Name of the bank</td>
+            <td class="black" style="width: 30%; text-align:right;">The Saudi National Bank</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">اسم البنك</td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left;">Bank`s Swift code for wire transfer</td>
+            <td class="black" style="width: 30%; text-align:right;">NCBKSAJE</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">رمز سويفت </td>
+        </tr>
+        <tr>
+            <td class="firstCol" style="width: 40%; text-align:left; ">Currency</td>
+            <td class="black" style="width: 30%; text-align:right;">SAR</td>
+            <td class="lastCol" style="width: 30%; text-align:right;">العملة</td>
+        </tr>
+    </table>
+    <div class="table-container">
+        <table style="width: 100%; margin-top: 15px;border: 1px teal solid;">
+            <tr class="firstRow" style="height:5px">
+                <td class="firstCol" style=" text-align: left;">Notes</td>
+            </tr>
+            <tr>
+                <td class="firstCol" style=" text-align: left; height: 20px;"> <span id="T6R1V1">Thanks.</span> </td>
+            </tr>
+            <tr>
+                <td class="firstCol" style=" text-align: left; height: 20px;"> <span id="T6R1V1"></span> </td>
+            </tr>
+        </table>
+    </div> <br /> <span style="float: right;display:none;"> Please pay with reference ******</span>
+    <br />
+    <hr style="width:100%;text-align:left;margin-left:0;color: teal;display:none;">
+    <footer>
+        <div class="row" style="font-size: 10px;display:none;">
+            <div class="column2">
+                <p> Commercial registration nr: 2050164710 VAT nr:311673386800003 For questions concerning the status of
+                    your account, please contact our Accounts Receivable Department at +971 (4) 881 2524. For more
+                    information on Brady products, please visit our website at www.bradyeurope.com. For our complete
+                    terms and conditions, which apply to your order, see www.bradyeurope.com/terms </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -306,7 +306,7 @@ filedate:string;
 
         this._profileService.getPasswordComplexitySetting().subscribe((result) => {
             this.passwordComplexitySetting = result.setting;
-           this.modal.show();
+           //this.modal.show();
         });
     }
 

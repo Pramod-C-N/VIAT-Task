@@ -40,5 +40,8 @@ tr.p-selectable-row:nth-child(even) {
 }
 
 #formcontrol {
-    width: 100%
+    width: 100%;
+}
+#bordercolor{
+    border-color: #E4E6EF;
 }

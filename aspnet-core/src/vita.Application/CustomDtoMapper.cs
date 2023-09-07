@@ -1,4 +1,12 @@
-﻿using vita.CustomReportSP.Dtos;
+﻿using vita.DraftFee.Dtos;
+using vita.DraftFee;
+using vita.TenantConfigurations.Dtos;
+using vita.TenantConfigurations;
+using vita.PurchaseDebit.Dtos;
+using vita.PurchaseDebit;
+using vita.PurchaseCredit.Dtos;
+using vita.PurchaseCredit;
+using vita.CustomReportSP.Dtos;
 using vita.CustomReportSP;
 using vita.TenantDetails.Dtos;
 using vita.TenantDetails;
@@ -62,6 +70,11 @@ using vita.Notifications.Dto;
 using vita.Organizations.Dto;
 using vita.Sessions.Dto;
 using vita.WebHooks.Dto;
+using vita.EInvoicing.Dto;
+using Newtonsoft.Json;
+using Twilio.TwiML.Messaging;
+using System.Linq;
+using iText.Layout.Element;
 
 namespace vita
 {
@@ -69,6 +82,533 @@ namespace vita
     {
         public static void CreateMappings(IMapperConfigurationExpression configuration)
         {
+
+            configuration.CreateMap<CreateOrEditDraftVATDetailDto, DraftVATDetail>().ReverseMap();
+            configuration.CreateMap<DraftVATDetailDto, DraftVATDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftSummaryDto, DraftSummary>().ReverseMap();
+            configuration.CreateMap<DraftSummaryDto, DraftSummary>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftPaymentDetailDto, DraftPaymentDetail>().ReverseMap();
+            configuration.CreateMap<DraftPaymentDetailDto, DraftPaymentDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftPartyDto, DraftParty>().ReverseMap();
+            configuration.CreateMap<DraftPartyDto, DraftParty>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftItemDto, DraftItem>().ReverseMap();
+            configuration.CreateMap<DraftItemDto, DraftItem>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftDiscountDto, DraftDiscount>().ReverseMap();
+            configuration.CreateMap<DraftDiscountDto, DraftDiscount>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftContactPersonDto, DraftContactPerson>().ReverseMap();
+            configuration.CreateMap<DraftContactPersonDto, DraftContactPerson>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftAddressDto, DraftAddress>().ReverseMap();
+            configuration.CreateMap<DraftAddressDto, DraftAddress>().ReverseMap();
+            configuration.CreateMap<CreateOrEditDraftDto, Draft>().ReverseMap();
+            configuration.CreateMap<DraftDto, Draft>().ReverseMap();
+            configuration.CreateMap<CreateOrEditTenantConfigurationDto, TenantConfiguration>().ReverseMap();
+            configuration.CreateMap<TenantConfigurationDto, TenantConfiguration>().ReverseMap();
+            configuration.CreateMap<CreateOrEditTenantBankDetailDto, TenantBankDetail>().ReverseMap();
+            configuration.CreateMap<TenantBankDetailDto, TenantBankDetail>().ReverseMap();
+
+            configuration.CreateMap<CreateOrEditDraftDto, PDFRequest>().ForMember(
+    dest => dest.AdditionalData1,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+       .ForMember(
+    dest => dest.AdditionalData2,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+       .ForMember(
+    dest => dest.AdditionalData3,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+       .ForMember(
+    dest => dest.AdditionalData4,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4))).ReverseMap();
+
+            configuration.CreateMap<CreateOrEditSalesInvoiceDto, PDFRequest>()
+                  .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+          .ForMember(
+       dest => dest.AdditionalData2,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+          .ForMember(
+       dest => dest.AdditionalData3,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+          .ForMember(
+       dest => dest.AdditionalData4,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4))).ReverseMap();
+
+            configuration.CreateMap<CreateOrEditCreditNoteDto, PDFRequest>().ForMember(
+dest => dest.AdditionalData1,
+opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+.ForMember(
+dest => dest.AdditionalData2,
+opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+.ForMember(
+dest => dest.AdditionalData3,
+opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+.ForMember(
+dest => dest.AdditionalData4,
+opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4))).ReverseMap();
+
+            configuration.CreateMap<CreateOrEditDebitNoteDto, PDFRequest>().ForMember(
+dest => dest.AdditionalData1,
+opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+.ForMember(
+dest => dest.AdditionalData2,
+opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+.ForMember(
+dest => dest.AdditionalData3,
+opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+.ForMember(
+dest => dest.AdditionalData4,
+opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4))).ReverseMap();
+
+            configuration.CreateMap<InvoiceRequestLanguage, InvoiceRequest>().ReverseMap();
+
+            configuration.CreateMap<InvoiceRequestLanguage, CreateOrEditSalesInvoiceDto>()
+          .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+          .ForMember(
+       dest => dest.AdditionalData2,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+          .ForMember(
+       dest => dest.AdditionalData3,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+          .ForMember(
+       dest => dest.AdditionalData4,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4)))
+            .ReverseMap();
+
+            configuration.CreateMap<InvoiceRequestLanguage, CreateOrEditCreditNoteDto>()
+       .ForMember(
+    dest => dest.AdditionalData1,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+       .ForMember(
+    dest => dest.AdditionalData2,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+       .ForMember(
+    dest => dest.AdditionalData3,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+       .ForMember(
+    dest => dest.AdditionalData4,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4))).ReverseMap();
+
+            configuration.CreateMap<InvoiceRequestLanguage, CreateOrEditDebitNoteDto>()
+       .ForMember(
+    dest => dest.AdditionalData1,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+       .ForMember(
+    dest => dest.AdditionalData2,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+       .ForMember(
+    dest => dest.AdditionalData3,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+       .ForMember(
+    dest => dest.AdditionalData4,
+    opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4))).ReverseMap();
+
+            //-------------------------------------------Draft--------------------------------------------------------
+            configuration.CreateMap<InvoiceRequest, CreateOrEditDraftDto>()
+                .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+                .ForMember(
+             dest => dest.AdditionalData3,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+                .ForMember(
+             dest => dest.AdditionalData4,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4)))
+                .ReverseMap()
+              .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+          .ForMember(
+       dest => dest.AdditionalData2,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+          .ForMember(
+       dest => dest.AdditionalData3,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+          .ForMember(
+       dest => dest.AdditionalData4,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4)));
+
+                       configuration.CreateMap<InvoicePartyDto, CreateOrEditDraftPartyDto>()
+                 .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceItemDto, CreateOrEditDraftItemDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                  .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceSummaryDto, CreateOrEditDraftSummaryDto>().ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceDiscountDto, CreateOrEditDraftDiscountDto>().ReverseMap();
+            configuration.CreateMap<InvoiceVATDetailDto, CreateOrEditDraftVATDetailDto>()
+                 .ForMember(
+            dest => dest.AdditionalData1,
+            opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+            .ForMember(
+      dest => dest.AdditionalData1,
+      opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoicePaymentDetailDto, CreateOrEditDraftPaymentDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceAddressDto, CreateOrEditDraftAddressDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceContactPersonDto, CreateOrEditDraftContactPersonDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            //-------------------------------------------Sales-------------------------------------------------------
+
+            configuration.CreateMap<InvoiceRequest, CreateOrEditSalesInvoiceDto>()
+                .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+                .ForMember(
+             dest => dest.AdditionalData3,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+                .ForMember(
+             dest => dest.AdditionalData4,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4)))
+                .ReverseMap()
+              .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+          .ForMember(
+       dest => dest.AdditionalData2,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+          .ForMember(
+       dest => dest.AdditionalData3,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+          .ForMember(
+       dest => dest.AdditionalData4,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4)));
+
+            configuration.CreateMap<InvoicePartyDto, CreateOrEditSalesInvoicePartyDto>()
+                 .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceItemDto, CreateOrEditSalesInvoiceItemDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                  .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceSummaryDto, CreateOrEditSalesInvoiceSummaryDto>().ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceDiscountDto, CreateOrEditSalesInvoiceDiscountDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceVATDetailDto, CreateOrEditSalesInvoiceVATDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoicePaymentDetailDto, CreateOrEditSalesInvoicePaymentDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceAddressDto, CreateOrEditSalesInvoiceAddressDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceContactPersonDto, CreateOrEditSalesInvoiceContactPersonDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            //------------------------------------Debit----------------------------------------------------------------
+
+            configuration.CreateMap<InvoiceRequest, CreateOrEditDebitNoteDto>()
+           .ForMember(
+        dest => dest.AdditionalData1,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+           .ForMember(
+        dest => dest.AdditionalData2,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+           .ForMember(
+        dest => dest.AdditionalData3,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+           .ForMember(
+        dest => dest.AdditionalData4,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4)))
+           .ReverseMap()
+         .ForMember(
+  dest => dest.AdditionalData1,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+     .ForMember(
+  dest => dest.AdditionalData2,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+     .ForMember(
+  dest => dest.AdditionalData3,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+     .ForMember(
+  dest => dest.AdditionalData4,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4)));
+
+            configuration.CreateMap<InvoicePartyDto, CreateOrEditDebitNotePartyDto>()
+                 .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceItemDto, CreateOrEditDebitNoteItemDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                  .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceSummaryDto, CreateOrEditDebitNoteSummaryDto>().ForMember(
+                           dest => dest.AdditionalData1,
+                           opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+                           .ForMember(
+                     dest => dest.AdditionalData1,
+                     opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceDiscountDto, CreateOrEditDebitNoteDiscountDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceVATDetailDto, CreateOrEditDebitNoteVATDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoicePaymentDetailDto, CreateOrEditDebitNotePaymentDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceAddressDto, CreateOrEditDebitNoteAddressDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceContactPersonDto, CreateOrEditDebitNoteContactPersonDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            //--------------------------------------------------Credit-----------------------------------------------
+
+            configuration.CreateMap<InvoiceRequest, CreateOrEditCreditNoteDto>()
+           .ForMember(
+        dest => dest.AdditionalData1,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+           .ForMember(
+        dest => dest.AdditionalData2,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2)))
+           .ForMember(
+        dest => dest.AdditionalData3,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.SerializeObject(src.AdditionalData3)))
+           .ForMember(
+        dest => dest.AdditionalData4,
+        opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.SerializeObject(src.AdditionalData4)))
+           .ReverseMap()
+         .ForMember(
+  dest => dest.AdditionalData1,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)))
+     .ForMember(
+  dest => dest.AdditionalData2,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData2)))
+     .ForMember(
+  dest => dest.AdditionalData3,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData3 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData3)))
+     .ForMember(
+  dest => dest.AdditionalData4,
+  opt => opt.MapFrom((src, dest) => src.AdditionalData4 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData4)));
+
+            configuration.CreateMap<InvoicePartyDto, CreateOrEditCreditNotePartyDto>()
+                 .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceItemDto, CreateOrEditCreditNoteItemDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)))
+                  .ForMember(
+             dest => dest.AdditionalData2,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData2 == null ? null : JsonConvert.SerializeObject(src.AdditionalData2))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceSummaryDto, CreateOrEditCreditNoteSummaryDto>().ForMember(
+                         dest => dest.AdditionalData1,
+                         opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+                         .ForMember(
+                   dest => dest.AdditionalData1,
+                   opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            configuration.CreateMap<InvoiceDiscountDto, CreateOrEditCreditNoteDiscountDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceVATDetailDto, CreateOrEditCreditNoteVATDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoicePaymentDetailDto, CreateOrEditCreditNotePaymentDetailDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceAddressDto, CreateOrEditCreditNoteAddressDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+            configuration.CreateMap<InvoiceContactPersonDto, CreateOrEditCreditNoteContactPersonDto>()
+                  .ForMember(
+             dest => dest.AdditionalData1,
+             opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1))).ReverseMap()
+             .ForMember(
+       dest => dest.AdditionalData1,
+       opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.DeserializeObject<object>(src.AdditionalData1)));
+
+            //-------------------------------------------------------------------------------------------------
+
+            configuration.CreateMap<InvoiceRequest, CreateOrEditPurchaseEntryDto>().ForMember(
+            dest => dest.Additional_Data,
+                opt => opt.MapFrom((src, dest) => src.AdditionalData1 == null ? null : JsonConvert.SerializeObject(src.AdditionalData1)));
+            configuration.CreateMap<CreateOrEditPurchaseEntryPartyDto, InvoicePartyDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryItemDto, InvoiceItemDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntrySummaryDto, InvoiceSummaryDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryDiscountDto, InvoiceDiscountDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryVATDetailDto, InvoiceVATDetailDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryPaymentDetailDto, InvoicePaymentDetailDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryAddressDto, InvoiceAddressDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseEntryContactPersonDto, InvoiceContactPersonDto>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteDiscountDto, PurchaseDebitNoteDiscount>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteDiscountDto, PurchaseDebitNoteDiscount>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteVATDetailDto, PurchaseDebitNoteVATDetail>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteVATDetailDto, PurchaseDebitNoteVATDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteContactPersonDto, PurchaseDebitNoteContactPerson>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteContactPersonDto, PurchaseDebitNoteContactPerson>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteItemDto, PurchaseDebitNoteItem>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteItemDto, PurchaseDebitNoteItem>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNotePaymentDetailDto, PurchaseDebitNotePaymentDetail>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNotePaymentDetailDto, PurchaseDebitNotePaymentDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteAddressDto, PurchaseDebitNoteAddress>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteAddressDto, PurchaseDebitNoteAddress>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNotePartyDto, PurchaseDebitNoteParty>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNotePartyDto, PurchaseDebitNoteParty>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteSummaryDto, PurchaseDebitNoteSummary>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteSummaryDto, PurchaseDebitNoteSummary>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseDebitNoteDto, PurchaseDebitNote>().ReverseMap();
+            configuration.CreateMap<PurchaseDebitNoteDto, PurchaseDebitNote>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteDiscountDto, PurchaseCreditNoteDiscount>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteDiscountDto, PurchaseCreditNoteDiscount>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteItemDto, PurchaseCreditNoteItem>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteItemDto, PurchaseCreditNoteItem>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteVATDetailDto, PurchaseCreditNoteVATDetail>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteVATDetailDto, PurchaseCreditNoteVATDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNotePaymentDetailDto, PurchaseCreditNotePaymentDetail>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNotePaymentDetailDto, PurchaseCreditNotePaymentDetail>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteContactPersonDto, PurchaseCreditNoteContactPerson>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteContactPersonDto, PurchaseCreditNoteContactPerson>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteAddressDto, PurchaseCreditNoteAddress>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteAddressDto, PurchaseCreditNoteAddress>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNotePartyDto, PurchaseCreditNoteParty>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNotePartyDto, PurchaseCreditNoteParty>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteSummaryDto, PurchaseCreditNoteSummary>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteSummaryDto, PurchaseCreditNoteSummary>().ReverseMap();
+            configuration.CreateMap<CreateOrEditPurchaseCreditNoteDto, PurchaseCreditNote>().ReverseMap();
+            configuration.CreateMap<PurchaseCreditNoteDto, PurchaseCreditNote>().ReverseMap();
             configuration.CreateMap<CreateOrEditModuleDto, Module>().ReverseMap();
             configuration.CreateMap<ModuleDto, Module>().ReverseMap();
             configuration.CreateMap<CreateOrEditDesignationDto, Designation>().ReverseMap();

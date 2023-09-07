@@ -116,14 +116,14 @@ namespace vita.Debit
 
         public async Task CreateOrEdit(CreateOrEditDebitNoteAddressDto input)
         {
-                await Create(input);
+            await Create(input);
         }
 
         [AbpAuthorize(AppPermissions.Pages_DebitNoteAddresses_Create)]
         protected virtual async Task Create(CreateOrEditDebitNoteAddressDto input)
         {
             var debitNoteAddress = ObjectMapper.Map<DebitNoteAddress>(input);
-            debitNoteAddress.UniqueIdentifier= Guid.NewGuid();
+            debitNoteAddress.UniqueIdentifier = Guid.NewGuid();
             if (AbpSession.TenantId != null)
             {
                 debitNoteAddress.TenantId = (int?)AbpSession.TenantId;

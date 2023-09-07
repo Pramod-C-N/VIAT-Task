@@ -7,7 +7,7 @@ namespace vita.Debit.Dtos
     public class CreateOrEditDebitNoteVATDetailDto : EntityDto<long?>
     {
 
-        
+
         public string IRNNo { get; set; }
 
         public string TaxSchemeId { get; set; }
@@ -25,6 +25,9 @@ namespace vita.Debit.Dtos
         public decimal TaxAmount { get; set; }
 
         public string CurrencyCode { get; set; }
+
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
 
     }
 }

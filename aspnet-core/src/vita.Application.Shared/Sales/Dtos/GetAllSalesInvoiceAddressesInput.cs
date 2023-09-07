@@ -29,5 +29,9 @@ namespace vita.Sales.Dtos
 
         public string TypeFilter { get; set; }
 
+        public string AdditionalData1Filter { get; set; }
+
+        public string LanguageFilter { get; set; }
+
     }
 }

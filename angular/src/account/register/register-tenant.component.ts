@@ -96,8 +96,8 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
                   companycode: ['', []],
                 crnumber: ['', [Validators.pattern("^[0-9]*$"),Validators.maxLength(10),Validators.minLength(10)] ],
                   companyname: ['', [Validators.required,Validators.maxLength(68)] ],
-                  adminusername: ['', [Validators.required,Validators.maxLength(64)] ],
-                  adminsurname: ['', [Validators.required,Validators.maxLength(64)] ],
+                  adminusername: ['', [Validators.required,Validators.maxLength(64),Validators.pattern("[a-zA-Z][a-zA-Z ]+")] ],
+                  adminsurname: ['', [Validators.required,Validators.maxLength(64),Validators.pattern("[a-zA-Z][a-zA-Z ]+")] ],
                   adminemail:['', [Validators.required,Validators.maxLength(256)] ],
                   Additnalstreet: ['', []],
                   pin: ['', [Validators.required,
@@ -165,7 +165,9 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
         }
 
         this._profileService.getPasswordComplexitySetting().subscribe((result) => {
+           
             this.passwordComplexitySetting = result.setting;
+            
         });
 
         this.loadindividualdt=true;
@@ -174,7 +176,7 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
         this.tenants.constitutionType=null;
         this.tenants.tenantType=null;
         this.tenants.vatReturnFillingFrequency=null;
-        this.getCountriesDropdown();
+        //this.getCountriesDropdown();
 
 
     }
@@ -240,19 +242,26 @@ export class RegisterTenantComponent extends AppComponentBase implements OnInit,
     }
     async isvatRegistered(){
         //return false 
+        if((this.tenants.vatid).charAt(10)!='1')
+        {
        var res = await firstValueFrom(this._tenantRegistrationService.checkIfVatExists(this.tenants.vatid,true))
-        return res
+       return res;
+        }
+        else
+        {
+            return res;
+        }
     }
     async save(): Promise<void> {
       
-console.log(this.privacyEnabled)
 if(this.isFormValid())
 {
+    
     this.model.tenancyName="dummy_1"
     if((this.tenants.vatid==null || this.tenants.vatid==undefined )&&(
         this.documents.documentNumber==null || this.documents.documentNumber==undefined))
         {
-        this.notify.error(this.l('Please fill either CR number or VAT ID to save.'));
+        this.notify.error(this.l('Please fill either CR number or VAT number to save.'));
         }
     else if(this.model.adminPassword==null || this.model.adminPassword==undefined)
     {
@@ -433,6 +442,7 @@ if(this.isFormValid())
 
         // this.tenants.documents=this.documents;        
         this.tenants.address=this.address;
+        this.tenants.tenantType='Individual'
             this._tenantRegistrationService
             .createTenant(this.tenants)
             .pipe(finalize(() => (this.saving = false,

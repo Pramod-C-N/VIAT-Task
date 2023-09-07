@@ -9,6 +9,8 @@ import {
     TenantSettingsEditDto,
     TenantSettingsServiceProxy,
     JsonClaimMapDto,
+    CreateOrEditTenantConfigurationDto,
+    TenantConfigurationServiceProxy,
 } from '@shared/service-proxies/service-proxies';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { finalize } from 'rxjs/operators';
@@ -27,10 +29,115 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
     @ViewChild('uploadLogoInputLabel') uploadLogoInputLabel: ElementRef;
     @ViewChild('uploadCustomCSSInputLabel') uploadCustomCSSInputLabel: ElementRef;
 
+    shipmentDetailsModel: any = {
+        crNumber: {
+            type: 'text',
+            value: '',
+            placeholder: ' Code',
+            // rules: {
+            //     required: true,
+            // },
+            col: '3',
+        },
+        registrationName: {
+            type: 'text',
+            value: '',
+            placeholder: ' Name',
+            col: '5',
+        },
+        vatid: {
+            type: 'text',
+            value: '',
+            placeholder: ' VAT Number',
+            col: '4',
+        },
+        address: {
+            isChildGroup: true,
+            buildingNo: {
+                type: 'text',
+                value: '',
+                placeholder: ' Building No',
+                col: '2',
+            },
+            additionalNo: {
+                type: 'text',
+                value: '',
+                placeholder: ' Additional No',
+                col: '2',
+            },
+            street: {
+                type: 'text',
+                value: '',
+                placeholder: ' Street',
+                col: '4',
+            },
+            additionalStreet: {
+                type: 'text',
+                value: '',
+                placeholder: ' Additional Street',
+                col: '4',
+            },
+            city: {
+                type: 'text',
+                value: '',
+                placeholder: ' City',
+                col: '2',
+            },
+            neighbourhood: {
+                type: 'text',
+                value: '',
+                placeholder: ' District',
+                col: '2',
+            },
+            state: {
+                type: 'text',
+                value: '',
+                placeholder: ' Province/State',
+                col: '3',
+            },
+            postalCode: {
+                type: 'text',
+                value: '',
+                placeholder: ' Postal Code',
+                col: '2',
+            },
+            countryCode: {
+                type: 'text',
+                value: '',
+                placeholder: ' Country Code',
+                col: '3',
+            },
+        },
+        contactPerson: {
+            isChildGroup: true,
+            name: {
+                type: 'text',
+                value: '',
+                placeholder: ' Attn',
+                col: '5',
+            },
+            contactNumber: {
+                type: 'text',
+                value: '',
+                placeholder: ' Contact',
+                col: '4',
+            },
+        },
+    };
+
     usingDefaultTimeZone = false;
     initialTimeZone: string = null;
     testEmailAddress: string = undefined;
     setRandomPassword: boolean;
+
+    configurations: CreateOrEditTenantConfigurationDto = new CreateOrEditTenantConfigurationDto();
+    emailCongiguration: any = {};
+    additionalFieldsConfiguration: any = {};
+    shipmentFieldsConfiguration: any = {};
+    configurationsList: CreateOrEditTenantConfigurationDto[] = [];
+    isShipmentEnabled: boolean = false;
+    additionalFieldList: any[] = [];
+    deleteList: number[] = [];
 
     isMultiTenancyEnabled: boolean = this.multiTenancy.isEnabled;
     showTimezoneSelection: boolean = abp.clock.provider.supportsMultipleTimezone;
@@ -61,12 +168,16 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
 
     initialEmailSettings: string;
 
+    generateDraft:boolean=false;
+
     constructor(
         injector: Injector,
         private _tenantSettingsService: TenantSettingsServiceProxy,
-        private _tokenService: TokenService
+        private _tokenService: TokenService,
+        private _tenantConfigurationService: TenantConfigurationServiceProxy
     ) {
         super(injector);
+        this.getConfigurations();
     }
 
     ngOnInit(): void {
@@ -74,6 +185,39 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
         this.getSettings();
         this.initUploaders();
         this.loadSocialLoginSettings();
+    }
+
+    getConfigurations(): void {
+        this._tenantConfigurationService.getAll('', '', 0, 100000).subscribe((e) => {
+            console.log(e);
+            if (e.totalCount > 0) {
+                e.items.forEach((val) => {
+                    if (val.tenantConfiguration.transactionType == 'General') {
+                        this.configurations.isPhase1 = val.tenantConfiguration.isPhase1;
+                        this.emailCongiguration = JSON.parse(val.tenantConfiguration.emailJson);
+                        this.configurations.language = val.tenantConfiguration.language;
+                        this.configurations.additionalData1 = val.tenantConfiguration.additionalData1;
+                        this.configurations.additionalData2 = val.tenantConfiguration.additionalData2 ?? 'false';
+                        this.generateDraft = val.tenantConfiguration.additionalData2 === "true"
+                    }
+                    this.configurationsList.push(
+                        new CreateOrEditTenantConfigurationDto({
+                            shipmentJson: val.tenantConfiguration.shipmentJson,
+                            additionalFieldsJson: val.tenantConfiguration.additionalFieldsJson,
+                            emailJson: val.tenantConfiguration.emailJson,
+                            additionalData1: val.tenantConfiguration.additionalData1,
+                            additionalData2: val.tenantConfiguration.additionalData2,
+                            additionalData3: val.tenantConfiguration.additionalData3,
+                            isPhase1: val.tenantConfiguration.isPhase1,
+                            transactionType: val.tenantConfiguration.transactionType,
+                            isActive: val.tenantConfiguration.isActive,
+                            id: val.tenantConfiguration.id,
+                            language: val.tenantConfiguration.language,
+                        })
+                    );
+                });
+            }
+        });
     }
 
     getSettings(): void {
@@ -129,12 +273,13 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
                         value: item.claim,
                     }));
 
-                if(this.settings.externalLoginProviderSettings.openIdConnect.responseType){                
-                    var openIdConnectResponseTypes = this.settings.externalLoginProviderSettings.openIdConnect.responseType.split(',');
-                    
-                    this.openIdConnectResponseTypeCode = openIdConnectResponseTypes.indexOf('code') >- 1;
-                    this.openIdConnectResponseTypeIdToken = openIdConnectResponseTypes.indexOf('id_token') >- 1;
-                    this.openIdConnectResponseTypeToken = openIdConnectResponseTypes.indexOf('token') >- 1 ;
+                if (this.settings.externalLoginProviderSettings.openIdConnect.responseType) {
+                    var openIdConnectResponseTypes =
+                        this.settings.externalLoginProviderSettings.openIdConnect.responseType.split(',');
+
+                    this.openIdConnectResponseTypeCode = openIdConnectResponseTypes.indexOf('code') > -1;
+                    this.openIdConnectResponseTypeIdToken = openIdConnectResponseTypes.indexOf('id_token') > -1;
+                    this.openIdConnectResponseTypeToken = openIdConnectResponseTypes.indexOf('token') > -1;
                 }
 
                 this.initialEmailSettings = JSON.stringify(this.settings.email);
@@ -247,16 +392,121 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
         }
     }
 
+    deleteConfiguration(index) {
+        this.deleteList.push(this.configurationsList[index].id);
+        this.configurationsList.splice(index, 1);
+    }
+
+    editConfiguration(index) {
+        this.configurations = this.configurationsList[index];
+        this.configurationsList.splice(index, 1);
+        this.additionalFieldList = [];
+
+        let conf = JSON.parse(this.configurations.additionalFieldsJson);
+        this.additionalFieldList = Object.keys(conf).map((val) => {
+            return {
+                name: conf[val]?.placeholder,
+                col: conf[val]?.col,
+                type: conf[val]?.type,
+                isRequired: conf[val]?.rules?.required ?? false,
+            };
+        });
+
+        this.isShipmentEnabled = this.configurations.shipmentJson != null;
+    }
+
+    addConfiguration() {
+        let conf = {};
+        this.additionalFieldList.forEach((val) => {
+            conf[val?.name?.toLowerCase()?.replaceAll(' ', '_')] = {
+                type: val?.type,
+                value: '',
+                placeholder: val?.name,
+                col: val?.col,
+            };
+            val?.isRequired
+                ? (conf[val?.name?.toLowerCase()?.replaceAll(' ', '_')].rules = {
+                      required: val?.isRequired,
+                  })
+                : null;
+        });
+
+        this.additionalFieldList.length > 0
+            ? (this.configurations.additionalFieldsJson = JSON.stringify(conf))
+            : (this.configurations.additionalFieldsJson = null);
+
+        this.isShipmentEnabled
+            ? (this.configurations.shipmentJson = JSON.stringify(this.shipmentDetailsModel))
+            : (this.configurations.shipmentJson = null);
+
+        console.log(this.configurations);
+
+        this.configurationsList.push(JSON.parse(JSON.stringify(this.configurations)));
+
+        this.configurations = new CreateOrEditTenantConfigurationDto();
+        this.additionalFieldList = [];
+        this.isShipmentEnabled = false;
+    }
+
+    addField() {
+        this.additionalFieldList.push({
+            name: 'Field ' + this.additionalFieldList.length,
+            col: '3',
+            val: 'text',
+            isRequired: false,
+        });
+    }
+
+    deleteField(i) {
+        this.additionalFieldList.splice(i, 1);
+    }
+
+    saveConfigurations(): void {
+        // this.configurations.additionalFieldsJson = JSON.stringify(this.additionalFieldsConfiguration);
+        // this.configurations.shipmentJson = JSON.stringify(this.shipmentFieldsConfiguration);
+        let configurations = new CreateOrEditTenantConfigurationDto();
+        let general = this.configurationsList.find((a) => a.transactionType == 'General');
+
+        configurations.transactionType = 'General';
+        configurations.emailJson = JSON.stringify(this.emailCongiguration);
+        configurations.isActive = true;
+        configurations.isPhase1 = this.configurations.isPhase1;
+        configurations.language = this.configurations.language;
+        configurations.additionalData1 = this.configurations.additionalData1;
+        configurations.additionalData2 = this.generateDraft?'true':'false';
+        configurations.id = general != undefined ? general.id : null;
+        this._tenantConfigurationService.createOrEdit(configurations).subscribe((e) => {});
+
+        this.deleteList.forEach((val) => {
+            this._tenantConfigurationService.delete(val).subscribe((e) => {});
+        });
+
+        this.configurationsList
+            .filter((a) => a.transactionType != 'General')
+            .forEach((val) => {
+                this._tenantConfigurationService.createOrEdit(val).subscribe((e) => {});
+            });
+        // this.configurations = new CreateOrEditTenantConfigurationDto();
+        //   this.configurations.isActive
+        //   this.configurations.transactionType
+    }
+
     saveAll(): void {
+        this.saveConfigurations();
+
         if (!this.isSmtpSettingsFormValid()) {
             return;
         }
 
-        this.settings.externalLoginProviderSettings.openIdConnect.responseType = this.getSelectedOpenIdConnectResponseTypes();
-        
+        this.settings.externalLoginProviderSettings.openIdConnect.responseType =
+            this.getSelectedOpenIdConnectResponseTypes();
+
         this.mapClaims();
         this._tenantSettingsService.updateAllSettings(this.settings).subscribe(() => {
             this.notify.info(this.l('SavedSuccessfully'));
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
 
             if (
                 abp.clock.provider.supportsMultipleTimezone &&
@@ -269,26 +519,30 @@ export class TenantSettingsComponent extends AppComponentBase implements OnInit 
             }
             this.initialEmailSettings = JSON.stringify(this.settings.email);
         });
+
+        // setTimeout(()=>{
+        //     window.location.reload();
+        // },2000)
     }
 
     getSelectedOpenIdConnectResponseTypes(): string {
-        var openIdConnectResponseTypes='';
-        if(this.openIdConnectResponseTypeToken){
-            openIdConnectResponseTypes += "token";
+        var openIdConnectResponseTypes = '';
+        if (this.openIdConnectResponseTypeToken) {
+            openIdConnectResponseTypes += 'token';
         }
 
-        if(this.openIdConnectResponseTypeIdToken){
-            if(openIdConnectResponseTypes.length > 0){
-                openIdConnectResponseTypes += ",";
+        if (this.openIdConnectResponseTypeIdToken) {
+            if (openIdConnectResponseTypes.length > 0) {
+                openIdConnectResponseTypes += ',';
             }
-            openIdConnectResponseTypes+="id_token";
+            openIdConnectResponseTypes += 'id_token';
         }
 
-        if(this.openIdConnectResponseTypeCode){
-            if(openIdConnectResponseTypes.length > 0){
-                openIdConnectResponseTypes += ",";
+        if (this.openIdConnectResponseTypeCode) {
+            if (openIdConnectResponseTypes.length > 0) {
+                openIdConnectResponseTypes += ',';
             }
-            openIdConnectResponseTypes += "code";
+            openIdConnectResponseTypes += 'code';
         }
 
         return openIdConnectResponseTypes;

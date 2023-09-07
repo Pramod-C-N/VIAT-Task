@@ -57,7 +57,8 @@ namespace vita.Credit
                         .WhereIf(input.MinAdvanceAmountwithoutVatFilter != null, e => e.AdvanceAmountwithoutVat >= input.MinAdvanceAmountwithoutVatFilter)
                         .WhereIf(input.MaxAdvanceAmountwithoutVatFilter != null, e => e.AdvanceAmountwithoutVat <= input.MaxAdvanceAmountwithoutVatFilter)
                         .WhereIf(input.MinAdvanceVatFilter != null, e => e.AdvanceVat >= input.MinAdvanceVatFilter)
-                        .WhereIf(input.MaxAdvanceVatFilter != null, e => e.AdvanceVat <= input.MaxAdvanceVatFilter);
+                        .WhereIf(input.MaxAdvanceVatFilter != null, e => e.AdvanceVat <= input.MaxAdvanceVatFilter)
+                         .WhereIf(!string.IsNullOrWhiteSpace(input.AdditionalData1Filter), e => e.AdditionalData1.Contains(input.AdditionalData1Filter));
 
             var pagedAndFilteredCreditNoteSummary = filteredCreditNoteSummary
                 .OrderBy(input.Sorting ?? "id asc")
@@ -83,6 +84,7 @@ namespace vita.Credit
                                         o.PayableAmountCurrency,
                                         o.AdvanceAmountwithoutVat,
                                         o.AdvanceVat,
+                                        o.AdditionalData1,
                                         Id = o.Id
                                     };
 
@@ -114,6 +116,7 @@ namespace vita.Credit
                         PayableAmountCurrency = o.PayableAmountCurrency,
                         AdvanceAmountwithoutVat = o.AdvanceAmountwithoutVat,
                         AdvanceVat = o.AdvanceVat,
+                        AdditionalData1=o.AdditionalData1,
                         Id = o.Id,
                     }
                 };

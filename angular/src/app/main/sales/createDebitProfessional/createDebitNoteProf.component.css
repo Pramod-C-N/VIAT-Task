@@ -1,0 +1,13 @@
+.borderDebitColor{
+    border: solid;
+    border-width: thick;
+    border-color: #F1BC00;
+    border-radius: 1%;
+}
+.row > * {
+    padding-right: 0%;
+}
+
+.p-autocomplete-input {
+    height: 50px !important;
+  }

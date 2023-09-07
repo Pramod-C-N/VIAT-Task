@@ -33,8 +33,10 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetFinancialYearForViewDto>> GetAll(GetAllFinancialYearInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredFinancialYear = _financialYearRepository.GetAll()
+                var filteredFinancialYear = _financialYearRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.EffectiveFromDate.Contains(input.Filter) || e.EffectiveTillEndDate.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -43,55 +45,55 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.EffectiveTillEndDateFilter), e => e.EffectiveTillEndDate.Contains(input.EffectiveTillEndDateFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredFinancialYear = filteredFinancialYear
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredFinancialYear = filteredFinancialYear
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var financialYear = from o in pagedAndFilteredFinancialYear
-                                select new
-                                {
+                var financialYear = from o in pagedAndFilteredFinancialYear
+                                    select new
+                                    {
 
-                                    o.Name,
-                                    o.Description,
-                                    o.Code,
-                                    o.EffectiveFromDate,
-                                    o.EffectiveTillEndDate,
-                                    o.IsActive,
-                                    Id = o.Id
-                                };
+                                        o.Name,
+                                        o.Description,
+                                        o.Code,
+                                        o.EffectiveFromDate,
+                                        o.EffectiveTillEndDate,
+                                        o.IsActive,
+                                        Id = o.Id
+                                    };
 
-            var totalCount = await filteredFinancialYear.CountAsync();
+                var totalCount = await filteredFinancialYear.CountAsync();
 
-            var dbList = await financialYear.ToListAsync();
-            var results = new List<GetFinancialYearForViewDto>();
+                var dbList = await financialYear.ToListAsync();
+                var results = new List<GetFinancialYearForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetFinancialYearForViewDto()
+                foreach (var o in dbList)
                 {
-                    FinancialYear = new FinancialYearDto
+                    var res = new GetFinancialYearForViewDto()
                     {
+                        FinancialYear = new FinancialYearDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        EffectiveFromDate = o.EffectiveFromDate,
-                        EffectiveTillEndDate = o.EffectiveTillEndDate,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            EffectiveFromDate = o.EffectiveFromDate,
+                            EffectiveTillEndDate = o.EffectiveTillEndDate,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetFinancialYearForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetFinancialYearForViewDto>(
-                totalCount,
-                results
-            );
-
         }
-
         public async Task<GetFinancialYearForViewDto> GetFinancialYearForView(int id)
         {
             var financialYear = await _financialYearRepository.GetAsync(id);

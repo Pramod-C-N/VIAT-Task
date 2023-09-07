@@ -1,0 +1,10 @@
+@media screen and (max-width: 480px) {
+    .defSmallLogo {
+      display: block; /* The width is 100%, when the viewport is 800px or smaller */
+
+    }
+
+    .dflogo{
+        display: none;
+    }
+  }

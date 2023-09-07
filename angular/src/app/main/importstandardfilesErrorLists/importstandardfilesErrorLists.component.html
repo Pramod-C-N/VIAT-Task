@@ -1,32 +1,36 @@
 ﻿<div [@routerTransition]>
   <div class="content d-flex flex-column flex-column-fluid">
-    <sub-header [title]="'Batch Details' | localize" [description]="">
+    <sub-header [title]="'Batch Details' | localize" [description]="" *ngIf="Deletepage == false;">
     </sub-header>
     <div class="app-container container-fluid">
       <div class="card">
-        <div class="card-body py-3">
-          <div class="row gx-10 text-center">
-            <div class="col-lg-8 ">
+        <div class="card-body py-3" *ngIf="Deletepage == false;">
+          <div class="row col-md-12 mt-3">
+            <div class="col-md-8">
               <label class="d-flex align-items-center">
                 <span class="">&nbsp;</span>
               </label>
               <label class="d-flex align-items-center mb-2">
                 <span class="card-label fw-bolder fs-3 mb-1 px-10 pt-0">
-                  Batch Id: {{ batchid }}
+                  Batch Number : {{ batchid }}
                 </span>
               </label>
             </div>
-            <div class="col-lg-4">
+            <div class="col-md-2">
               <div role="actions">
-                <button (click)="exportToExcel(batchid)"
-                  class="btn btn-outline btn-outline-success btn-active-light-success me-1">
-                  <i class="fa fa-file-excel"></i>
-                  {{ l('ExportToExcel') }}
-                </button>
-                <button (click)="Override()" class="btn btn-outline btn-outline-danger btn-active-light-danger me-1">
-                  {{ l('Override') }}
+                <button type="button" class="btn btn-outline btn-outline-success me-1 w-100"
+                  (click)="exportToExcel(batchid)">
+                  <i class="far fa-file-excel btn-md-icon"></i>
+                  Download
                 </button>
               </div>
+            </div>
+            <div  class="col-md-2" role="actions">
+              <button type="button"   [disabled]="disable == true"
+               class="btn btn-outline btn-outline-danger me-1 w-100"
+              (click)="Override()">              
+              Override
+            </button>             
             </div>
           </div>
           <div class="separator separator-dashed"></div>
@@ -38,7 +42,7 @@
                 <th class="text-center" *ngFor="let c of columns">
                   {{ c.header }}
                 </th>
-                <th class="text-center">
+                <th class="text-center" *ngIf="Deletepage == false && hide == true;">
                   Select All
                   <input [(ngModel)]="isSelectAll" type="checkbox" (click)="selectAll()" />
                 </th>
@@ -64,8 +68,8 @@
                     Success
                   </span>
                 </td>
-                <td>
-                  <span *ngIf="record.isOverride==1">
+                <td *ngIf="Deletepage == false && hide == true;">
+                  <span *ngIf="record.isOverride==1" >
                     <input [(ngModel)]="record.isSelected" type="checkbox"
                       (click)="checkAllSelected(record.isSelected)" />
                   </span>

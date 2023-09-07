@@ -33,57 +33,59 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetBusinessOperationalModelForViewDto>> GetAll(GetAllBusinessOperationalModelInput input)
         {
-
-            var filteredBusinessOperationalModel = _businessOperationalModelRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredBusinessOperationalModel = _businessOperationalModelRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredBusinessOperationalModel = filteredBusinessOperationalModel
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredBusinessOperationalModel = filteredBusinessOperationalModel
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var businessOperationalModel = from o in pagedAndFilteredBusinessOperationalModel
-                                           select new
-                                           {
+                var businessOperationalModel = from o in pagedAndFilteredBusinessOperationalModel
+                                               select new
+                                               {
 
-                                               o.Name,
-                                               o.Description,
-                                               o.Code,
-                                               o.IsActive,
-                                               Id = o.Id
-                                           };
+                                                   o.Name,
+                                                   o.Description,
+                                                   o.Code,
+                                                   o.IsActive,
+                                                   Id = o.Id
+                                               };
 
-            var totalCount = await filteredBusinessOperationalModel.CountAsync();
+                var totalCount = await filteredBusinessOperationalModel.CountAsync();
 
-            var dbList = await businessOperationalModel.ToListAsync();
-            var results = new List<GetBusinessOperationalModelForViewDto>();
+                var dbList = await businessOperationalModel.ToListAsync();
+                var results = new List<GetBusinessOperationalModelForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetBusinessOperationalModelForViewDto()
+                foreach (var o in dbList)
                 {
-                    BusinessOperationalModel = new BusinessOperationalModelDto
+                    var res = new GetBusinessOperationalModelForViewDto()
                     {
+                        BusinessOperationalModel = new BusinessOperationalModelDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetBusinessOperationalModelForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetBusinessOperationalModelForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetBusinessOperationalModelForViewDto> GetBusinessOperationalModelForView(int id)

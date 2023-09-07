@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using vita.Credit.Dtos;
 using vita.Debit.Dtos;
+using vita.EInvoicing.Dto;
 using vita.Sales.Dtos;
 
 namespace vita.PdfFile
 {
     public interface IPdfReportAppService : IApplicationService
     {
-        Task<InvoiceResponse> GetPDFFile_Invoice(CreateOrEditSalesInvoiceDto input, string invoiceno, string uniqueIdentifier, string tenantId);
-        Task<InvoiceResponse> GetPDFFile_CreditNote(CreateOrEditCreditNoteDto input, string invoiceno, string uniqueIdentifier, string tenantId);
-        Task<InvoiceResponse> GetPDFFile_DebitNote(CreateOrEditDebitNoteDto input, string invoiceno, string uniqueIdentifier, string tenantId);
+        Task<InvoiceResponse> GeneratePdfRequest<T>(T inputGen, string invoiceno, string uniqueIdentifier, string tenantId, InvoiceTypeEnum invoiceType,bool isDraft=false);
+
 
     }
 }

@@ -32,6 +32,9 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
   exempt = 0;
   isdisable = false;
   outofScope = 0;
+  importVATCustoms = 0;
+  vatDeffered = 0;
+  importsatRCM = 0;
   vatrate = 0;
   export = 0;
   Gov = 0;
@@ -53,7 +56,11 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
     Gov: 0,
     exise: 0,
     customs: 0,
-    otherChargesPaid: 0
+    otherChargesPaid: 0,
+    chargesIncludingVAT: 0,
+    importVATCustoms: 0,
+    vatDeffered: 0,
+    importsatRCM: 0
   };
 
   daywiseFooter: any = {
@@ -68,44 +75,48 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
     outofScope: 0,
     exise: 0,
     customs: 0,
-    otherChargesPaid: 0
+    otherChargesPaid: 0,
+    importVATCustoms: 0,
+    vatDeffered: 0,
+    importsatRCM: 0
   };
 
   detailedColumns: any[] = [
-    { field: 'irnNo', header: 'IRN No' },
-    { field: 'invoicenumber', header: 'DN Number' },
-    { field: 'referenceNo', header: 'Reference No' },
-    { field: 'invoiceDate', header: 'DN Date ' },
+    // { field: 'irnNo', header: 'IRN No' },
+    { field: 'invoicenumber', header: 'Debit Note Number' },
+    { field: 'vendorName', header: 'Vendor Name' },
+    { field: 'invoiceDate', header: 'Debit Note Date ' },
+    { field: 'referenceNo', header: 'Purchase Number' },
     { field: 'purchasecategory', header: 'Purchase Category' },
     { field: 'taxableAmount', header: 'Taxable Amount' },
+    { field: 'vatrate', header: 'VAT Rate' },
+    { field: 'vatAmount', header: 'VAT Amount' },
+    { field: 'totalAmount', header: 'Total Amount' },
     { field: 'zeroRated', header: 'Zero Rated' },
     { field: 'exempt', header: 'Exempt' },
     { field: 'outofScope', header: 'Out of Scope' },
-    { field: 'importVATCustoms', header: 'Import Subject to VAT paid at Customs' },
-    { field: 'vatDeffered', header: 'Import Subject to Deferred VAT' },
-    { field: 'importsatRCM', header: 'Import Subject to RCM' },
+    { field: 'importVATCustoms', header: 'Import VAT Customs' },
+    { field: 'vatDeffered', header: 'VAT Deffered' },
+    { field: 'importsatRCM', header: 'Imports at RCM' },
     { field: 'customsPaid', header: 'Customs Paid' },
     { field: 'exciseTaxPaid', header: 'Excise Tax Paid' },
     { field: 'otherChargesPaid', header: 'Other Charges Paid' },
-    { field: 'vatrate', header: 'VAT Rate' },
-    { field: 'vatAmount', header: 'VAT Amount' },
-    { field: 'totalAmount', header: 'Total Amount' }];
-
+    {field: 'chargesIncludingVAT', header: 'Charges Including VAT'}];
     dayColumns: any[] = [
-      {field: 'invoiceDate', header: 'DN Date ' },
-      { field: 'invoicenumber', header: 'DN Count' },
+      {field: 'invoiceDate', header: 'Debit Note Date ' },
+      {field: 'invoicenumber', header: 'Debit Note Count' },
       {field: 'purchasecategory', header: 'Purchase Category'},
       {field: 'taxableAmount', header: 'Taxable Amount'},
       {field: 'zeroRated', header: 'Zero Rated'},
       {field: 'exempt', header: 'Exempt'},
       {field: 'outofScope', header: 'Out of Scope'},
-      {field: 'importVATCustoms', header: 'Import Subject to VAT paid at Customs'},
-      {field: 'vatDeffered', header: 'Import Subject to Deferred VAT'},
-      {field: 'importsatRCM', header: 'Import Subject to RCM'},
+      {field: 'importVATCustoms', header: 'Import VAT Customs'},
+      {field: 'vatDeffered', header: 'VAT Deffered'},
+      {field: 'importsatRCM', header: 'Imports at RCM'},
       {field: 'customsPaid', header: 'Customs Paid'},
       {field: 'exciseTaxPaid', header: 'Excise Tax Paid'},
       {field: 'otherChargesPaid', header: 'Other Charges Paid'},
-      {field: 'vatrate', header: 'VAT Rate'},
+      //{field: 'vatrate', header: 'VAT Rate'},
       {field: 'vatAmount', header: 'VAT Amount' },
       {field: 'totalAmount', header: 'Total Amount'}];
       columns: any[] = this.detailedColumns;
@@ -143,6 +154,10 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
         customs: 0,
         exise: 0,
         otherChargesPaid: 0,
+        chargesIncludingVAT: 0,
+        importVATCustoms: 0,
+        vatDeffered: 0,
+        importsatRCM: 0
       };
       this.daywiseFooter = {
         vatAmount: 0,
@@ -157,6 +172,9 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
         exise: 0,
         customs: 0,
         otherChargesPaid: 0,
+        importVATCustoms: 0,
+        vatDeffered: 0,
+        importsatRCM: 0
       };
   }
 
@@ -174,13 +192,16 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
           this.detailedwiseFooter.exempt += element.exempt;
           this.detailedwiseFooter.totalAmount += element.totalAmount;
           this.detailedwiseFooter.outofScope += element.outofScope;
+          this.detailedwiseFooter.importVATCustoms += element.importVATCustoms;
+          this.detailedwiseFooter.vatDeffered += element.vatDeffered;
+          this.detailedwiseFooter.importsatRCM += element.importsatRCM;
           this.detailedwiseFooter.vatrate += element.vatrate;
           this.detailedwiseFooter.export += element.exports;
           this.detailedwiseFooter.Gov += element.govtTaxableAmt;
           this.detailedwiseFooter.exise += element.exciseTaxPaid;
           this.detailedwiseFooter.customs += element.customsPaid;
           this.detailedwiseFooter.otherChargesPaid += element.otherChargesPaid;
-
+          this.detailedwiseFooter.chargesIncludingVAT += element.chargesIncludingVAT;
         });
       });
   }
@@ -200,6 +221,9 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
           this.daywiseFooter.exempt += element.exempt;
           this.daywiseFooter.export += element.exports;
           this.daywiseFooter.outofScope += element.outofScope;
+          this.daywiseFooter.importVATCustoms += element.importVATCustoms;
+          this.daywiseFooter.vatDeffered += element.vatDeffered;
+          this.daywiseFooter.importsatRCM += element.importsatRCM;
           this.daywiseFooter.exise += element.exciseTaxPaid;
           this.daywiseFooter.customs += element.customsPaid;
           this.daywiseFooter.otherChargesPaid += element.otherChargesPaid;
@@ -238,10 +262,17 @@ export class DebitNotePurchaseDetailedReportComponent extends AppComponentBase {
   }
 
   downloadExcel(li: any[]) {
+    if (this.tab === 'Detailed') {
     this._creditNoteProxy.getDebitPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, 'DebitNote(Purchase)DetailedReport', this.tenantName, false)
       .subscribe((result) => {
         this._fileDownloadService.downloadTempFile(result);
       });
+    } else{
+      this._creditNoteProxy.getDaywiseDebitPurchaseToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), 'DebitNote(Purchase)DaywiseReport', this.tenantName, false)
+      .subscribe((result) => {
+          this._fileDownloadService.downloadTempFile(result);
+      });
+    }
   }
   changeEvent(event: any) {
     if (this.tab === 'Detailed') {

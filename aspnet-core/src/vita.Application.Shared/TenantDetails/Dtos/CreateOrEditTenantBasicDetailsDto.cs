@@ -3,12 +3,11 @@ using Abp.Application.Services.Dto;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
+
 namespace vita.TenantDetails.Dtos
 {
     public class CreateOrEditTenantBasicDetailsDto : EntityDto<int?>
     {
-
-
 
         public string TenantType { get; set; }
 
@@ -44,6 +43,8 @@ namespace vita.TenantDetails.Dtos
 
         public string TimeZone { get; set; }
 
+        public bool isPhase1 { get; set; }
+
         public TenantAddressDto Address { get; set; }
 
 
@@ -58,7 +59,9 @@ namespace vita.TenantDetails.Dtos
         public TenantSupplyVATCategoryDto supplyVATCategory { get; set; }
 
         public List<CreateOrEditTenantShareHoldersDto> partnerShareHolders { get; set; }
+        public string FaxNo { get; set; }
 
+        public string Website { get; set; }
 
     }
 }

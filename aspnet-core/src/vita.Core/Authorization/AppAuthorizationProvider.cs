@@ -30,6 +30,151 @@ namespace vita.Authorization
 
             var pages = context.GetPermissionOrNull(AppPermissions.Pages) ?? context.CreatePermission(AppPermissions.Pages, L("Pages"));
 
+            var draftVATDetails = pages.CreateChildPermission(AppPermissions.Pages_DraftVATDetails, L("DraftVATDetails"));
+            draftVATDetails.CreateChildPermission(AppPermissions.Pages_DraftVATDetails_Create, L("CreateNewDraftVATDetail"));
+            draftVATDetails.CreateChildPermission(AppPermissions.Pages_DraftVATDetails_Edit, L("EditDraftVATDetail"));
+            draftVATDetails.CreateChildPermission(AppPermissions.Pages_DraftVATDetails_Delete, L("DeleteDraftVATDetail"));
+
+            var draftSummaries = pages.CreateChildPermission(AppPermissions.Pages_DraftSummaries, L("DraftSummaries"));
+            draftSummaries.CreateChildPermission(AppPermissions.Pages_DraftSummaries_Create, L("CreateNewDraftSummary"));
+            draftSummaries.CreateChildPermission(AppPermissions.Pages_DraftSummaries_Edit, L("EditDraftSummary"));
+            draftSummaries.CreateChildPermission(AppPermissions.Pages_DraftSummaries_Delete, L("DeleteDraftSummary"));
+
+            var draftPaymentDetails = pages.CreateChildPermission(AppPermissions.Pages_DraftPaymentDetails, L("DraftPaymentDetails"));
+            draftPaymentDetails.CreateChildPermission(AppPermissions.Pages_DraftPaymentDetails_Create, L("CreateNewDraftPaymentDetail"));
+            draftPaymentDetails.CreateChildPermission(AppPermissions.Pages_DraftPaymentDetails_Edit, L("EditDraftPaymentDetail"));
+            draftPaymentDetails.CreateChildPermission(AppPermissions.Pages_DraftPaymentDetails_Delete, L("DeleteDraftPaymentDetail"));
+
+            var draftParties = pages.CreateChildPermission(AppPermissions.Pages_DraftParties, L("DraftParties"));
+            draftParties.CreateChildPermission(AppPermissions.Pages_DraftParties_Create, L("CreateNewDraftParty"));
+            draftParties.CreateChildPermission(AppPermissions.Pages_DraftParties_Edit, L("EditDraftParty"));
+            draftParties.CreateChildPermission(AppPermissions.Pages_DraftParties_Delete, L("DeleteDraftParty"));
+
+            var draftItems = pages.CreateChildPermission(AppPermissions.Pages_DraftItems, L("DraftItems"));
+            draftItems.CreateChildPermission(AppPermissions.Pages_DraftItems_Create, L("CreateNewDraftItem"));
+            draftItems.CreateChildPermission(AppPermissions.Pages_DraftItems_Edit, L("EditDraftItem"));
+            draftItems.CreateChildPermission(AppPermissions.Pages_DraftItems_Delete, L("DeleteDraftItem"));
+
+            var draftDiscounts = pages.CreateChildPermission(AppPermissions.Pages_DraftDiscounts, L("DraftDiscounts"));
+            draftDiscounts.CreateChildPermission(AppPermissions.Pages_DraftDiscounts_Create, L("CreateNewDraftDiscount"));
+            draftDiscounts.CreateChildPermission(AppPermissions.Pages_DraftDiscounts_Edit, L("EditDraftDiscount"));
+            draftDiscounts.CreateChildPermission(AppPermissions.Pages_DraftDiscounts_Delete, L("DeleteDraftDiscount"));
+
+            var draftContactPersons = pages.CreateChildPermission(AppPermissions.Pages_DraftContactPersons, L("DraftContactPersons"));
+            draftContactPersons.CreateChildPermission(AppPermissions.Pages_DraftContactPersons_Create, L("CreateNewDraftContactPerson"));
+            draftContactPersons.CreateChildPermission(AppPermissions.Pages_DraftContactPersons_Edit, L("EditDraftContactPerson"));
+            draftContactPersons.CreateChildPermission(AppPermissions.Pages_DraftContactPersons_Delete, L("DeleteDraftContactPerson"));
+
+            var draftAddresses = pages.CreateChildPermission(AppPermissions.Pages_DraftAddresses, L("DraftAddresses"));
+            draftAddresses.CreateChildPermission(AppPermissions.Pages_DraftAddresses_Create, L("CreateNewDraftAddress"));
+            draftAddresses.CreateChildPermission(AppPermissions.Pages_DraftAddresses_Edit, L("EditDraftAddress"));
+            draftAddresses.CreateChildPermission(AppPermissions.Pages_DraftAddresses_Delete, L("DeleteDraftAddress"));
+
+            var drafts = pages.CreateChildPermission(AppPermissions.Pages_Drafts, L("Drafts"));
+            drafts.CreateChildPermission(AppPermissions.Pages_Drafts_Create, L("CreateNewDraft"));
+            drafts.CreateChildPermission(AppPermissions.Pages_Drafts_Edit, L("EditDraft"));
+            drafts.CreateChildPermission(AppPermissions.Pages_Drafts_Delete, L("DeleteDraft"));
+
+            var tenantConfiguration = pages.CreateChildPermission(AppPermissions.Pages_TenantConfiguration, L("TenantConfiguration"));
+            tenantConfiguration.CreateChildPermission(AppPermissions.Pages_TenantConfiguration_Create, L("CreateNewTenantConfiguration"));
+            tenantConfiguration.CreateChildPermission(AppPermissions.Pages_TenantConfiguration_Edit, L("EditTenantConfiguration"));
+            tenantConfiguration.CreateChildPermission(AppPermissions.Pages_TenantConfiguration_Delete, L("DeleteTenantConfiguration"));
+
+            var tenantBankDetails = pages.CreateChildPermission(AppPermissions.Pages_TenantBankDetails, L("TenantBankDetails"));
+            tenantBankDetails.CreateChildPermission(AppPermissions.Pages_TenantBankDetails_Create, L("CreateNewTenantBankDetail"));
+            tenantBankDetails.CreateChildPermission(AppPermissions.Pages_TenantBankDetails_Edit, L("EditTenantBankDetail"));
+            tenantBankDetails.CreateChildPermission(AppPermissions.Pages_TenantBankDetails_Delete, L("DeleteTenantBankDetail"));
+
+            var purchaseDebitNoteDiscount = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteDiscount, L("PurchaseDebitNoteDiscount"));
+            purchaseDebitNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteDiscount_Create, L("CreateNewPurchaseDebitNoteDiscount"));
+            purchaseDebitNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteDiscount_Edit, L("EditPurchaseDebitNoteDiscount"));
+            purchaseDebitNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteDiscount_Delete, L("DeletePurchaseDebitNoteDiscount"));
+
+            var purchaseDebitNoteVATDetail = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteVATDetail, L("PurchaseDebitNoteVATDetail"));
+            purchaseDebitNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteVATDetail_Create, L("CreateNewPurchaseDebitNoteVATDetail"));
+            purchaseDebitNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteVATDetail_Edit, L("EditPurchaseDebitNoteVATDetail"));
+            purchaseDebitNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteVATDetail_Delete, L("DeletePurchaseDebitNoteVATDetail"));
+
+            var purchaseDebitNoteContactPerson = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteContactPerson, L("PurchaseDebitNoteContactPerson"));
+            purchaseDebitNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteContactPerson_Create, L("CreateNewPurchaseDebitNoteContactPerson"));
+            purchaseDebitNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteContactPerson_Edit, L("EditPurchaseDebitNoteContactPerson"));
+            purchaseDebitNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteContactPerson_Delete, L("DeletePurchaseDebitNoteContactPerson"));
+
+            var purchaseDebitNoteItem = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteItem, L("PurchaseDebitNoteItem"));
+            purchaseDebitNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteItem_Create, L("CreateNewPurchaseDebitNoteItem"));
+            purchaseDebitNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteItem_Edit, L("EditPurchaseDebitNoteItem"));
+            purchaseDebitNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteItem_Delete, L("DeletePurchaseDebitNoteItem"));
+
+            var purchaseDebitNotePaymentDetail = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNotePaymentDetail, L("PurchaseDebitNotePaymentDetail"));
+            purchaseDebitNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNotePaymentDetail_Create, L("CreateNewPurchaseDebitNotePaymentDetail"));
+            purchaseDebitNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNotePaymentDetail_Edit, L("EditPurchaseDebitNotePaymentDetail"));
+            purchaseDebitNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNotePaymentDetail_Delete, L("DeletePurchaseDebitNotePaymentDetail"));
+
+            var purchaseDebitNoteAddress = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteAddress, L("PurchaseDebitNoteAddress"));
+            purchaseDebitNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteAddress_Create, L("CreateNewPurchaseDebitNoteAddress"));
+            purchaseDebitNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteAddress_Edit, L("EditPurchaseDebitNoteAddress"));
+            purchaseDebitNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteAddress_Delete, L("DeletePurchaseDebitNoteAddress"));
+
+            var purchaseDebitNoteParty = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteParty, L("PurchaseDebitNoteParty"));
+            purchaseDebitNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteParty_Create, L("CreateNewPurchaseDebitNoteParty"));
+            purchaseDebitNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteParty_Edit, L("EditPurchaseDebitNoteParty"));
+            purchaseDebitNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteParty_Delete, L("DeletePurchaseDebitNoteParty"));
+
+            var purchaseDebitNoteSummary = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteSummary, L("PurchaseDebitNoteSummary"));
+            purchaseDebitNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteSummary_Create, L("CreateNewPurchaseDebitNoteSummary"));
+            purchaseDebitNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteSummary_Edit, L("EditPurchaseDebitNoteSummary"));
+            purchaseDebitNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNoteSummary_Delete, L("DeletePurchaseDebitNoteSummary"));
+
+            var purchaseDebitNote = pages.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNote, L("PurchaseDebitNote"));
+            purchaseDebitNote.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNote_Create, L("CreateNewPurchaseDebitNote"));
+            purchaseDebitNote.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNote_Edit, L("EditPurchaseDebitNote"));
+            purchaseDebitNote.CreateChildPermission(AppPermissions.Pages_PurchaseDebitNote_Delete, L("DeletePurchaseDebitNote"));
+
+            var purchaseCreditNoteDiscount = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteDiscount, L("PurchaseCreditNoteDiscount"));
+            purchaseCreditNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteDiscount_Create, L("CreateNewPurchaseCreditNoteDiscount"));
+            purchaseCreditNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteDiscount_Edit, L("EditPurchaseCreditNoteDiscount"));
+            purchaseCreditNoteDiscount.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteDiscount_Delete, L("DeletePurchaseCreditNoteDiscount"));
+
+            var purchaseCreditNoteItem = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteItem, L("PurchaseCreditNoteItem"));
+            purchaseCreditNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteItem_Create, L("CreateNewPurchaseCreditNoteItem"));
+            purchaseCreditNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteItem_Edit, L("EditPurchaseCreditNoteItem"));
+            purchaseCreditNoteItem.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteItem_Delete, L("DeletePurchaseCreditNoteItem"));
+
+            var purchaseCreditNoteVATDetail = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteVATDetail, L("PurchaseCreditNoteVATDetail"));
+            purchaseCreditNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteVATDetail_Create, L("CreateNewPurchaseCreditNoteVATDetail"));
+            purchaseCreditNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteVATDetail_Edit, L("EditPurchaseCreditNoteVATDetail"));
+            purchaseCreditNoteVATDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteVATDetail_Delete, L("DeletePurchaseCreditNoteVATDetail"));
+
+            var purchaseCreditNotePaymentDetail = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNotePaymentDetail, L("PurchaseCreditNotePaymentDetail"));
+            purchaseCreditNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNotePaymentDetail_Create, L("CreateNewPurchaseCreditNotePaymentDetail"));
+            purchaseCreditNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNotePaymentDetail_Edit, L("EditPurchaseCreditNotePaymentDetail"));
+            purchaseCreditNotePaymentDetail.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNotePaymentDetail_Delete, L("DeletePurchaseCreditNotePaymentDetail"));
+
+            var purchaseCreditNoteContactPerson = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteContactPerson, L("PurchaseCreditNoteContactPerson"));
+            purchaseCreditNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteContactPerson_Create, L("CreateNewPurchaseCreditNoteContactPerson"));
+            purchaseCreditNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteContactPerson_Edit, L("EditPurchaseCreditNoteContactPerson"));
+            purchaseCreditNoteContactPerson.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteContactPerson_Delete, L("DeletePurchaseCreditNoteContactPerson"));
+
+            var purchaseCreditNoteAddress = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteAddress, L("PurchaseCreditNoteAddress"));
+            purchaseCreditNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteAddress_Create, L("CreateNewPurchaseCreditNoteAddress"));
+            purchaseCreditNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteAddress_Edit, L("EditPurchaseCreditNoteAddress"));
+            purchaseCreditNoteAddress.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteAddress_Delete, L("DeletePurchaseCreditNoteAddress"));
+
+            var purchaseCreditNoteParty = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteParty, L("PurchaseCreditNoteParty"));
+            purchaseCreditNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteParty_Create, L("CreateNewPurchaseCreditNoteParty"));
+            purchaseCreditNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteParty_Edit, L("EditPurchaseCreditNoteParty"));
+            purchaseCreditNoteParty.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteParty_Delete, L("DeletePurchaseCreditNoteParty"));
+
+            var purchaseCreditNoteSummary = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteSummary, L("PurchaseCreditNoteSummary"));
+            purchaseCreditNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteSummary_Create, L("CreateNewPurchaseCreditNoteSummary"));
+            purchaseCreditNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteSummary_Edit, L("EditPurchaseCreditNoteSummary"));
+            purchaseCreditNoteSummary.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNoteSummary_Delete, L("DeletePurchaseCreditNoteSummary"));
+
+            var purchaseCreditNote = pages.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNote, L("PurchaseCreditNote"));
+            purchaseCreditNote.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNote_Create, L("CreateNewPurchaseCreditNote"));
+            purchaseCreditNote.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNote_Edit, L("EditPurchaseCreditNote"));
+            purchaseCreditNote.CreateChildPermission(AppPermissions.Pages_PurchaseCreditNote_Delete, L("DeletePurchaseCreditNote"));
+
             var designation = pages.CreateChildPermission(AppPermissions.Pages_Designation, L("Designation"));
             designation.CreateChildPermission(AppPermissions.Pages_Designation_Create, L("CreateNewDesignation"));
             designation.CreateChildPermission(AppPermissions.Pages_Designation_Edit, L("EditDesignation"));

@@ -54,13 +54,13 @@ export class DebitNoteComponent extends AppComponentBase {
   }
   
   getSalesData(){
-    this._debitNoteProxy.getDebitData(this.parseDate(this.dateRange[0].toString()),this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
-      console.log(result)
-      this.invoices = result;
-      // this.invoices.forEach(element => {
-      //   element.invoiceheader.issueDate = new Date(element.invoiceheader.issueDate).toLocaleDateString();
-      // });
-    });
+    // this._debitNoteProxy.getDebitData(this.parseDate(this.dateRange[0].toString()),this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
+    //   console.log(result)
+    //   this.invoices = result;
+    //   // this.invoices.forEach(element => {
+    //   //   element.invoiceheader.issueDate = new Date(element.invoiceheader.issueDate).toLocaleDateString();
+    //   // });
+    // });
   }
   parseDate(dateString: string): DateTime {
     if (dateString) {

@@ -1,3 +1,82 @@
+<div class="container-fluid" *ngIf="vitamenu==true">
+    <div class="card mb-5 mb-xl-10"></div>
+    <div class="card card-custom gutter-b">
+        <div class="card-body py-0">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bolder fs-3 mb-1">Company Profile Type</span>
+                            </h3>
+                        </div>
+                        <div class="card-body py-0">
+                            <div class="row gx-10 mb-5">
+                                <div class="col-lg-8"></div>
+                                <div>
+                                    <select class="form-select form-select-solid form-select-lg fw-bold"
+                                     name="type"
+                                     [(ngModel)]="profileType">
+                                        <option value="Individual">Individual</option>
+                                        <option value="Company">Company</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 px-0"  *ngIf="profileType=='Company'">
+                    <div class="card">
+                        <div class="card-header border-0 pt-5">
+                            <h3 class="card-title align-items-start flex-column">
+                                <span class="card-label fw-bolder fs-3 mb-1">Constitution Type</span>
+                            </h3>
+                        </div>
+                        <div>
+                            <div class="card-body py-0">
+                                <div class="row gx-10 mb-5">
+                                    <div class="col-lg-8 px-0">
+                                        <select
+                                            class="form-select form-select-solid form-select-lg fw-bold"
+                                            name="constitutionType"
+                                            [(ngModel)]="constitutiontype"
+                                            required
+                                        >
+                                            <option value="" selected>Select a Constitution Type...</option>
+                                            <option
+                                                *ngFor="let c of constitutionTypes"
+                                                value="{{ c.constitution.name }}"
+                                            >
+                                                {{ c.constitution.name }}
+                                            </option>
+                                        </select>
+                                        <div class="fv-plugins-message-container invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="separator separator-dashed my-1"></div> -->
+                    </div>
+                </div>
+            </div>
+            <IndividualTenant *ngIf="profileType=='Individual'" (state)="updatedetails($event)"  [tenantid]="tenantid" [type]="type"></IndividualTenant>
+            <GeneralTenant *ngIf="profileType=='Company' &&  constitutiontype=='General Partnership' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></GeneralTenant>
+            <LLPTenant *ngIf="profileType=='Company' &&  constitutiontype=='Limited Liability Partnership' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></LLPTenant>
+            <LLCTenant *ngIf="profileType=='Company' &&  constitutiontype=='Limited Liability Company' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></LLCTenant>
+            <JSCTenant *ngIf="profileType=='Company' &&  constitutiontype=='Joint Stock Company' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></JSCTenant>
+            <ForeignTenant *ngIf="profileType=='Company' &&  constitutiontype=='Foreign Branch' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></ForeignTenant>
+            <PETenant *ngIf="profileType=='Company' && constitutiontype=='Permanent Establishment' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></PETenant>
+            <NRCTenant *ngIf="profileType=='Company' &&  constitutiontype=='Non-Resident Company' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></NRCTenant>
+            <GovernmentTenant *ngIf="profileType=='Company' &&  constitutiontype=='Government' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></GovernmentTenant>
+            <ConsoritiumTenant *ngIf="profileType=='Company' && constitutiontype=='Consortium' " (state)="updatedetails($event)" [tenantid]="tenantid" [type]="type"></ConsoritiumTenant>
+
+            <!--
+<app-Government *ngIf="profileType=='Company' &&  customer.constitutionType=='Government' " [id]="customer.id"></app-Government>
+<app-LLP *ngIf="profileType=='Company' &&  customer.constitutionType=='Limited Liability Partnership' "  [id]="customer.id"></app-LLP>
+<app-NRC *ngIf="profileType=='Company' &&  customer.constitutionType=='Non-Resident Company' " [id]="customer.id"></app-NRC> -->
+        </div>
+    </div>
+</div>
 <!-- <div class="d-flex overflow-auto h-55px pt-5" style="padding-left: 15px">
     <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
         <li class="nav-item">
@@ -17,7 +96,7 @@
     </ul>
 </div> -->
 
-<div  class="card">
+<div  class="card" *ngIf="vitamenu==false" [ngClass]="{'TenantDetailsunicoreTabsComponent' : vitamenu==false}">
     <div class="card">
         <div class="card-body py-3">
             <div class="row mb-5">
@@ -300,6 +379,34 @@
                             </div>
                         </div>
                     </div>  
+                    <div class="row gx-10 mb-1">   
+                        <div class="col-lg-6">
+                            <label class="d-flex align-items-center">
+                                <span>Website :</span>
+                            </label>
+                            <div >
+                                <input
+                                    [(ngModel)]="tenants.website"
+                                    type="text"
+                                    placeholder="Website"
+                                    class="form-control form-control-lg"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="d-flex align-items-center">
+                                <span>FAX Number :</span>
+                            </label>
+                            <div >
+                                <input
+                                [(ngModel)]="tenants.faxNo"
+                                    type="text"
+                                    placeholder="FAX Number *"
+                                    class="form-control form-control-lg"
+                                />
+                            </div>
+                        </div>
+                    </div> 
             <br>
             <div class="row  mb-1 ">
                 <label class="d-flex align-items-center">
@@ -310,13 +417,13 @@
                 <div class="row   mb-1">
                     <div class="col-lg-6">
                     <label class="d-flex align-items-center">
-                        <span >VAT ID :</span>
+                        <span >VAT Number :</span>
                     </label>
                     <div [formGroup]="basicForm">
                         <input
                             type="text"
                             id="vatid"
-                            placeholder="VAT ID"
+                            placeholder="VAT Number"
                             class="form-control form-control-lg"
                             minlength="15"
                             maxlength="15"
@@ -328,8 +435,8 @@
                         *ngIf="basicForm.controls['vatid'].invalid && basicForm.controls['vatid'].touched"
                         class="fv-plugins-message-container invalid-feedback"
                     >
-                        Please enter a valid VAT ID
-                        <div *ngIf="basicForm.controls['vatid'].errors.required">VAT ID is required.</div>
+                        Please enter a valid VAT Number
+                        <div *ngIf="basicForm.controls['vatid'].errors.required">VAT Number is required.</div>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -427,7 +534,10 @@
 
 
 <div class="modal-footer">
-    <button type="button" [disabled]="saving" class="btn btn-light-primary fw-bold" (click)="close()">
+    <a type="button"  class="btn btn-light-warning fw-bold" href="/app/admin/tenantSettings">
+        {{ 'Tenant Configuration' | localize }}
+    </a>
+        <button type="button" [disabled]="saving" class="btn btn-light-primary fw-bold" (click)="close()">
         {{ 'Cancel' | localize }}
     </button>
     <button
@@ -435,9 +545,11 @@
         [buttonBusy]="saving"
         [busyText]="l('SavingWithThreeDot')"
         class="btn btn-primary fw-bold"
-        (click)="updatedetails()"
+        (click)="updateunicoredetails()"
     >
         <i class="fa fa-save"></i>
         <span>{{ 'Save' | localize }}</span>
     </button>
 </div>
+</div>
+

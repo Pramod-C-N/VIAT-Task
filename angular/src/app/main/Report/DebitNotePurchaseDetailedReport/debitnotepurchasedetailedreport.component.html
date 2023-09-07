@@ -1,22 +1,14 @@
 <div class="content d-flex flex-column flex-column-fluid">
-
-  <div class="mt-3 ">
-    <div class="d-flex flex-stack mt-3 search">
-      <sub-header [title]="'Input Tax-Debit Note (Purchase) Report' | localize"></sub-header>
-      <div class="d-flex align-items-senter">
-          <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" >
-              <li class="nav-item">
-  
-                  <input class="form-control div1"  id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
-                    readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
-                    placement="bottom right" (bsValueChange)="searchData()" />
-                </li>
-            
-          </ul>
-      </div>
+  <div class="row col-md-12 mt-3">
+    <div class="col-md-9">
+      <sub-header [title]="'Debit Note Purchase Report' | localize"></sub-header>
+    </div>
+    <div class="col-md-3">
+      <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker" readonly="readonly"
+        bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
+        [(date)]="dateRange" placement="bottom right" (bsValueChange)="searchData()" />
+    </div>
   </div>
- 
-
   <div class="app-container container-fluid">
     <div class="card px-0">
       <div class="card-body px-4 py-4">
@@ -24,11 +16,8 @@
           <div class="col-lg-3 mb-3 px-5">
             <div class="div10">
               <span>
-                <a [ngClass]="
-                           tab == 'Detailed'
-                                  ? 'blockquote w-100  fw-bolder '
-                                  : 'blockquote w-100 fw-bolder text-dark'
-                          " data-bs-toggle="tab" style="color: #F1BC00;">
+                <a [ngClass]="tab == 'Detailed' ? 'blockquote w-100  fw-bolder ' : 'blockquote w-100 fw-bolder text-dark' "
+                  data-bs-toggle="tab" class="colorStyle">
                   Detailed
                 </a>
               </span>
@@ -37,34 +26,27 @@
                   (ngModelChange)="changeEvent($event)" checked>
               </span>
               <span>
-                <a [ngClass]="
-                      tab == 'Daywise'
-                             ? 'blockquote w-100  fw-bolder'
-                             : 'blockquote w-100 fw-bolder text-dark'
-                     " data-bs-toggle="tab" style="color: #F1BC00;">
+                <a [ngClass]=" tab == 'Daywise' ? 'blockquote w-100  fw-bolder' : 'blockquote w-100 fw-bolder text-dark' "
+                  data-bs-toggle="tab" class="colorStyle">
                   Daywise
                 </a>
               </span>
             </div>
           </div>
-
           <div class="col-lg-2"></div>
           <div class="col-lg-7 mb-3">
             <div class="row">
-              <div class="col-lg-8 mb-3">
+              <div class="col-lg-6 mb-3">
                 <span *ngIf="tab=='Detailed'">
-                  <input  class="form form-control" pInputText type="text"
+                  <input class="form form-control" pInputText type="text"
                     (input)="dt.filterGlobal($event.target.value, 'contains')"
-                    placeholder="Search Credit Note or Invoice Number" />
+                    placeholder="Search Debit Note or Purchase Number" />
                 </span>
               </div>
-              <div class="col-lg-4">
+              <div class="col-lg-6">
                 <button type="button" class="btn btn-outline btn-outline-success me-1 w-100"
                   (click)="downloadExcel(dt.value)">
                   <i class="far fa-file-excel btn-md-icon"></i>
-                  <!-- <span class="d-none d-md-inline-block">
-              {{ 'Download Report' | localize }}
-          </span> -->
                   Download Report</button>
               </div>
             </div>
@@ -77,80 +59,128 @@
                 <p-table #dt sortMode="multiple" [value]="invoices" [columns]="columns" [paginator]="true" [rows]="10"
                   [showCurrentPageReport]="true"
                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                  [rowsPerPageOptions]="[5, 10, 15, 20]" [scrollable]="true" [style]="{ width: '100%' }">
-
-
+                  [rowsPerPageOptions]="[5, 10, 15, 20]" [scrollable]="true" class="ptable">
                   <ng-template pTemplate="header">
-
                     <tr>
                       <th class="div9" *ngFor="let col of columns" pSortableColumn="{{ col.field }}">
                         {{col.header | localize}}
                         <p-sortIcon field="{{ col.field }}"></p-sortIcon>
                       </th>
-
-
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-record="$implicit" let-columns="columns">
                     <tr [pSelectableRow]="record">
-
-
-                      <td class="purchaserecords" *ngFor="let col of columns">
-
-                        <span *ngIf="col.field=='invoiceDate'">
+                      <td *ngFor="let col of columns">
+                        <span *ngIf="col.field=='invoiceDate'" class="table-record-center">
                           {{ record.invoiceDate }}
                         </span>
-
-                        <span *ngIf="col.field!='invoiceDate'">
-                          {{record[col.field]}}
+                        <span *ngIf="col.field=='taxableAmount'" class="table-record-right">
+                          {{record[col.field]?.toFixed(2)}}
                         </span>
+                        <span *ngIf="col.field=='vendorName'" class="table-record-left">
+                          {{ record[col.field] }}
+                        </span>
+                        <span *ngIf="col.field=='invoicenumber'" class="table-record-center">
+                          {{ record[col.field] }}
+                        </span>
+                        <span *ngIf="col.field=='referenceNo'" class="table-record-center">
+                          {{ record[col.field] }}
+                        </span>
+                        <span *ngIf="col.field=='purchasecategory'" class="table-record-left">
+                          {{ record[col.field] }}
+                        </span>
+                        <span *ngIf="col.field=='zeroRated'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='exempt'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='outofScope'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='importVATCustoms'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='vatDeffered'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='importsatRCM'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='customsPaid'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='exciseTaxPaid'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='otherChargesPaid'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='vatrate'" class="table-record-center">
+                          {{ record[col.field]}}
+                        </span>
+                        <span *ngIf="col.field=='vatAmount'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2)}}
+                        </span>
+                        <span *ngIf="col.field=='totalAmount'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2) }}                         
+                        </span>
+                        <span *ngIf="col.field=='chargesIncludingVAT'" class="table-record-right">
+                          {{ record[col.field]?.toFixed(2) }}                         
+                        </span>
+                        <span
+                        *ngIf="col.field!='invoiceDate' && col.field!='taxableAmount' && col.field!='zeroRated' && col.field!='exempt' && col.field!='outofScope' && col.field!='importVATCustoms' && col.field!='vatDeffered' && col.field!='importsatRCM' && col.field!='customsPaid' && col.field!='exciseTaxPaid' && col.field!='otherChargesPaid' && col.field!='vatrate' && col.field!='vatAmount' && col.field!='totalAmount' && col.field !='vendorName' && col.field !='invoicenumber' && col.field !='referenceNo' && col.field !='purchasecategory'&& col.field !='chargesIncludingVAT'"
+                        class="table-record-center">
+                        {{record[col.field]}}
+                      </span>
                       </td>
                     </tr>
                   </ng-template>
-
                   <ng-template pTemplate="footer">
                     <tr *ngIf="tab == 'Detailed'">
                       <td>
                         Total
-                      </td>
+                      </td>                     
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="purchaserecords" class="purchaserecords">
-                        {{detailedwiseFooter.taxable.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.zeroRated.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.exempt.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.outofScope.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.taxable.toFixed(2)}}</td>
                       <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="purchaserecords">{{detailedwiseFooter.customs.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.exise.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.otherChargesPaid.toFixed(2)}}</td>
-                      <td></td>
-                      <td class="purchaserecords">{{detailedwiseFooter.vatAmount.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{detailedwiseFooter.totalAmount.toFixed(2)}}</td>
-                    </tr>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.vatAmount.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.totalAmount.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.zeroRated.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.exempt.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.outofScope.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.importVATCustoms.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.vatDeffered.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.importsatRCM.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.customs.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.exise.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.otherChargesPaid.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{detailedwiseFooter.chargesIncludingVAT.toFixed(2)}}</td>
 
+                    </tr>
                     <tr *ngIf="tab == 'Daywise'">
                       <td>
                         Total
                       </td>
-                      <td class="purchaserecords">{{daywiseFooter.count}}</td>
+                      <td class="table-record-center footercenter">{{daywiseFooter.count}}</td>
                       <td></td>
-                      <td class="purchaserecords">{{daywiseFooter.taxable.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.zeroRated.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.exempt.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.outofScope.toFixed(2)}}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="purchaserecords">{{daywiseFooter.customs.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.exise.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.otherChargesPaid.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.vatAmount.toFixed(2)}}</td>
-                      <td class="purchaserecords">{{daywiseFooter.totalAmount.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.taxable.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.zeroRated.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.exempt.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.outofScope.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.importVATCustoms.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.vatDeffered.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.importsatRCM.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.customs.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.exise.toFixed(2)}}</td>
+                      <td class="table-record-right footerright">{{daywiseFooter.otherChargesPaid.toFixed(2)}}</td>
+                      <!-- <td></td> -->
+                      <td class="table-record-right footerright">{{daywiseFooter.vatAmount.toFixed(2)}}</td>
+                      <!-- <div></div> -->
+                      <td class="table-record-right footerright">{{daywiseFooter.totalAmount.toFixed(2)}}</td>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="paginatorleft"></ng-template>
@@ -162,8 +192,4 @@
       </div>
     </div>
   </div>
-
-
-  <!--<Primeng-TurboTable-End>-->
-
 </div>

@@ -5,63 +5,6 @@
           <span>{{ ('Back') }}</span>
         </button> -->
         <div class="col-lg-8 ">
-          <div  class="btn-group" style="float: right;" dropdown placement="button right">
-            <button
-                id="dropdownButtonExcelOperations"
-                dropdownToggle
-                type="button"
-                class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                aria-controls="dropdownMenuExcelOperations"
-            >
-                <i class="far fa-file-excel btn-md-icon"></i>
-                <span class="d-none d-md-inline-block">
-                    {{ 'ExcelOperations' | localize }}
-                </span>
-            </button>
-            <ul
-                id="dropdownMenuExcelOperations"
-                class="dropdown-menu dropdown-menu-right dropdown-excel-operations"
-                role="menu"
-                *dropdownMenu
-                aria-labelledby="dropdownButtonExcelOperations"
-            >
-                <li  role="menuitem">
-                    <a href="javascript:;" class="no-padding">
-                        <span class="fileinput-button">
-                            <p-fileUpload
-                                customUpload="true"
-                                name="ExcelFileUpload"
-                                #ExcelFileUpload
-                                maxFileSize="10000000"
-                                auto="auto"
-                                accept=".csv,.xls,.xlsx"
-                                (uploadHandler)="uploadExcel($event)"
-                                (onError)="onUploadExcelError()"
-                                chooseLabel="{{ 'ImportFromExcel' | localize }}"
-                            ></p-fileUpload>
-                        </span>
-                    </a>
-                </li>
-                <!-- <li class="divider dropdown-divider"></li> -->
-                <!-- <li role="menuitem">
-                    <span class="dropdown-item-text text-muted pl-3" href="#">
-                        <small
-                            [innerHTML]="
-                                l(
-                                    'ImportToExcelSampleFileDownloadInfo',
-                                    '<a href=/assets/sampleFiles/CreditNoteBatchUpload.xlsx>' +
-                                        l('ClickHere') +
-                                        '</a>'
-                                )
-                            "
-                        ></small>
-                    </span>
-                </li> -->
-            </ul>
-        </div>
     </div>
       </div>
     </sub-header>

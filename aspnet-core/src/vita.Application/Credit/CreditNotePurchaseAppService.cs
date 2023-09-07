@@ -27,6 +27,7 @@ using System.Data;
 using vita.EntityFrameworkCore;
 using vita.Credit;
 using Abp.Timing.Timezone;
+using System.DirectoryServices.Protocols;
 
 namespace vita.Credit
 {
@@ -81,7 +82,7 @@ namespace vita.Credit
 
         }
 
-        public async Task<DataTable> GetCreditData(DateTime fromDate, DateTime toDate)
+        public async Task<DataTable> GetCreditData(DateTime fromDate, DateTime toDate, DateTime? creationDate, string customername, string salesorderno, string purchaseorderno, string invoicerefno, string buyercode, string shippedcode)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -99,6 +100,13 @@ namespace vita.Credit
                         cmd.Parameters.AddWithValue("fromDate", fromDate);
                         cmd.Parameters.AddWithValue("toDate", toDate);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@creationDate", creationDate);
+                        cmd.Parameters.AddWithValue("@customername", customername);
+                        cmd.Parameters.AddWithValue("@salesorderno", salesorderno);
+                        cmd.Parameters.AddWithValue("@purchaseorderno", purchaseorderno);
+                        cmd.Parameters.AddWithValue("@invoicerefno", invoicerefno);
+                        cmd.Parameters.AddWithValue("@buyercode", buyercode);
+                        cmd.Parameters.AddWithValue("@shippedcode", shippedcode);
                         dt.Load(cmd.ExecuteReader());
                         conn.Close();
                         return dt;
@@ -308,7 +316,7 @@ namespace vita.Credit
 
         public async Task CreateOrEdit(CreateOrEditCreditNoteDto input)
         {
-            await Create(input);
+           await Create(input);
         }
 
         public async Task<InvoiceResponse> CreateCreditNote(CreateOrEditCreditNoteDto input)
@@ -318,13 +326,11 @@ namespace vita.Credit
 
 
 
-            input.Buyer.Address.Type = "Buyer";
-            input.Buyer.ContactPerson.Type = "Buyer";
-            input.Buyer.Type = "Buyer";
-            input.Supplier.Address.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.Type = "Supplier";
+ 
+            input.Supplier[0].Address.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].Type = "Supplier";
 
             var a = new CreateOrEditIRNMasterDto()
             {
@@ -333,22 +339,42 @@ namespace vita.Credit
             var data = await _transactionsAppService.CreateOrEdit(a);
             string invoiceno = data.IRNNo.ToString();
             input.IRNNo = invoiceno;
-            input.Buyer.IRNNo = invoiceno;
-            input.Supplier.IRNNo = invoiceno;
-            input.Supplier.Address.IRNNo = invoiceno;
-            input.Buyer.Address.IRNNo = invoiceno;
-            input.Buyer.ContactPerson.IRNNo = invoiceno;
-            input.Supplier.ContactPerson.IRNNo = invoiceno;
+            input.Supplier[0].IRNNo = invoiceno;
+            input.Supplier[0].Address.IRNNo = invoiceno;
+            input.Supplier[0].ContactPerson.IRNNo = invoiceno;
             input.InvoiceSummary.IRNNo = invoiceno;
+            foreach (var buyer in input.Buyer)
+            {
+                if (buyer.Address == null)
+                {
+                    buyer.Address = new CreateOrEditCreditNoteAddressDto();
+                }
+                if (buyer.ContactPerson == null)
+                {
+                    buyer.ContactPerson = new CreateOrEditCreditNoteContactPersonDto();
+                }
+
+                buyer.Address.Type = "Buyer";
+                buyer.ContactPerson.Type = "Buyer";
+                buyer.Type = "Buyer";
+                buyer.IRNNo = invoiceno;
+                buyer.Address.IRNNo = invoiceno;
+                buyer.ContactPerson.IRNNo = invoiceno;
+            }
+
 
             await CreateOrEdit(input);
             await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
-            await _partyAppService.CreateOrEdit(input.Buyer);
-            await _partyAppService.CreateOrEdit(input.Supplier);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
-            await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
-            await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
+            await _partyAppService.CreateOrEdit(input.Supplier[0]);
+            foreach (var buyer in input.Buyer)
+            {
+                await _invoiceAddressesAppService.CreateOrEdit(buyer.Address);
+                await _partyAppService.CreateOrEdit(buyer);
+                await _contactPersonsAppService.CreateOrEdit(buyer.ContactPerson);
+            }
+
+            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier[0].Address);
+            await _contactPersonsAppService.CreateOrEdit(input.Supplier[0].ContactPerson);
 
 
             //--------------------newly added---------------------------
@@ -429,8 +455,14 @@ namespace vita.Credit
                 response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
                 response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
 
-                await _generateXmlAppService.GenerateXmlRequest_CreditNote(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString());
-
+                await _generateXmlAppService.GenerateXmlRequest(input, new UblSharp.Dtos.XMLRequestParam
+                {
+                    invoiceno = invoiceno,
+                    uniqueIdentifier = data.UniqueIdentifier.ToString(),
+                    tenantId = AbpSession.TenantId.ToString(),
+                    xml_uid = input.Additional_Info,
+                    invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Credit
+                });
 
                 var pathToSave = string.Empty;
                 if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
@@ -439,7 +471,7 @@ namespace vita.Credit
                     pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", data.UniqueIdentifier.ToString());
                 if (!Directory.Exists(pathToSave))
                     Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
+                var xmlfileName = input.Supplier[0].VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
                 var path = (Path.Combine(pathToSave, xmlfileName));
 
                 var xmlBase64 = FileIO.GetFileInBas64(path);
@@ -447,16 +479,11 @@ namespace vita.Credit
                 var xmlHash = FileIO.GetSha256FileHash(path);
                 var pdfHash = xmlHash;
 
-                var isGenFile =await _pdfReportAppService.GetPDFFile_CreditNote(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString());
 
+                var isGenFile = await _pdfReportAppService.GeneratePdfRequest(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Credit);
 
                 response.InvoiceNumber = invoiceno;
-                response.QRCode = "";
-                response.QRCodeUrl = "";
-                response.ArchivalFileUrl = "";
-                response.PreviousHash = "";
-                response.TransactionCode = "";
-                response.TypeCode = "";
+               
             }
             catch (Exception ex)
             {

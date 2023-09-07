@@ -1,4 +1,8 @@
-﻿using vita.CustomReportSP;
+﻿using vita.DraftFee;
+using vita.TenantConfigurations;
+using vita.PurchaseDebit;
+using vita.PurchaseCredit;
+using vita.CustomReportSP;
 using vita.TenantDetails;
 using vita.Vendor;
 using vita.Customer;
@@ -27,6 +31,63 @@ namespace vita.EntityFrameworkCore
 {
     public class vitaDbContext : AbpZeroDbContext<Tenant, Role, User, vitaDbContext>, IAbpPersistedGrantDbContext
     {
+        public virtual DbSet<DraftVATDetail> DraftVATDetails { get; set; }
+
+        public virtual DbSet<DraftSummary> DraftSummaries { get; set; }
+
+        public virtual DbSet<DraftPaymentDetail> DraftPaymentDetails { get; set; }
+
+        public virtual DbSet<DraftParty> DraftParties { get; set; }
+
+        public virtual DbSet<DraftItem> DraftItems { get; set; }
+
+        public virtual DbSet<DraftDiscount> DraftDiscounts { get; set; }
+
+        public virtual DbSet<DraftContactPerson> DraftContactPersons { get; set; }
+
+        public virtual DbSet<DraftAddress> DraftAddresses { get; set; }
+
+        public virtual DbSet<Draft> Drafts { get; set; }
+
+        public virtual DbSet<TenantConfiguration> TenantConfiguration { get; set; }
+
+        public virtual DbSet<TenantBankDetail> TenantBankDetails { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteDiscount> PurchaseDebitNoteDiscount { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteVATDetail> PurchaseDebitNoteVATDetail { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteContactPerson> PurchaseDebitNoteContactPerson { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteItem> PurchaseDebitNoteItem { get; set; }
+
+        public virtual DbSet<PurchaseDebitNotePaymentDetail> PurchaseDebitNotePaymentDetail { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteAddress> PurchaseDebitNoteAddress { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteParty> PurchaseDebitNoteParty { get; set; }
+
+        public virtual DbSet<PurchaseDebitNoteSummary> PurchaseDebitNoteSummary { get; set; }
+
+        public virtual DbSet<PurchaseDebitNote> PurchaseDebitNote { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteDiscount> PurchaseCreditNoteDiscount { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteItem> PurchaseCreditNoteItem { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteVATDetail> PurchaseCreditNoteVATDetail { get; set; }
+
+        public virtual DbSet<PurchaseCreditNotePaymentDetail> PurchaseCreditNotePaymentDetail { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteContactPerson> PurchaseCreditNoteContactPerson { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteAddress> PurchaseCreditNoteAddress { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteParty> PurchaseCreditNoteParty { get; set; }
+
+        public virtual DbSet<PurchaseCreditNoteSummary> PurchaseCreditNoteSummary { get; set; }
+
+        public virtual DbSet<PurchaseCreditNote> PurchaseCreditNote { get; set; }
         public virtual DbSet<Module> Module { get; set; }
 
         public virtual DbSet<Designation> Designation { get; set; }
@@ -253,10 +314,254 @@ namespace vita.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Designation>(d =>
+            modelBuilder.Entity<TenantBasicDetails>(t =>
             {
-                d.HasIndex(e => new { e.TenantId });
+                t.HasIndex(e => new { e.TenantId });
             });
+            modelBuilder.Entity<Draft>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftVATDetail>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftSummary>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftPaymentDetail>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftParty>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftItem>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftDiscount>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftContactPerson>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DraftAddress>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<Draft>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<TenantBankDetail>(t =>
+                       {
+                           t.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<TenantBasicDetails>(t =>
+                       {
+                           t.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<TenantConfiguration>(t =>
+                       {
+                           t.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteItem>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteItem>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<TenantBankDetail>(t =>
+                       {
+                           t.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoiceParty>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteSummary>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteContactPerson>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNotePaymentDetail>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteVATDetail>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteAddress>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNoteItem>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNote>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteSummary>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteContactPerson>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNotePaymentDetail>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteVATDetail>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteAddress>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNoteItem>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNote>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoiceContactPerson>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoicePaymentDetail>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoiceVATDetail>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoiceParty>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoiceAddress>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoice>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<TenantBasicDetails>(t =>
+                       {
+                           t.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<DebitNote>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<CreditNote>(c =>
+                       {
+                           c.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<SalesInvoice>(s =>
+                       {
+                           s.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNote>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteDiscount>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteVATDetail>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteContactPerson>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteItem>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNotePaymentDetail>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteAddress>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteParty>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNoteSummary>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseDebitNote>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteDiscount>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteItem>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteVATDetail>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNotePaymentDetail>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteContactPerson>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteAddress>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteParty>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNoteSummary>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<PurchaseCreditNote>(p =>
+                       {
+                           p.HasIndex(e => new { e.TenantId });
+                       });
+            modelBuilder.Entity<Designation>(d =>
+                       {
+                           d.HasIndex(e => new { e.TenantId });
+                       });
             modelBuilder.Entity<BusinessOperationalModel>(b =>
                        {
                            b.HasIndex(e => new { e.TenantId });

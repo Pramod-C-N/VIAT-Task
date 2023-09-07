@@ -32,24 +32,30 @@ export class DetailedReportComponent extends AppComponentBase {
   fromDate: Date;
   toDate: Date;
   data: any[] = [];
+  nosType: any;
   vatAmount = 0;
   totalAmount = 0;
   taxable = 0;
   customPaid = 0;
   custom = 0;
+  code : string;
   withholdingtaxamount = 0;
   taxrate = 0;
   totalamountPaid = 0;
   isdisable = false;
   columns: any[] = [
-    { field: 'slno', header: 'Sl Number' },
+    { field: 'slno', header: 'Sl No' },
     { field: 'typeofpayments', header: 'Type of Payments' },
     { field: 'nameofPayee', header: 'Name of the Payee' },
     { field: 'country', header: 'Country' },
     { field: 'paymentdate', header: 'Payment Date' },
     { field: 'totalamountPaid', header: 'Total Amount Paid (SAR)' },
     { field: 'taxrate', header: 'Tax Rate' },
-    { field: 'withholdingtaxamount', header: 'Withholding Tax Amount' }];
+    { field: 'withholdingtaxamount', header: 'Withholding Tax Amount' },
+    {field: 'standardRate', header: 'Standard Rate'},
+    {field: 'dtTrate', header: 'DTT Rate'},
+    {field: 'affiliationStatus', header: 'Affiliation Status'},
+    {field: 'obtainedrequireddocuments', header: 'Obtained Required Documents'}];
 
   exportColumns: any[] = this.columns.map(col => ({ title: col.header, dataKey: col.field }));
   _selectedColumns: any[] = this.columns;
@@ -88,12 +94,14 @@ export class DetailedReportComponent extends AppComponentBase {
     this.bsConfig = Object.assign({}, {
       minMode: this.minMode
     });
+    this.code = "natureofservice";
+    this.getReportType();
   }
 
   getSalesDetailedReport() {
     this.isdisable = true;
     this.ResetData();
-    this._WHTReportsServiceProxy.getDetailedData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
+    this._WHTReportsServiceProxy.getDetailedData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()),this.code)
       .pipe(finalize(() => this.isdisable = false))
       .subscribe((result) => {
         this.data = result;
@@ -127,8 +135,21 @@ export class DetailedReportComponent extends AppComponentBase {
   }
 
   downloadExcel() {
-    this._WHTReportsServiceProxy.getWhtDetailedReportToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), 'WHTDetailedReport', this.tenantName, false).subscribe((result) => {
+    this._WHTReportsServiceProxy.getWhtDetailedReportToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), 'WHTDetailedReport', this.tenantName,this.code, false).subscribe((result) => {
       this._fileDownloadService.downloadTempFile(result);
     });
   }
+
+  getReportType() {
+
+    this._WHTReportsServiceProxy.getNatureOfServiceDropdown().subscribe((result) => {
+      console.log(result,'nos');
+        this.nosType = result;
+    });
+}
+getnosData(event?: string) {
+    this.code = event;
+    this.getSalesDetailedReport();
+    console.log(event);
+}
 }

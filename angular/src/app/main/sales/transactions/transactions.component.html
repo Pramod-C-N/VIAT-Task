@@ -2,7 +2,7 @@
     <div class="card">
         <div *ngIf="hideHeader" class="d-flex flex-stack">
             <div class="mt-3">
-                <sub-header [title]="'Recent Transactions' | localize"></sub-header>
+                <sub-header [title]="'Recent (Current Date) Transactions' | localize"></sub-header>
             </div>
 
             <div>
@@ -219,6 +219,7 @@
                                 </li>
                             </ul>
                         </div>
+
                         <div class="col-lg-4 d-flex align-items-center justify-content-end">
                             <div class="btn-group" dropdown container="body">
                                 <a
@@ -265,23 +266,441 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
-                                <div class="card card-p-0 card-flush">
-                                    <div class="card-body">
-                                        <report-grid [columns]="columns" [data]="invoices" [theme]="theme"></report-grid>
-                                    </div>
+                    </div>
+
+                    <div *ngIf="advancedFiltersAreShown" class="mb-5">
+                        <div class="row gx-10 mb-2" style="padding-left: 1%; padding-right: 1%">
+                            <div class="col-md-3 px-1 form-floating">
+                                <input
+                                    type="date"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="creationDate"
+                                    name="creationDate"
+                                    placeholder="Invoice Creation Date"
+                                    value=""
+                                    [(ngModel)]="creationDate"
+                                    [max]="maxDate"
+                                />
+                                <label style="text-align: left" for="creationDate">Invoice Reference Date</label>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="customerName"
+                                        name="customerName"
+                                        placeholder="Customer Name"
+                                        value=""
+                                        [(ngModel)]="customerName"
+                                    />
+                                    <label style="text-align: left" for="customerName">Customer Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="salesOrderNo"
+                                        name="salesOrderNo"
+                                        placeholder="Sales Order Number"
+                                        value=""
+                                        [(ngModel)]="salesOrderNo"
+                                    />
+                                    <label style="text-align: left" for="salesOrderNo">Sales Order Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="purchaseOrderNo"
+                                        name="purchaseOrderNo"
+                                        placeholder="Purchase Order Number"
+                                        value=""
+                                        [(ngModel)]="purchaseOrderNo"
+                                    />
+                                    <label style="text-align: left" for="purchaseOrderNo">Purchase Order Number</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row gx-10 mb-2" style="padding-left: 1%; padding-right: 1%">
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="ReferenceNumber"
+                                        name="ReferenceNumber"
+                                        placeholder="Invoice Reference Number"
+                                        value=""
+                                        [(ngModel)]="ReferenceNumber"
+                                    />
+                                    <label style="text-align: left" for="ReferenceNumber">
+                                        Invoice Reference Number
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="IRNo"
+                                        name="IRNo"
+                                        placeholder="IRN Number"
+                                        value=""
+                                        [(ngModel)]="IRNo"
+                                    />
+                                    <label style="text-align: left" for="IRNo">IRN Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="buyerCode"
+                                        name="buyerCode"
+                                        placeholder="Buyer Code"
+                                        value=""
+                                        [(ngModel)]="buyerCode"
+                                    />
+                                    <label style="text-align: left" for="buyerCode">Payer Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="shippedToCode"
+                                        name="shippedToCode"
+                                        placeholder="Shipped to Number"
+                                        value=""
+                                        [(ngModel)]="shippedToCode"
+                                    />
+                                    <label style="text-align: left" for="shippedToCode">Shipped to Number</label>
                                 </div>
                             </div>
 
-                            <!-- <div class="tab-pane fade" id="kt_tab_pane_8" role="tabpanel">
+                          
+                        </div>
+                        <div class="row gx-10 mb-2" style="padding-left: 1%; padding-right: 1%;">
+                            <div class="col-md-3 px-1">
+                                <div class="form-floating">
+                                    <input
+                                      type="text"
+                                     class="form-control form-control-lg form-control-solid"
+                                     id="createdby"
+                                     name="createdby"
+                                     placeholder="Created By"
+                                     value=""
+                                    [(ngModel)]="createdBy"
+                                    />
+                                    <label style="text-align: left" for="createdby">Created By</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9 d-flex align-items-center justify-content-end">
+                                <div class="btn-group" dropdown container="body">
+                                    <a
+                                        class="btn nav-link w-100 btn-sm fw-bold"
+                                        (click)="searchData()"
+                                        [ngStyle]="{
+                                            'text-align': 'center',
+                                            color: 'white',
+                                            'border-color': '#20AAF8',
+                                            border: '1px solid',
+                                            'background-color': '#20AAF8'
+                                        }"
+                                    >
+                                        Search
+                                    </a>
+                                </div>
+                                <div class="btn-group" dropdown container="body">
+                                    <button
+                                        class="btn nav-link w-100 btn-sm fw-bold"
+                                        (click)="clearData()"
+                                        [ngStyle]="{
+                                            'text-align': 'center',
+                                            color: 'black',
+                                            'border-color': 'black',
+                                            border: '1px solid',
+                                            'background-color': 'white'
+                                        }"
+                                    >
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col-sm-6">
+                            <span
+                                class="clickable-item text-muted"
+                                *ngIf="!advancedFiltersAreShown"
+                                (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                            >
+                                <i class="fa fa-angle-down"></i>
+                                {{ 'ShowAdvancedFilters' | localize }}
+                            </span>
+                            <span
+                                class="clickable-item text-muted"
+                                *ngIf="advancedFiltersAreShown"
+                                (click)="advancedFiltersAreShown = !advancedFiltersAreShown"
+                            >
+                                <i class="fa fa-angle-up"></i>
+                                {{ 'HideAdvancedFilters' | localize }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
+                            <div class="card card-p-0 card-flush">
+                                <div class="primeng-datatable-container">
+                                    <p-table
+                                        #dt
+                                        [columns]="columns"
+                                        [value]="invoices"
+                                        [paginator]="true"
+                                        [rows]="10"
+                                        [showCurrentPageReport]="true"
+                                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                        [rowsPerPageOptions]="[5, 10, 15, 20]"
+                                        [scrollable]="true"
+                                        [globalFilterFields]="searchableFields"
+                                    >
+                                        <ng-template pTemplate="caption">
+                                            <div class="row">
+                                                <div class="col-lg-6"></div>
+                                                <div class="col-lg-3">
+                                                    <input
+                                                        class="form form-control"
+                                                        pInputText
+                                                        type="text"
+                                                        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                                                        placeholder="Search keyword"
+                                                    />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-success"
+                                                        (click)="exportExcel()"
+                                                        pTooltip="Export to excel"
+                                                        tooltipPosition="bottom"
+                                                        style="
+                                                            text-align: center;
+                                                            color: #58b241;
+                                                            border-color: #58b241;
+                                                            border: 1px solid;
+                                                            background-color: #d9ffd8;
+                                                            width: 100%;
+                                                        "
+                                                    >
+                                                        Download Report
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template pTemplate="header" class="fw-bold" let-columns>
+                                            <tr>
+                                                <ng-container *ngFor="let column of columns">
+                                                    <th
+                                                        style="text-align: center; width: 150px"
+                                                        *ngIf="column.header !== 'PDF' && column.header !== 'STATUS'"
+                                                        pSortableColumn="{{ column.field }}"
+                                                    >
+                                                        {{ column.header }}
+                                                        <p-sortIcon field="{{ column.field }}"></p-sortIcon>
+                                                    </th>
+                                                    <th
+                                                        style="text-align: center; width: 700px"
+                                                        *ngIf="column.header == 'STATUS'"
+                                                        pSortableColumn="{{ column.field }}"
+                                                    >
+                                                        {{ column.header }}
+                                                        <p-sortIcon field="{{ column.field }}"></p-sortIcon>
+                                                    </th>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                            <tr
+                                                class="alternate-row"
+                                                [pSelectableRow]="columns"
+                                                *ngIf="invoices.length > 0"
+                                            >
+                                                <ng-container *ngFor="let column of columns">
+                                                    <td
+                                                        *ngIf="column.header !== 'PDF' || column.header == 'STATUS'"
+                                                        [class.center-align]="column.field !== 'amount'"
+                                                        style="text-align: center; width: 150px;justify-content: center;"
+                                                    >
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Einvoice not created'"
+                                                            class="badge badge-danger nowrap"
+                                                            style="text-align: center; width: 65%"
+                                                        >
+                                                            Einvoice not created
+                                                        </span>
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Draft' && !loader"
+                                                            class="badge badge-warning nowrap"
+                                                            (click)="convert(rowData['invoice_Number'])"
+                                                            style="text-align: center; width: 60%; cursor: pointer;justify-content: center;"
+                                                        >
+                                                            Draft
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Draft' && !loader">
+                                                            <a
+                                                                target="_blank"
+                                                                [href]="rowData['pdf']"
+                                                                class="btn btn-light-color-primary btn-sm me-2 p-0"
+                                                            >
+                                                                <span style="float: right">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Draft' && !loader">
+                                                            <a
+                                                                (click)="modalViewShow(rowData['invoice_Number'],'isDraft')"
+                                                                class="me-5 p-0"
+                                                            >
+                                                                <span style="cursor: pointer">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <!-- <span *ngIf="rowData[column.field] === 'Draft' && loader"
+                                                        style="text-align: center; width: 100%; cursor: pointer"> -->
+                                                            <span
+                                                                *ngIf="(rowData['invoice_Number'] === irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                                class="spinner-border text-warning spinner-border-sm"
+                                                                role="status"
+                                                                aria-hidden="true"
+                                                            ></span>
+                                                            <span
+                                                            *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            class="badge badge-warning nowrap"
+                                                                (click)="convert(rowData['invoice_Number'])"
+                                                                style="text-align: center; width: 60%; cursor: pointer;justify-content: center;"
+                                                            >
+                                                                Draft
+                                                            </span>
+                                                            <span 
+                                                            *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            >
+                                                                <a
+                                                                    target="_blank"
+                                                                    [href]="rowData['pdf']"
+                                                                    class="btn btn-light-color-primary btn-sm me-2 p-0"
+                                                                >
+                                                                    <span style="float: right">
+                                                                        <img
+                                                                            class="pdf-md"
+                                                                            [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                        />
+                                                                    </span>
+                                                                </a>
+                                                            </span>
+                                                            <span *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            >
+                                                                <a
+                                                                    (click)="modalViewShow(rowData['invoice_Number'],'isDraft')"
+                                                                    class="me-5 p-0"
+                                                                >
+                                                                    <span style="cursor: pointer">
+                                                                        <img
+                                                                            [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                        />
+                                                                    </span>
+                                                                </a>
+                                                            </span>
+                                                            
+                                                        <!-- </span> -->
+
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Einvoice created'"
+                                                            class="badge badge-success nowrap"
+                                                            style="text-align: center; width: 60%"
+                                                        >
+                                                            Einvoice created
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Einvoice created'">
+                                                            <a
+                                                                target="_blank"
+                                                                [href]="rowData['pdf']"
+                                                                class="btn btn-light-color-primary h-10 w-10 px-1"
+                                                            >
+                                                                <span>
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span
+                                                            *ngIf="
+                                                                rowData[column.field] === 'Einvoice created' &&
+                                                                tenantId === 127
+                                                            "
+                                                        >
+                                                            <a
+                                                                (click)="modalViewShow(rowData['invoice_Number'],'theme')"
+                                                                class="me-5 p-0"
+                                                            >
+                                                                <span style="cursor: pointer">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span
+                                                            *ngIf="
+                                                                rowData[column.field] !== 'Einvoice created' &&
+                                                                rowData[column.field] !== 'Einvoice not created' &&
+                                                                rowData[column.field] !== 'Draft'
+                                                            "
+                                                            style="text-align: center; width: 100%"
+                                                        >
+                                                            {{ rowData[column.field] }}
+                                                        </span>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <tr style="align-items: center">
+                                                <td colspan="100%" style="justify-content: center">No Records Found</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="tab-pane fade" id="kt_tab_pane_8" role="tabpanel">
                         ...
                       </div>
             
                       <div class="tab-pane fade" id="kt_tab_pane_9" role="tabpanel">
                         ...
                       </div> -->
-                        </div>
                     </div>
                 </div>
             </div>
@@ -378,12 +797,345 @@
                             </li>
                         </ul>
                     </div>
+
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
                             <div class="card card-p-0 card-flush">
                                 <div class="card-body">
-                                    <report-grid [columns]="columns" [data]="invoices" [theme]="theme"></report-grid>
+                                    <!-- <p-table #dt [value]="invoices" [columns]="columns" [paginator]="true" [rows]="10"
+                                    [showCurrentPageReport]="true"
+                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                    [rowsPerPageOptions]="[5, 10, 15, 20]">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th *ngFor="let col of columns" class="fw-bold"
+                                                pSortableColumn="{{ col.field }}">
+                                                {{ col.header | localize }}
+                                                <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-record="$implicit" let-i="rowIndex"
+                                        let-columns="columns">
+                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Sales Invoice'"
+                                            class="alternate-row">
+                                            <td [ngStyle]="
+                                                        col.header == 'Amount (SAR)'
+                                                            ? { 'text-align': 'right' }
+                                                            : col.header == 'Download Invoice'
+                                                            ? { 'text-align': 'center' }
+                                                            : { 'text-align': 'left' }
+                                                    " *ngFor="let col of columns">
+                                                <span *ngIf="col.header == 'Amount (SAR)'">
+                                                    {{ record[col.field]?.toFixed(2) | currency: '':'' }}
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header != 'Amount (SAR)' &&
+                                                            col.header != 'ZATCA Status' &&
+                                                            col.header != 'Download Invoice'
+                                                        ">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'false'
+                                                        " class="badge badge-danger" style="cursor: pointer"
+                                                    (click)="modaltermsshow(i)">
+                                                    ZATCA Rejected
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'true'
+                                                        " class="badge badge-success">
+                                                    ZATCA Accepted
+                                                </span>
+                                                <span *ngIf="col.header == 'Download Invoice'">
+                                                    <a target="_blank" [href]="record[col.field]"
+                                                        class="btn btn-light-color-primary btn-sm me-2 p-0">
+                                                        <span style="float: right">
+                                                            <img class="pdf-md"
+                                                                [src]="'/assets/common/images/pdf_icon.svg'" />
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Credit Note'"
+                                            class="alternate-row-credit">
+                                            <td [ngStyle]="
+                                                        col.header == 'Amount (SAR)'
+                                                            ? { 'text-align': 'right' }
+                                                            : col.header == 'Download Invoice'
+                                                            ? { 'text-align': 'center' }
+                                                            : { 'text-align': 'left' }
+                                                    " *ngFor="let col of columns">
+                                                <span *ngIf="col.header == 'Amount (SAR)'">
+                                                    {{ record[col.field]?.toFixed(2) | currency: '':'' }}
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header != 'Amount (SAR)' &&
+                                                            col.header != 'ZATCA Status' &&
+                                                            col.header != 'Download Invoice'
+                                                        ">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'false'
+                                                        " class="badge badge-danger" style="cursor: pointer"
+                                                    (click)="modaltermsshow(i)">
+                                                    ZATCA Rejected
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'true'
+                                                        " class="badge badge-success">
+                                                    ZATCA Accepted
+                                                </span>
+                                                <span *ngIf="col.header == 'Download Invoice'">
+                                                    <a target="_blank" [href]="record[col.field]"
+                                                        class="btn btn-light-color-primary btn-sm me-2 p-0">
+                                                        <span style="float: right">
+                                                            <img class="pdf-md"
+                                                                [src]="'/assets/common/images/pdf_icon.svg'" />
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Debit Note'"
+                                            class="alternate-row-debit">
+                                            <td [ngStyle]="
+                                                        col.header == 'Amount (SAR)'
+                                                            ? { 'text-align': 'right' }
+                                                            : col.header == 'Download Invoice'
+                                                            ? { 'text-align': 'center' }
+                                                            : { 'text-align': 'left' }
+                                                    " *ngFor="let col of columns">
+                                                <span *ngIf="col.header == 'Amount (SAR)'">
+                                                    {{ record[col.field]?.toFixed(2) | currency: '':'' }}
+                                                </span>
 
+                                                <span *ngIf="
+                                                            col.header != 'Amount (SAR)' &&
+                                                            col.header != 'Download Invoice' &&
+                                                            col.header != 'ZATCA Status'
+                                                        ">
+                                                    {{ record[col.field] }}
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'false'
+                                                        " class="badge badge-danger" style="cursor: pointer"
+                                                    (click)="modaltermsshow(i)">
+                                                    ZATCA Rejected
+                                                </span>
+                                                <span *ngIf="
+                                                            col.header == 'ZATCA Status' &&
+                                                            record[col.field] == 'true'
+                                                        " class="badge badge-success">
+                                                    ZATCA Accepted
+                                                </span>
+                                                <span *ngIf="col.header == 'Download Invoice'">
+                                                    <a target="_blank" [href]="record[col.field]"
+                                                        class="btn btn-light-color-primary btn-sm me-2 p-0">
+                                                        <span style="float: right">
+                                                            <img class="pdf-md"
+                                                                [src]="'/assets/common/images/pdf_icon.svg'" />
+                                                        </span>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table> -->
+                                    <p-table
+                                        #dt
+                                        [columns]="columns"
+                                        sortMode="multiple"
+                                        [value]="invoices"
+                                        [paginator]="true"
+                                        [rows]="10"
+                                        [showCurrentPageReport]="true"
+                                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                        [rowsPerPageOptions]="[5, 10, 15, 20]"
+                                        [scrollable]="true"
+                                        [globalFilterFields]="searchableFields"
+                                    >
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <ng-container *ngFor="let column of columns">
+                                                    <th
+                                                        style="text-align: center; width: 150px"
+                                                        *ngIf="column.header !== 'PDF'"
+                                                        pSortableColumn="{{ column.field }}"
+                                                    >
+                                                        {{ column.header }}
+                                                        <p-sortIcon field="{{ column.field }}"></p-sortIcon>
+                                                    </th>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-rowData let-columns="columns">
+                                            <tr
+                                                class="alternate-row"
+                                                [pSelectableRow]="columns"
+                                                *ngIf="invoices.length > 0"
+                                            >
+                                                <ng-container *ngFor="let column of columns">
+                                                    <td
+                                                        *ngIf="column.header !== 'PDF'"
+                                                        [class.center-align]="column.field !== 'amount'"
+                                                        style="text-align: center; width: 150px"
+                                                    >
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Einvoice not created'"
+                                                            class="badge badge-danger nowrap"
+                                                            style="text-align: center; width: 100%"
+                                                        >
+                                                            Einvoice not created
+                                                        </span>
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Draft' && !loader"
+                                                            class="badge badge-warning nowrap"
+                                                            (click)="convert(rowData['invoice_Number'])"
+                                                            style="text-align: center; width: 60%; cursor: pointer;justify-content: center;"
+                                                        >
+                                                            Draft
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Draft' && !loader">
+                                                            <a
+                                                                target="_blank"
+                                                                [href]="rowData['pdf']"
+                                                                class="btn btn-light-color-primary btn-sm me-2 p-0"
+                                                            >
+                                                                <span style="float: right">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Draft' && !loader">
+                                                            <a
+                                                                (click)="modalViewShow(rowData['invoice_Number'],'isDraft')"
+                                                                class="me-5 p-0"
+                                                            >
+                                                                <span style="cursor: pointer">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <!-- <span *ngIf="rowData[column.field] === 'Draft' && loader"
+                                                        style="text-align: center; width: 100%; cursor: pointer"> -->
+                                                            <span
+                                                                *ngIf="(rowData['invoice_Number'] === irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                                class="spinner-border text-warning spinner-border-sm"
+                                                                role="status"
+                                                                aria-hidden="true"
+                                                            ></span>
+                                                            <span
+                                                            *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            class="badge badge-warning nowrap"
+                                                                (click)="convert(rowData['invoice_Number'])"
+                                                                style="text-align: center; width: 60%; cursor: pointer;justify-content: center;"
+                                                            >
+                                                                Draft
+                                                            </span>
+                                                            <span 
+                                                            *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            >
+                                                                <a
+                                                                    target="_blank"
+                                                                    [href]="rowData['pdf']"
+                                                                    class="btn btn-light-color-primary btn-sm me-2 p-0"
+                                                                >
+                                                                    <span style="float: right">
+                                                                        <img
+                                                                            class="pdf-md"
+                                                                            [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                        />
+                                                                    </span>
+                                                                </a>
+                                                            </span>
+                                                            <span 
+                                                            *ngIf="(rowData['invoice_Number'] != irnNo) && (rowData[column.field] === 'Draft' && loader)"
+                                                            >
+                                                                <a
+                                                                    (click)="modalViewShow(rowData['invoice_Number'],'isDraft')"
+                                                                    class="me-5 p-0"
+                                                                >
+                                                                    <span style="cursor: pointer">
+                                                                        <img
+                                                                            [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                        />
+                                                                    </span>
+                                                                </a>
+                                                            </span>
+                                                        <!-- </span> -->
+                                                        <span
+                                                            *ngIf="rowData[column.field] === 'Einvoice created'"
+                                                            class="badge badge-success nowrap"
+                                                            style="text-align: center; width: 100%"
+                                                        >
+                                                            Einvoice created
+                                                        </span>
+                                                        <span *ngIf="rowData[column.field] === 'Einvoice created'">
+                                                            <a
+                                                                target="_blank"
+                                                                [href]="rowData['pdf']"
+                                                                class="btn btn-light-color-primary btn-sm me-2 p-0"
+                                                            >
+                                                                <span style="float: right">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/pdf_icon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span
+                                                            *ngIf="
+                                                                rowData[column.field] === 'Einvoice created' &&
+                                                                tenantId === 127
+                                                            "
+                                                        >
+                                                            <a
+                                                                (click)="modalViewShow(rowData['invoice_Number'],'theme')"
+                                                                class="me-5 p-0"
+                                                            >
+                                                                <span style="cursor: pointer">
+                                                                    <img
+                                                                        class="pdf-md"
+                                                                        [src]="'/assets/common/images/eyeIcon.svg'"
+                                                                    />
+                                                                </span>
+                                                            </a>
+                                                        </span>
+                                                        <span
+                                                            *ngIf="
+                                                                rowData[column.field] !== 'Einvoice created' &&
+                                                                rowData[column.field] !== 'Einvoice not created' &&
+                                                                rowData[column.field] !== 'Draft'
+                                                            "
+                                                            style="text-align: center; width: 100%"
+                                                        >
+                                                            {{ rowData[column.field] }}
+                                                        </span>
+                                                    </td>
+                                                </ng-container>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <tr style="align-items: center">
+                                                <td colspan="100%" style="justify-content: center">No Records Found</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
                                 </div>
                             </div>
                         </div>
@@ -396,6 +1148,83 @@
                         ...
                       </div> -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        bsModal
+        #modalterms="bs-modal"
+        class="modal fade"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modal"
+        aria-hidden="true"
+        [config]="{ backdrop: 'static' }"
+        style="
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            padding-top: 6%;
+        "
+    >
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <span>{{ 'Error Messages' | localize }}</span>
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        <span>{{ 'ZATCA Status' | localize }}: {{ em?.reportingStatus }}</span>
+                    </h5>
+                    <div class="separator separator-border-dashed py-4"></div>
+                    <div class="py-4">
+                        <h5 *ngIf="em?.validationResults?.warningMessages?.length > 0">
+                            <span>Warning Messages</span>
+                        </h5>
+                        <ul *ngFor="let e of em?.validationResults?.warningMessages">
+                            <li>{{ e.code }} : {{ e.message }}</li>
+                        </ul>
+                        <h5 *ngIf="em?.validationResults?.errorMessages?.length > 0">
+                            <span>Error Messages</span>
+                        </h5>
+                        <ul *ngFor="let e of em?.validationResults?.errorMessages">
+                            <li>{{ e.code }} : {{ e.message }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" (click)="modalterms.hide()">
+                        {{ 'Close' | localize }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        bsModal
+        #modalView="bs-modal"
+        class="modal fade"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modal"
+        aria-hidden="true"
+        [config]="{ backdrop: 'static' }"
+        style="position: fixed; width: 100%; height: 100%; justify-content: center; align-items: center"
+    >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <viewInvoice *ngIf="viewShow == true" [id]="id" [type]="type" [theme]="theme"></viewInvoice>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" (click)="Modalhide()">
+                        {{ 'Close' | localize }}
+                    </button>
                 </div>
             </div>
         </div>

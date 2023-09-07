@@ -33,8 +33,10 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetTaxCategoryForViewDto>> GetAll(GetAllTaxCategoryInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredTaxCategory = _taxCategoryRepository.GetAll()
+                var filteredTaxCategory = _taxCategoryRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.IsKSAApplicable.Contains(input.Filter) || e.TaxSchemeID.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -43,53 +45,53 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.TaxSchemeIDFilter), e => e.TaxSchemeID.Contains(input.TaxSchemeIDFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredTaxCategory = filteredTaxCategory
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredTaxCategory = filteredTaxCategory
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var taxCategory = from o in pagedAndFilteredTaxCategory
-                              select new
-                              {
+                var taxCategory = from o in pagedAndFilteredTaxCategory
+                                  select new
+                                  {
 
-                                  o.Name,
-                                  o.Description,
-                                  o.Code,
-                                  o.IsKSAApplicable,
-                                  o.TaxSchemeID,
-                                  o.IsActive,
-                                  Id = o.Id
-                              };
+                                      o.Name,
+                                      o.Description,
+                                      o.Code,
+                                      o.IsKSAApplicable,
+                                      o.TaxSchemeID,
+                                      o.IsActive,
+                                      Id = o.Id
+                                  };
 
-            var totalCount = await filteredTaxCategory.CountAsync();
+                var totalCount = await filteredTaxCategory.CountAsync();
 
-            var dbList = await taxCategory.ToListAsync();
-            var results = new List<GetTaxCategoryForViewDto>();
+                var dbList = await taxCategory.ToListAsync();
+                var results = new List<GetTaxCategoryForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetTaxCategoryForViewDto()
+                foreach (var o in dbList)
                 {
-                    TaxCategory = new TaxCategoryDto
+                    var res = new GetTaxCategoryForViewDto()
                     {
+                        TaxCategory = new TaxCategoryDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsKSAApplicable = o.IsKSAApplicable,
-                        TaxSchemeID = o.TaxSchemeID,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsKSAApplicable = o.IsKSAApplicable,
+                            TaxSchemeID = o.TaxSchemeID,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetTaxCategoryForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetTaxCategoryForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetTaxCategoryForViewDto> GetTaxCategoryForView(int id)

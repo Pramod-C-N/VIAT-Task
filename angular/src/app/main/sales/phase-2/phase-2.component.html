@@ -1,0 +1,186 @@
+<style>
+    .ui-autocomplete .inputTest {
+        background-color: red;
+    }
+
+    .panelTest .ui-autocomplete-items .ui-state-highlight {
+        background-color: blue;
+    }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Phase 2 Configuration' | localize">
+        <div role="actions"></div>
+    </sub-header>
+    <div class="ng-tns-c327-6 app-container container-fluid">
+        <div class="card mb-2">
+            <div class="card-body py-3">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row gx-10 mb-2" style="text-align: center">
+                            <div class="col-lg-2 px-1">
+                                <div>
+                                    <input
+                                        type="text"
+                                        [(ngModel)]="otp"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="name"
+                                        name="name"
+                                        placeholder="OTP"
+                                        value=""
+                                    />
+                                </div>
+                                <div class="fv-plugins-message-container invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-3 px-1">
+                                <div>
+                                    <input
+                                        type="text"
+                                        [(ngModel)]="vatid"
+                                        class="form-control form-control-lg form-control-solid"
+                                        id="vatid"
+                                        name="vatid"
+                                        placeholder="VAT Id"
+                                        value=""
+                                    />
+                                </div>
+                                <div class="fv-plugins-message-container invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-2 p-2 float-left">
+                                <div>
+                                    <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    value=""
+                                    id="isSimplified"
+                                    name="isSimplified"
+                                    [(ngModel)]="isSimplified"
+                                />
+                                <label class="form-check-label" for="isSimplified">Simplified</label>
+                                </div>
+                                <div class="fv-plugins-message-container invalid-feedback"></div>
+                            </div>
+                            <div class="col-lg-4 px-1">
+                                <div class="row">
+                                    <div class="col-lg-6 btn-text-left">
+                                        <button class="btn btn-primary w-50" (click)="sendOTP(otp)">Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label style="text-align: left" for="csid">CSID</label>
+                        <textarea
+                            class="form-control form-control-solid"
+                            type="text"
+                            [(ngModel)]="csid"
+                            id="csid"
+                            name="csid"
+                            rows="4"
+                            placeholder="CSID"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-2" *ngIf="showXml== true">
+            <div class="card-body py-3">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label style="text-align: left" for="xml">XML Input</label>
+                        <textarea
+                            class="form-control form-control-solid"
+                            [(ngModel)]="xml"
+                            type="text"
+                            id="xml"
+                            name="xml"
+                            rows="4"
+                            placeholder="XML"
+                        ></textarea>
+                    </div>
+                    <div class="col-lg-4 px-1">
+                        <div class="row">
+                            <div class="col-lg-6 text-end">
+                                <button class="btn btn-primary w-100" (click)="sendToZatca()">Send to ZATCA</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="showStatus == true">
+            <div class="col-lg-4">
+                <div class="modal-content p-2">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <span>{{ 'Compliance Status' | localize }}</span>
+                        </h3>
+                    </div>
+                    <div class="modal-body pt-2">
+                            <span *ngIf="complainceStatus == 'NOT_CLEARED'">
+                                <span class="badge badge-danger nowrap" > {{complainceStatus}}</span>
+                            </span>
+                            <span *ngIf="complainceStatus == 'CLEARED'">
+                                <span class="badge badge-success nowrap" > {{complainceStatus}}</span>
+                            </span>
+                        <ul *ngFor="let e of em">
+                            <li>
+                                {{ e.message }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="modal-content p-2">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <span>{{ 'Clearance Status' | localize }}</span>
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-body pt-2">
+                            <span *ngIf="clearenceStatus == 'NOT_CLEARED'">
+                                <span class="badge badge-danger nowrap" > {{clearenceStatus}}</span>
+                            </span>
+                            <span *ngIf="clearenceStatus == 'CLEARED'">
+                                <span class="badge badge-success nowrap" > {{clearenceStatus}}</span>
+                            </span>
+                        <ul *ngFor="let e of clearenceEm">
+                            <li>
+                                {{ e.message }}
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="modal-content p-2">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <span>{{ 'Reporting Status' | localize }}</span>
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-body pt-2">
+                            <span *ngIf="reportingStatus == 'NOT_REPORTED'">
+                                <span class="badge badge-danger nowrap" > {{reportingStatus}}</span>
+                            </span>
+                            <span *ngIf="reportingStatus == 'REPORTED'">
+                                <span class="badge badge-success nowrap" > {{reportingStatus}}</span>
+                            </span>
+                        <ul *ngFor="let e of reportingEm">
+                            <li>
+                                {{ e.message }}
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

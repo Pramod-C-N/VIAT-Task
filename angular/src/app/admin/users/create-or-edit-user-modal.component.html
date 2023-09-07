@@ -222,7 +222,8 @@
                                     class="help-block text-danger"
                                     *ngIf="
                                         userForm.controls['PasswordRepeat'] &&
-                                        userForm.controls['PasswordRepeat'].errors
+                                        userForm.controls['PasswordRepeat'].errors &&
+                                        userForm.controls['PasswordRepeat'].touched
                                     "
                                 >
                                     <li [hidden]="!userForm.controls['PasswordRepeat'].errors.requireDigit">
@@ -333,13 +334,12 @@
                             </ng-template>
                             <div class="row">
                                 <div *ngFor="let role of roles" class="col-4">
-                                    <label *ngIf="role.roleName=='Admin'" class="form-check form-check-custom form-check-solid py-1">
+                                    <label  class="form-check form-check-custom form-check-solid py-1">
                                         <input
                                             id="EditUser_{{ role.roleName }}"
                                             type="checkbox"
                                             name="{{ role.roleName }}"
                                             [(ngModel)]="role.isAssigned"
-                                            [disabled]="true"
                                             class="form-check-input"
                                         />
                                         <span class="form-check-label">

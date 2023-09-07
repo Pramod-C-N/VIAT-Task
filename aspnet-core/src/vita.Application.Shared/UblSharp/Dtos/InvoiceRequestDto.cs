@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
+using vita.EInvoicing.Dto;
 
 namespace vita.UblSharp.Dtos
 {
@@ -52,5 +53,16 @@ namespace vita.UblSharp.Dtos
         public string InvoiceTransactionType { get; set; }
         public string XmlHash { get; set; }
         public string PdfHash { get; set; }
+    }
+
+
+    public class XMLRequestParam
+    {
+        public InvoiceTypeEnum invoiceType { get; set; }
+        public string invoiceno { get; set; }
+        public string uniqueIdentifier { get; set; }
+        public string tenantId { get; set; }
+        public string xml_uid { get; set; } = "";
+        public bool isPhase1 { get; set; } = true;
     }
 }

@@ -7,7 +7,7 @@ namespace vita.Debit.Dtos
     public class CreateOrEditDebitNotePaymentDetailDto : EntityDto<long?>
     {
 
-        
+
         public string IRNNo { get; set; }
 
         public string PaymentMeans { get; set; }
@@ -15,6 +15,9 @@ namespace vita.Debit.Dtos
         public string CreditDebitReasonText { get; set; }
 
         public string PaymentTerms { get; set; }
+
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
 
     }
 }

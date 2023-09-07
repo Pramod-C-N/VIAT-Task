@@ -40,11 +40,11 @@ namespace vita.Report
 
 
 
-        public async Task<DataTable> GetSalesDetailedReport(ReportInputDto input)
+        public async Task<DataTable> GetSalesDetailedReport(GetSalesReportInputDto input)
+        
         {
             input.Fromdate = _timeZoneConverter.Convert(input.Fromdate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.Fromdate;
             input.Todate = _timeZoneConverter.Convert(input.Todate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.Todate;
-
             DataTable dt = new DataTable();
             try
             {
@@ -60,9 +60,13 @@ namespace vita.Report
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
                         cmd.Parameters.AddWithValue("@fromDate", input.Fromdate);
                         cmd.Parameters.AddWithValue("@toDate", input.Todate);
-                        cmd.Parameters.AddWithValue("@code", input.code);
-
-
+                        cmd.Parameters.AddWithValue("@text", input.text);
+                        cmd.Parameters.AddWithValue("@type", input.type);
+                        cmd.Parameters.AddWithValue("@code", input.code);                       
+                        if (input.subcode != null)
+                        {
+                            cmd.Parameters.AddWithValue("@subcode", "'" + input.subcode.Replace(",", "','") + "'");
+                        }
                         dt.Load(cmd.ExecuteReader()); 
                         conn.Close();
 
@@ -239,7 +243,7 @@ namespace vita.Report
         }
 
 
-        public async Task<DataTable> GetDetailedData(DateTime fromDate, DateTime toDate)
+        public async Task<DataTable> GetDetailedData(DateTime fromDate, DateTime toDate, string code)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -271,6 +275,9 @@ namespace vita.Report
                         //System.Diagnostics.Debug.WriteLine(reader.GetValue(0))
 
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        if (code == "natureofservice") { cmd.Parameters.AddWithValue("@code", '0'); }
+                        else { cmd.Parameters.AddWithValue("@code", code); }
+                        
 
 
                         dt.Load(cmd.ExecuteReader());
@@ -625,6 +632,40 @@ namespace vita.Report
 
         }
 
+        public async Task<DataTable> GetNatureOfServiceDropdown()
+        {
+            //Input.Fromdate = _timeZoneConverter.Convert(Input.Fromdate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? Input.Fromdate;
+            //Input.Todate = _timeZoneConverter.Convert(Input.Todate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? Input.Todate;
+
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getnatureofservice";
+                        //cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+
+        }
+
         public async Task<FileDto> GetVatReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
         {
 
@@ -650,7 +691,7 @@ namespace vita.Report
             return _excelExporter.ExportToFileVat(dt, fileName, fromDate, toDate, tenantName);
         }
 
-        public async Task<FileDto> GetWhtDetailedReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
+        public async Task<FileDto> GetWhtDetailedReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, string code, bool total = false)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -660,7 +701,7 @@ namespace vita.Report
 
             try
             {
-                dt = await GetDetailedData(fromDate, toDate);
+                dt = await GetDetailedData(fromDate, toDate, code);
                 decimal TotalAmount = 0;
                 decimal taxrate = 0;
                 decimal whtamount = 0;
@@ -673,7 +714,7 @@ namespace vita.Report
 
                 }
 
-                dt.Rows.Add(null, "", "", "", null, TotalAmount, null, whtamount);
+                dt.Rows.Add(null, "", "", "", null, TotalAmount, null, whtamount,null,null,"","");
                 input.FinancialNumber = "";
                 input.FiscalYear = "";
                 dt.Columns["slno"].ColumnName = "Sl Number";
@@ -685,9 +726,12 @@ namespace vita.Report
                 dt.Columns["taxrate"].ColumnName = "Tax Rate";
                 dt.Columns["withholdingtaxamount"].ColumnName = "With Holding Tax Amount";
                 dt.Columns["AffiliationStatus"].ColumnName = "Affiliation Status";
+                dt.Columns["Obtainedrequireddocuments"].ColumnName = "Obtained Required Documents";
 
 
                 input.WithholderName = tenantName;
+                input.code = code;
+                input.FiscalYear= fromDate.Year.ToString()+"-"+ toDate.Year.ToString();
                 input.FromDate = (fromDate).ToString("dd/MM/yyyy");
                 input.ToDate = (toDate).ToString("dd/MM/yyyy");
                 input.Month = fromDate.ToString("MMM");
@@ -728,7 +772,7 @@ namespace vita.Report
 
                 }
 
-                dt.Rows.Add(null, "", "", null, whtamount, null, TotalAmount);
+                //dt.Rows.Add(null, "", "", null, whtamount, null, TotalAmount);
 
                 input.FinancialNumber = "";
                 input.FiscalYear = "";
@@ -757,7 +801,7 @@ namespace vita.Report
             return _excelExporter.ExportToFileWht(dt, fileName, input);
         }
 
-        public async Task<FileDto> GetSalesDetailedToExcel(ReportInputDto reportInput, string fileName, string tenantName, bool total = false)
+        public async Task<FileDto> GetSalesDetailedToExcel(GetSalesReportInputDto reportInput, string fileName, string tenantName, bool total = false)
         {
             reportInput.Fromdate = _timeZoneConverter.Convert(reportInput.Fromdate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? reportInput.Fromdate;
             reportInput.Todate = _timeZoneConverter.Convert(reportInput.Todate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? reportInput.Todate;
@@ -766,8 +810,8 @@ namespace vita.Report
             PurchaseExcelDto input = new PurchaseExcelDto();
             //ReportInputDto repinput = new ReportInputDto();
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
-
-
+            DataTable dtReport = new DataTable();
+            string typeCodeName = string.Empty;
             var i = 0;
             foreach (DataRow row in dt.Rows)
             {
@@ -802,27 +846,29 @@ namespace vita.Report
 
                 }
 
-
                 dt.Columns.Remove("ReferenceNo");
-                
-                if(reportInput.code == "VATSAL000")
+                if (reportInput.code == "VATSAL005" || reportInput.code == "VATSAL007")
                 {
-                    
-                    dt.Columns.Remove("IRNNo");
-                    dt.Rows.Add("",  null,null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
+                    dt.Rows.Add("", "", null, null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
 
                 }
                 else
                 {
-                    dt.Rows.Add("", null, null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
+                    dt.Rows.Add("",null, "", null,"","","","", TaxableAmount, 0.0, VatAmount, TotalAmount, ZeroRated, Export, Exempt, OutofScope, GovTaxableAmount);
 
                 }
-                input.Name = tenantName;
+                dtReport = GetReportType(reportInput.code);
+
+                if(reportInput.code != null)
+                {
+                    typeCodeName = dtReport.Rows[0]["ReportName"].ToString();
+                }
                 input.Month = reportInput.Fromdate.ToString("MMM");
                 input.FromDate = (reportInput.Fromdate).ToString("dd/MM/yyyy");
                 input.ToDate = (reportInput.Todate).ToString("dd/MM/yyyy");
                 input.Year = reportInput.Fromdate.Year.ToString();
                 input.Type = "Detailed";
+                input.Name = tenantName;
 
 
             }
@@ -831,7 +877,7 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFileSales(dt, fileName, input, reportInput.code);
+            return _excelExporter.ExportToFileSales(dt, fileName, input, reportInput.code, typeCodeName);
         }
 
 
@@ -881,7 +927,7 @@ namespace vita.Report
 
                 }
                 dt.Columns["invoicenumber"].ColumnName = "Invoice Count";
-                dt.Rows.Add(null, count, TaxableAmount,gov, ZeroRated, Exempt, Export, OutofScope, VatAmount, TotalAmount);
+                dt.Rows.Add(null, count, TaxableAmount, gov, ZeroRated, Exempt, Export, OutofScope, VatAmount, TotalAmount);
                 input.Name = tenantName;
                 input.FromDate = (fromDate).ToString("dd/MM/yyyy");
                 input.ToDate = (toDate).ToString("dd/MM/yyyy");
@@ -896,10 +942,10 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFileSales(dt, fileName, input,"");
+            return _excelExporter.ExportToFileSales(dt, fileName, input, "", "");
         }
 
-        public async Task<FileDto> GetReportExcel(string Tenantname,string filename,string Type)
+        public async Task<FileDto> GetReportExcel(string Tenantname, string filename, string Type)
         {
             DataTable dt = new DataTable();
             PurchaseExcelDto input = new PurchaseExcelDto();
@@ -917,10 +963,10 @@ namespace vita.Report
 
             try
             {
-                dt = await GetMasterReport(Type);  
+                dt = await GetMasterReport(Type);
                 input.Name = Tenantname;
                 input.Type = Type;
-                
+
 
             }
             catch (Exception e)
@@ -937,7 +983,8 @@ namespace vita.Report
             repinput.Todate = _timeZoneConverter.Convert(repinput.Todate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? repinput.Todate;
             DataTable dt = new DataTable();
             PurchaseExcelDto input = new PurchaseExcelDto();
-
+            DataTable dtReport = new DataTable();
+            string typeCodeName = string.Empty;
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
 
 
@@ -964,6 +1011,8 @@ namespace vita.Report
                 decimal OtherChargesPaid = 0;
                 decimal VatAmount = 0;
                 decimal TotalAmount = 0;
+                decimal ChargesIncludingVAT = 0;
+                decimal vatDeffered = 0;
 
 
 
@@ -984,13 +1033,15 @@ namespace vita.Report
                     ZeroRated += Convert.ToDecimal(row["ZeroRated"]);
                     Exempt += Convert.ToDecimal(row["Exempt"]);
                     OutofScope += Convert.ToDecimal(row["OutofScope"]);
-                    ImportsatCustoms += Convert.ToDecimal(row["ImportsatCustoms"]);
-                    ImportsatRCM += Convert.ToDecimal(row["ImportsatRCM"]);
+                    vatDeffered += Convert.ToDecimal(row["vatDeffered"]);
+                    ImportsatCustoms += Convert.ToDecimal(row["ImportVATCustoms"]);
+                    ImportsatRCM += Convert.ToDecimal(row["ImportsatRCM"]);                    
                     CustomsPaid += Convert.ToDecimal(row["CustomsPaid"]);
                     ExciseTaxPaid += Convert.ToDecimal(row["ExciseTaxPaid"]);
                     OtherChargesPaid += Convert.ToDecimal(row["OtherChargesPaid"]);
                     VatAmount += Convert.ToDecimal(row["VatAmount"]);
                     TotalAmount += Convert.ToDecimal(row["TotalAmount"]);
+                    ChargesIncludingVAT += Convert.ToDecimal(row["ChargesIncludingVAT"]);
 
 
 
@@ -998,15 +1049,22 @@ namespace vita.Report
                 }
                 dt.Columns["InvoiceDate"].ColumnName = "Purchase Date";
                 dt.Columns["InvoiceNumber"].ColumnName = "Purchase Number";
-                if(repinput.code=="VATPUR000")
+                if (repinput.code == "VATPUR000" || repinput.code == "VATPUR003" || repinput.code == "VATPUR004" || repinput.code == "VATPUR005" || repinput.code == "VATPUR007" || repinput.code == "VATPUR006" || repinput.code == "VATPUR009" || repinput.code == "VATPUR010")
                 {
-                    dt.Rows.Add(null, "", TaxableAmount, ZeroRated, ImportsatCustoms, ImportsatRCM, true, true, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, "", 0.00, Exempt, OutofScope, VatAmount, TotalAmount);
+                    //dt.Rows.Add(null, "", "", TaxableAmount, ZeroRated, ImportsatCustoms, ImportsatRCM, true, true, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, "", 0.00, Exempt, OutofScope, VatAmount, TotalAmount);
+                    dt.Rows.Add(null, "", "", "", TaxableAmount, 0.00, VatAmount, TotalAmount,ZeroRated, Exempt, OutofScope, ImportsatCustoms, vatDeffered, ImportsatRCM,CustomsPaid, ExciseTaxPaid, OtherChargesPaid,ChargesIncludingVAT);
 
                 }
                 else
                 {
-                    dt.Rows.Add(null, null,"", TaxableAmount, ZeroRated, ImportsatCustoms, ImportsatRCM, true, true, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, "", 0.00, Exempt, OutofScope, VatAmount, TotalAmount);
+                    dt.Rows.Add(null, null, "", "", TaxableAmount, ZeroRated, ImportsatCustoms, ImportsatRCM, true, true, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, "", 0.00, Exempt, OutofScope, VatAmount, TotalAmount);  
 
+                }
+                dtReport = GetReportType(repinput.code);
+                if (repinput.code != "VATPUR000")
+                {
+                    typeCodeName = dtReport.Rows[0]["ReportName"].ToString();
+                    input.Name = tenantName;
                 }
                 input.Name = tenantName;
                 input.FromDate = (repinput.Fromdate).ToString("dd/MM/yyyy");
@@ -1022,7 +1080,7 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFilePurchase(dt, fileName, input,repinput.code);
+            return _excelExporter.ExportToFilePurchase(dt, fileName, input, repinput.code, typeCodeName);
         }
 
         public async Task<FileDto> GetDaywisePurchaseToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
@@ -1096,7 +1154,7 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFilePurchase(dt, fileName, input,"");
+            return _excelExporter.ExportToFilePurchase(dt, fileName, input, "", "");
         }
 
 
@@ -1109,7 +1167,8 @@ namespace vita.Report
             PurchaseExcelDto input = new PurchaseExcelDto();
             //ReportInputDto repinput = new ReportInputDto();
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
-
+            DataTable dtReport = new DataTable();
+            string typeCodeName = string.Empty;
 
             var i = 0;
             foreach (DataRow row in dt.Rows)
@@ -1147,19 +1206,24 @@ namespace vita.Report
                 dt.Columns["InvoiceDate"].ColumnName = "Credit Note Date";
                 dt.Columns["irnno"].ColumnName = "Credit Note Number";
                 dt.Columns["Invoicenumber"].ColumnName = "Invoice Number";
-                dt.Columns["invoiceNumber1"].ColumnName = "Reference Number";
+                //dt.Columns["invoiceNumber1"].ColumnName = "Reference Number";
 
-                if (reportInput.code== "VATCNS000")
+                if (reportInput.code == "VATCNS000")
                 {
-                    dt.Rows.Add("", "", "", null,TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
+                    dt.Rows.Add("", "", "", null, TaxableAmount, 0.0, VatAmount, TotalAmount, ZeroRated, Export, Exempt, OutofScope, GovTaxableAmount);
 
                 }
                 else
                 {
-                    dt.Rows.Add("", "", "", null, null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
+                    dt.Rows.Add("", "", "", null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
 
                 }
-
+                dtReport = GetReportType(reportInput.code);
+                if (reportInput.code != "VATCNS000")
+                {
+                    typeCodeName = dtReport.Rows[0]["ReportName"].ToString();
+                    input.Name = tenantName;
+                }
                 input.Name = tenantName;
                 input.Month = reportInput.Fromdate.ToString("MMM");
                 input.FromDate = (reportInput.Fromdate).ToString("dd/MM/yyyy");
@@ -1174,7 +1238,7 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFileCredit(dt, fileName, input, reportInput.code);
+            return _excelExporter.ExportToFileCredit(dt, fileName, input, reportInput.code, typeCodeName);
         }
 
 
@@ -1201,7 +1265,7 @@ namespace vita.Report
 
             try
             {
-                dt = await GetCreditSalesDaywiseReport(reportInput.Fromdate,reportInput.Todate);
+                dt = await GetCreditSalesDaywiseReport(reportInput.Fromdate, reportInput.Todate);
                 decimal TaxableAmount = 0;
                 decimal GovTaxableAmount = 0;
                 decimal ZeroRated = 0;
@@ -1244,7 +1308,67 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFileCredit(dt, fileName, input,"");
+            return _excelExporter.ExportToFileCredit(dt, fileName, input, "", "");
+        }
+        public async Task <List<VatCalculationReportDto>> GetVatDescription( string FieldNo, DateTime fromDate, DateTime toDate)
+        {
+            fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
+            toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
+            DataTable dt = new DataTable();
+            var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+            string vatCalculation = string.Empty;
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    conn.Open();
+                    cmd.Connection = conn;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "VI_SP_GetVATDetailedReport";
+
+
+                    cmd.Parameters.Add(new SqlParameter("FromDate", SqlDbType.DateTime));
+                    cmd.Parameters["FromDate"].Value = fromDate;
+                    cmd.Parameters["FromDate"].Direction = ParameterDirection.Input;
+
+                    cmd.Parameters.Add(new SqlParameter("ToDate", SqlDbType.DateTime));
+                    cmd.Parameters["ToDate"].Value = toDate;
+                    cmd.Parameters["ToDate"].Direction = ParameterDirection.Input;
+                    ////System.Diagnostics.Debug.WriteLine(reader.GetValue(0))
+                    cmd.Parameters.AddWithValue("@FieldNo", FieldNo);
+
+                    dt.Load(cmd.ExecuteReader());
+                    conn.Close();
+
+                }
+            }
+
+            List<VatCalculationReportDto> result = new List<VatCalculationReportDto>();
+            var i = 1;
+            foreach (DataRow row in dt.Rows)
+            {
+                try
+                {
+                    result.Add(new VatCalculationReportDto()
+                    {
+                        SlNo = i,
+                        InvoiceNumber = Convert.ToInt32(row["InvoiceNumber"]),
+                        IssueDate = Convert.ToString(row["Issuedate"]),
+                        NetAmount = Convert.ToDecimal(row["NetAmount"]),
+                        VatAmount = Convert.ToDecimal(row["VatAmount"]),
+                        TotalAmount = Convert.ToDecimal(row["TotalAmount"]),
+                    });
+                    i++;
+                }
+                catch(Exception ex)
+                {
+
+                }
+               
+
+            }
+
+            return result;
         }
 
         public async Task<List<VatReportDto>> GetAllNew(DateTime fromDate, DateTime toDate)
@@ -1795,16 +1919,16 @@ namespace vita.Report
                 var i = 0;
                 foreach (DataRow row in dt.Rows)
                 {
-                   
-                        result.Add(new VatReportDto()
-                        {
-                            Id = i,
-                            text = row["Description"].ToString(),
-                            Amount = row["InnerAmount"] == DBNull.Value? null: Convert.ToDecimal(row["InnerAmount"]),
-                            Adjustment = row["Amount"] == DBNull.Value ? null : Convert.ToDecimal(row["Amount"]),
-                            style = Convert.ToInt32(row["style"])
-                        });
-                        i++;
+
+                    result.Add(new VatReportDto()
+                    {
+                        Id = i,
+                        text = row["Description"].ToString(),
+                        Amount = row["InnerAmount"] == DBNull.Value ? null : Convert.ToDecimal(row["InnerAmount"]),
+                        Adjustment = row["Amount"] == DBNull.Value ? null : Convert.ToDecimal(row["Amount"]),
+                        style = Convert.ToInt32(row["style"])
+                    });
+                    i++;
 
                 }
 
@@ -1866,6 +1990,185 @@ namespace vita.Report
                         text = row["Description"].ToString(),
                         Amount = row["InnerAmount"] == DBNull.Value ? null : Convert.ToDecimal(row["InnerAmount"]),
                         Adjustment = row["Amount"] == DBNull.Value ? null : Convert.ToDecimal(row["Amount"]),
+                        style = Convert.ToInt32(row["style"])
+                    });
+                    i++;
+
+                }
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                return result;
+            }
+
+
+        }
+
+        public async Task<DataTable> GetPreviousYearData()
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getPreviousYearData";
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> GetFinancialYearData()
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getFinancialYearData";
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<bool> RefereshSalesSummaryData()
+        {
+
+            SqlConnection conn = null;
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (conn = new SqlConnection(connStr))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "VI_RefereshSalesSummaryData";
+
+                        //cmd.Parameters.AddWithValue("@TenantId", AbpSession.TenantId);
+                        cmd.Parameters.Add(new SqlParameter("TenantId", SqlDbType.Int));
+                        cmd.Parameters["TenantId"].Value = AbpSession.TenantId;
+                        cmd.Parameters["TenantId"].Direction = ParameterDirection.Input;
+
+
+                        int i = cmd.ExecuteNonQuery();
+                        conn.Close();
+                        return true;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+
+                return false;
+
+            }
+            finally
+            {
+                if (conn != null && conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+
+            }
+
+
+        }
+
+        public async Task<List<OverHeadGapReportDto>> GetOverHeadGapAnalysisReport(DateTime fromDate, DateTime toDate)
+        {
+
+            fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
+            toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
+            DataTable dt = new DataTable();
+            List<OverHeadGapReportDto> result = new List<OverHeadGapReportDto>();
+
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "SP_GetOverHeadGapAnalysisReport";
+
+                        //System.Diagnostics.Debug.WriteLine(reader.GetValue(0))
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+
+                    }
+                }
+
+                var i = 0;
+                foreach (DataRow row in dt.Rows)
+                {
+                    result.Add(new OverHeadGapReportDto()
+                    {
+                        Id = i,
+                        particulars = row["Particular"].ToString(),
+                        col1 = row["col01"] == DBNull.Value ? null : Convert.ToDecimal(row["col01"]),
+                        col2 = row["col02"] == DBNull.Value ? null : Convert.ToDecimal(row["col02"]),
+                        col3 = row["col03"] == DBNull.Value ? null : Convert.ToDecimal(row["col03"]),
+                        col4 = row["col04"] == DBNull.Value ? null : Convert.ToDecimal(row["col04"]),
+                        col5 = row["col05"] == DBNull.Value ? null : Convert.ToDecimal(row["col05"]),
+                        col6 = row["col06"] == DBNull.Value ? null : Convert.ToDecimal(row["col06"]),
+                        col7 = row["col07"] == DBNull.Value ? null : Convert.ToDecimal(row["col07"]),
+                        col8 = row["col08"] == DBNull.Value ? null : Convert.ToDecimal(row["col08"]),
+                        col9 = row["col09"] == DBNull.Value ? null : Convert.ToDecimal(row["col09"]),
+                        col10 = row["col10"] == DBNull.Value ? null : Convert.ToDecimal(row["col10"]),
+                        col11 = row["col11"] == DBNull.Value ? null : Convert.ToDecimal(row["col11"]),
+                        col12 = row["col12"] == DBNull.Value ? null : Convert.ToDecimal(row["col12"]),
+                        Amount = row["Amount"] == DBNull.Value ? null : Convert.ToDecimal(row["Amount"]),
                         style = Convert.ToInt32(row["style"])
                     });
                     i++;
@@ -2251,7 +2554,7 @@ namespace vita.Report
             }
 
             string headername = "Sales Invoice Reconciliation Report";
-            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName,headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
 
@@ -2298,7 +2601,7 @@ namespace vita.Report
             }
 
             string headername = "Sales Credit Note Reconciliation Report";
-           return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
         public async Task<FileDto> GetSalesDebitReconciliationReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
@@ -2327,7 +2630,7 @@ namespace vita.Report
                 dt = _excelExporter.ToDataTable<VatReportDto>(li, total);
                 List<VatReportDto> result = new List<VatReportDto>();
 
-                
+
 
 
 
@@ -2348,7 +2651,7 @@ namespace vita.Report
             }
 
             string headername = "Sales Debit Note Reconciliation Report";
-            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
 
@@ -2396,7 +2699,7 @@ namespace vita.Report
             }
 
             string headername = "Purchase Entry Reconciliation Report";
-            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
         public async Task<FileDto> GetPurchaseCreditReconciliationReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
@@ -2419,12 +2722,12 @@ namespace vita.Report
                     input.Address = row["State"].ToString() + "," + row["country"].ToString();
                 }
 
-                    var li = await GetPurchaseCreditReconciliationReport(fromDate, toDate);
+                var li = await GetPurchaseCreditReconciliationReport(fromDate, toDate);
                 dt = _excelExporter.ToDataTable<VatReportDto>(li, total);
                 List<VatReportDto> result = new List<VatReportDto>();
 
 
-                
+
 
 
 
@@ -2446,7 +2749,7 @@ namespace vita.Report
             }
 
             string headername = "Purchase Credit Note Reconciliation Report";
-           return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
         public async Task<FileDto> GetPurchaseDebitReconciliationReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
@@ -2468,8 +2771,8 @@ namespace vita.Report
                     input.VAT = row["vatid"].ToString();
                     input.Address = row["State"].ToString() + "," + row["country"].ToString();
                 }
-                    var li = await GetPurchaseDebitReconciliationReport(fromDate, toDate);
-                
+                var li = await GetPurchaseDebitReconciliationReport(fromDate, toDate);
+
                 dt = _excelExporter.ToDataTable<VatReportDto>(li, total);
                 List<VatReportDto> result = new List<VatReportDto>();
 
@@ -2493,7 +2796,7 @@ namespace vita.Report
             }
 
             string headername = "Purchase Debit Note Reconciliation Report";
-           return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
         public async Task<FileDto> GetOverheadsReconciliationReportToExcel(DateTime fromDate, DateTime toDate, string fileName, string tenantName, bool total = false)
@@ -2542,7 +2845,7 @@ namespace vita.Report
             }
 
             string headername = "Overheads Reconciliation Report";
-            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername,input);
+            return _excelExporter.ExportToFileSalesReconciliation(dt, fileName, fromDate, toDate, tenantName, headername, input);
         }
 
         public async Task<FileDto> GetDebitDetailedToExcel(ReportInputDto reportInput, string fileName, string tenantName, bool total = false)
@@ -2567,7 +2870,7 @@ namespace vita.Report
 
             try
             {
-                dt = await GetDebitNotePeriodicalReport(reportInput.Fromdate,reportInput.Todate);
+                dt = await GetDebitNotePeriodicalReport(reportInput.Fromdate, reportInput.Todate);
                 decimal TaxableAmount = 0;
                 decimal GovTaxableAmount = 0;
                 decimal ZeroRated = 0;
@@ -2589,12 +2892,12 @@ namespace vita.Report
                     TotalAmount += Convert.ToDecimal(row["TotalAmount"]);
 
                 }
-               // dt.Columns.Remove("ReferenceNo");
+                // dt.Columns.Remove("ReferenceNo");
                 dt.Columns["invoicenumber"].ColumnName = "Invoice Number";
                 dt.Columns["invoicedate"].ColumnName = "Debit Note Date";
                 dt.Columns["IRNNo"].ColumnName = "Debit Note Number";
 
-                dt.Rows.Add("", "", null,null, TaxableAmount, GovTaxableAmount, ZeroRated, Export, Exempt, OutofScope, 0.00, VatAmount, TotalAmount);
+                dt.Rows.Add("", "", null, null, TaxableAmount, 0.0, VatAmount, TotalAmount,  ZeroRated, Export, Exempt, OutofScope, GovTaxableAmount);
                 input.Name = tenantName;
                 input.Month = reportInput.Fromdate.ToString("MMM");
                 input.FromDate = (reportInput.Fromdate).ToString("dd/MM/yyyy");
@@ -2701,7 +3004,7 @@ namespace vita.Report
 
             try
             {
-                dt = await GetCreditPurchaseDetailedReport(repinput.Fromdate,repinput.Todate);
+                dt = await GetCreditPurchaseDetailedReport(repinput.Fromdate, repinput.Todate);
                 decimal TaxableAmount = 0;
                 decimal ZeroRated = 0;
                 decimal Exempt = 0;
@@ -2713,13 +3016,8 @@ namespace vita.Report
                 decimal OtherChargesPaid = 0;
                 decimal VatAmount = 0;
                 decimal TotalAmount = 0;
-
-
-
-
-
-
-
+                decimal VATDeffered = 0;
+                decimal ChargesIncludingVAT = 0;
 
 
                 //for (int j = 0; j < dt.Columns.Count; j++)
@@ -2734,12 +3032,14 @@ namespace vita.Report
                     Exempt += Convert.ToDecimal(row["Exempt"]);
                     OutofScope += Convert.ToDecimal(row["OutofScope"]);
                     ImportsatCustoms += Convert.ToDecimal(row["importVATCustoms"]);
+                    VATDeffered+= Convert.ToDecimal(row["VATDeffered"]);
                     ImportsatRCM += Convert.ToDecimal(row["ImportsatRCM"]);
                     CustomsPaid += Convert.ToDecimal(row["CustomsPaid"]);
                     ExciseTaxPaid += Convert.ToDecimal(row["ExciseTaxPaid"]);
                     OtherChargesPaid += Convert.ToDecimal(row["OtherChargesPaid"]);
                     VatAmount += Convert.ToDecimal(row["VatAmount"]);
                     TotalAmount += Convert.ToDecimal(row["TotalAmount"]);
+                    ChargesIncludingVAT += Convert.ToDecimal(row["ChargesIncludingVAT"]);
 
 
 
@@ -2748,7 +3048,7 @@ namespace vita.Report
                 dt.Columns["invoicenumber"].ColumnName = "Credit Note Number";
                 dt.Columns["invoiceDate"].ColumnName = "Credit Note Date";
 
-                dt.Rows.Add(null, "","",null,"", TaxableAmount, ZeroRated, Exempt, OutofScope, 0, true, 0, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, 0.00, VatAmount, TotalAmount);
+                dt.Rows.Add( "", "", null, null, null, TaxableAmount, 0.0, VatAmount, TotalAmount, ZeroRated, Exempt, OutofScope, ImportsatCustoms, VATDeffered, ImportsatRCM, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, ChargesIncludingVAT);
                 input.Name = tenantName;
                 input.FromDate = (repinput.Fromdate).ToString("dd/MM/yyyy");
                 input.ToDate = (repinput.Todate).ToString("dd/MM/yyyy");
@@ -2802,6 +3102,7 @@ namespace vita.Report
                 decimal OtherChargesPaid = 0;
                 decimal VatAmount = 0;
                 decimal TotalAmount = 0;
+                decimal VATDeffered = 0;
 
 
 
@@ -2825,6 +3126,7 @@ namespace vita.Report
                     Exempt += Convert.ToDecimal(row["Exempt"]);
                     ImportsatCustoms += Convert.ToDecimal(row["ImportVATCustoms"]);
                     ImportsatRCM += Convert.ToDecimal(row["ImportsatRCM"]);
+                    VATDeffered += Convert.ToDecimal(row["VATDeffered"]);
                     CustomsPaid += Convert.ToDecimal(row["CustomsPaid"]);
                     ExciseTaxPaid += Convert.ToDecimal(row["ExciseTaxPaid"]);
                     OtherChargesPaid += Convert.ToDecimal(row["OtherChargesPaid"]);
@@ -2835,7 +3137,7 @@ namespace vita.Report
                 }
                 dt.Columns["invoicecount"].ColumnName = "Credit Note Count";
                 dt.Columns["invoiceDate"].ColumnName = "Credit Note Date";
-                dt.Rows.Add(null, InvoiceNumber, null, TaxableAmount, ZeroRated, Exempt, OutofScope, 0, true, 0, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, VatAmount, TotalAmount);
+                dt.Rows.Add(null, InvoiceNumber, null, TaxableAmount, ZeroRated, Exempt, OutofScope, ImportsatCustoms, VATDeffered, ImportsatRCM, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, VatAmount, TotalAmount);
                 input.Name = tenantName;
                 input.FromDate = (fromDate).ToString("dd/MM/yyyy");
                 input.ToDate = (toDate).ToString("dd/MM/yyyy");
@@ -2887,6 +3189,8 @@ namespace vita.Report
                 decimal OtherChargesPaid = 0;
                 decimal VatAmount = 0;
                 decimal TotalAmount = 0;
+                decimal VATDeffered = 0;
+                decimal ChargesIncludingVAT = 0;
 
 
 
@@ -2908,20 +3212,23 @@ namespace vita.Report
                     Exempt += Convert.ToDecimal(row["Exempt"]);
                     OutofScope += Convert.ToDecimal(row["OutofScope"]);
                     ImportsatCustoms += Convert.ToDecimal(row["importVATCustoms"]);
+                    VATDeffered += Convert.ToDecimal(row["VATDeffered"]);
                     ImportsatRCM += Convert.ToDecimal(row["ImportsatRCM"]);
                     CustomsPaid += Convert.ToDecimal(row["CustomsPaid"]);
                     ExciseTaxPaid += Convert.ToDecimal(row["ExciseTaxPaid"]);
                     OtherChargesPaid += Convert.ToDecimal(row["OtherChargesPaid"]);
                     VatAmount += Convert.ToDecimal(row["VatAmount"]);
                     TotalAmount += Convert.ToDecimal(row["TotalAmount"]);
-
+                    ChargesIncludingVAT += Convert.ToDecimal(row["ChargesIncludingVAT"]);
+                    
 
 
 
                 }
                 dt.Columns["invoicenumber"].ColumnName = "Debit Note Number";
                 dt.Columns["invoiceDate"].ColumnName = "Debit Note Date";
-                dt.Rows.Add(null, "", "", null, "", TaxableAmount, ZeroRated, Exempt, OutofScope, 0, true, 0, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, 0.00, VatAmount, TotalAmount);
+                //dt.Rows.Add("", "", null, null, null, TaxableAmount, 0.0, VatAmount, TotalAmount, ZeroRated, Exempt, OutofScope, CustomsPaid, VATDeffered, ImportsatRCM,CustomsPaid, ExciseTaxPaid, OtherChargesPaid, ChargesIncludingVAT);
+                dt.Rows.Add("", "", null, null, null, TaxableAmount, 0.0, VatAmount, TotalAmount, ZeroRated, Exempt, OutofScope, ImportsatCustoms, VATDeffered, ImportsatRCM, CustomsPaid, ExciseTaxPaid, OtherChargesPaid, ChargesIncludingVAT);
                 input.Name = tenantName;
                 input.FromDate = (repinput.Fromdate).ToString("dd/MM/yyyy");
                 input.ToDate = (repinput.Todate).ToString("dd/MM/yyyy");
@@ -3095,6 +3402,7 @@ namespace vita.Report
             reportInput.Todate = _timeZoneConverter.Convert(reportInput.Todate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? reportInput.Todate;
 
             DataTable dt = new DataTable();
+            string typeCodeName = string.Empty;
             PurchaseExcelDto input = new PurchaseExcelDto();
             //ReportInputDto repinput = new ReportInputDto();
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
@@ -3107,6 +3415,11 @@ namespace vita.Report
                 input.VAT = row["vatid"].ToString();
                 input.Address = row["State"].ToString() + "," + row["country"].ToString();
 
+            }
+            dt = GetReportType(reportInput.code);
+            if (reportInput.code != "VATSAL000")
+            {
+                typeCodeName = dt.Rows[0]["ReportName"].ToString();
             }
 
             try
@@ -3126,11 +3439,11 @@ namespace vita.Report
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
 
-            return _excelExporter.ExportToFileOverride(dt, fileName, input);
+            return _excelExporter.ExportToFileOverride(dt, fileName, input, reportInput.code, typeCodeName);
         }
-        public async Task<DataTable> GetReportType(string inputCode)
+        public DataTable GetReportType(string inputCode)
         {
-           
+
             DataTable dt = new DataTable();
             try
             {
@@ -3142,7 +3455,7 @@ namespace vita.Report
                         conn.Open();
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = "GetReportType";                      
+                        cmd.CommandText = "GetReportType";
                         cmd.Parameters.AddWithValue("@code", inputCode);
 
 
@@ -3150,7 +3463,39 @@ namespace vita.Report
                         conn.Close();
 
                         return dt;
-                    }                  
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+
+
+        }
+        public DataTable GetSalesSubReportType(string inputCode)
+        {
+
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetSubDropdownSalesReportType";
+                        cmd.Parameters.AddWithValue("@code", inputCode);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
                 }
             }
             catch (Exception e)
@@ -3162,5 +3507,5 @@ namespace vita.Report
         }
 
     }
-    
+
 }

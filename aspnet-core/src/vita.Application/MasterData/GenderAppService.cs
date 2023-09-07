@@ -33,51 +33,52 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetGenderForViewDto>> GetAll(GetAllGenderInput input)
         {
-
-            var filteredGender = _genderRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredGender = _genderRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredGender = filteredGender
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredGender = filteredGender
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var gender = from o in pagedAndFilteredGender
-                         select new
-                         {
+                var gender = from o in pagedAndFilteredGender
+                             select new
+                             {
 
-                             o.Name,
-                             o.IsActive,
-                             Id = o.Id
-                         };
+                                 o.Name,
+                                 o.IsActive,
+                                 Id = o.Id
+                             };
 
-            var totalCount = await filteredGender.CountAsync();
+                var totalCount = await filteredGender.CountAsync();
 
-            var dbList = await gender.ToListAsync();
-            var results = new List<GetGenderForViewDto>();
+                var dbList = await gender.ToListAsync();
+                var results = new List<GetGenderForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetGenderForViewDto()
+                foreach (var o in dbList)
                 {
-                    Gender = new GenderDto
+                    var res = new GetGenderForViewDto()
                     {
+                        Gender = new GenderDto
+                        {
 
-                        Name = o.Name,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetGenderForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetGenderForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetGenderForViewDto> GetGenderForView(int id)

@@ -18,6 +18,7 @@ import { DateTime } from 'luxon';
 import { AppSessionService } from '@shared/common/session/app-session.service';
 import { finalize } from 'rxjs/operators';
 import { FileDownloadService } from '@shared/utils/file-download.service';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
 
 
 @Component({
@@ -34,39 +35,41 @@ export class CreditSalesReportComponent extends AppComponentBase {
     tenantName: String;
     checkboxValue: any;
     reportType: any;
+    vitamenu: boolean = AppConsts.vitaMenu;
     pdfUrl = AppConsts.pdfUrl + '/InvoiceFiles';
     tab = 'Detailed';
     daywiseColumns: any[] = [
         { field: 'invoiceDate', header: 'Credit Note Date' },
         { field: 'invoicenumber', header: 'Credit Note Count' },
         { field: 'taxableAmount', header: 'Taxable Amount' },
-        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
+        { field: 'vatAmount', header: 'VAT Amount' },
         { field: 'zeroRated', header: 'Zero Rated' },
         { field: 'exempt', header: 'Exempt' },
         { field: 'exports', header: 'Exports' },
         { field: 'outofScope', header: 'Out of Scope' },
-        { field: 'vatAmount', header: 'VAT Amount' },
+        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
         { field: 'totalAmount', header: 'Total Amount' },
     ];
 
     detailedColumns: any[] = [
-        { field: 'invoiceDate', header: 'Credit Note Date' },
         { field: 'irnNo', header: 'Credit Note Number' },
+        { field: 'customerName', header: 'Customer Name' },
+        { field: 'invoiceDate', header: 'Credit Note Date' },
         { field: 'invoicenumber', header: 'Invoice Number' },
         { field: 'taxableAmount', header: 'Taxable Amount' },
-        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' },
-        { field: 'exports', header: 'Exports' },
-        { field: 'zeroRated', header: 'Zero Rated' },
-        { field: 'exempt', header: 'Exempt' },
-        { field: 'outofScope', header: 'Out of Scope' },
         { field: 'vatrate', header: 'VAT Rate' },
         { field: 'vatAmount', header: 'VAT Amount' },
         { field: 'totalAmount', header: 'Total Amount' },
+        { field: 'zeroRated', header: 'Zero Rated' },
+        { field: 'exempt', header: 'Exempt' },
+        { field: 'exports', header: 'Exports' },
+        { field: 'outofScope', header: 'Out of Scope' },
+        { field: 'govtTaxableAmt', header: 'Govt Taxable Amount' }, 
     ];
 
     detailedDescriptionColumns: any[] = [
         { field: 'invoiceDate', header: 'Credit Note Date' },
-        { field: 'description', header: 'Description' },
+        { field: 'customerName', header: 'Customer Name' },
         { field: 'irnNo', header: 'Credit Note Number' },
         { field: 'invoicenumber', header: 'Invoice Number' },
         { field: 'taxableAmount', header: 'Taxable Amount' },
@@ -117,6 +120,7 @@ export class CreditSalesReportComponent extends AppComponentBase {
         private _reportService: ReportServiceProxy,
         private _dateTimeService: DateTimeService,
         private _fileDownloadService: FileDownloadService,
+        private _GlobalConstsCustomService: GlobalConstsCustomService
 
     ) {
         super(injector);
@@ -130,6 +134,9 @@ export class CreditSalesReportComponent extends AppComponentBase {
         this.tenantName = this._sessionService.tenant.name;
         // this.getCreditDetailedReport();
        this.getReportType();
+       this._GlobalConstsCustomService.data$.subscribe(e=>{
+        this.vitamenu=e.isVita;
+    })
 
     }
 

@@ -33,8 +33,10 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetSectorForViewDto>> GetAll(GetAllSectorInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredSector = _sectorRepository.GetAll()
+                var filteredSector = _sectorRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.GroupName.Contains(input.Filter) || e.IndustryGroupCode.Contains(input.Filter) || e.IndustryGroupName.Contains(input.Filter) || e.IndustryCode.Contains(input.Filter) || e.IndustryName.Contains(input.Filter) || e.SubIndustryCode.Contains(input.Filter) || e.SubIndustryName.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -48,63 +50,64 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.SubIndustryNameFilter), e => e.SubIndustryName.Contains(input.SubIndustryNameFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredSector = filteredSector
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredSector = filteredSector
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var sector = from o in pagedAndFilteredSector
-                         select new
-                         {
+                var sector = from o in pagedAndFilteredSector
+                             select new
+                             {
 
-                             o.Name,
-                             o.Description,
-                             o.Code,
-                             o.GroupName,
-                             o.IndustryGroupCode,
-                             o.IndustryGroupName,
-                             o.IndustryCode,
-                             o.IndustryName,
-                             o.SubIndustryCode,
-                             o.SubIndustryName,
-                             o.IsActive,
-                             Id = o.Id
-                         };
+                                 o.Name,
+                                 o.Description,
+                                 o.Code,
+                                 o.GroupName,
+                                 o.IndustryGroupCode,
+                                 o.IndustryGroupName,
+                                 o.IndustryCode,
+                                 o.IndustryName,
+                                 o.SubIndustryCode,
+                                 o.SubIndustryName,
+                                 o.IsActive,
+                                 Id = o.Id
+                             };
 
-            var totalCount = await filteredSector.CountAsync();
+                var totalCount = await filteredSector.CountAsync();
 
-            var dbList = await sector.ToListAsync();
-            var results = new List<GetSectorForViewDto>();
+                var dbList = await sector.ToListAsync();
+                var results = new List<GetSectorForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetSectorForViewDto()
+                foreach (var o in dbList)
                 {
-                    Sector = new SectorDto
+                    var res = new GetSectorForViewDto()
                     {
+                        Sector = new SectorDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        GroupName = o.GroupName,
-                        IndustryGroupCode = o.IndustryGroupCode,
-                        IndustryGroupName = o.IndustryGroupName,
-                        IndustryCode = o.IndustryCode,
-                        IndustryName = o.IndustryName,
-                        SubIndustryCode = o.SubIndustryCode,
-                        SubIndustryName = o.SubIndustryName,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            GroupName = o.GroupName,
+                            IndustryGroupCode = o.IndustryGroupCode,
+                            IndustryGroupName = o.IndustryGroupName,
+                            IndustryCode = o.IndustryCode,
+                            IndustryName = o.IndustryName,
+                            SubIndustryCode = o.SubIndustryCode,
+                            SubIndustryName = o.SubIndustryName,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetSectorForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetSectorForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetSectorForViewDto> GetSectorForView(int id)

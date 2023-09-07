@@ -433,6 +433,43 @@ namespace vita.Customer
             }
         }
 
+        public async Task<bool> CheckIfCustomerVatExists(string vat, bool checkInAllTenants = false)
+        {
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "CheckIfcustomervatExists";
+
+                        cmd.Parameters.AddWithValue("@vat", vat);
+                        cmd.Parameters.AddWithValue("@checkInAllCustomer", checkInAllTenants);
+
+                        var reader = cmd.ExecuteReader();
+                        int count = 0;
+                        while (reader.Read())
+                        {
+                            count = reader.GetInt32("count");
+                        }
+                        conn.Close();
+
+                        return count > 0;
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+
         public async Task<bool> upadateCustomer(CreateOrEditCustomersDto input)
         {
             

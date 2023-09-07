@@ -97,6 +97,8 @@ import { SubheaderModule } from './shared/common/sub-header/subheader.module';
 import { ChangeProfilePictureModalModule } from './shared/layout/profile/change-profile-picture-modal.module';
 import { ToggleDarkModeComponent } from './shared/layout/toggle-dark-mode/toggle-dark-mode.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
+import { SelectMessageService } from '@shared/customService/select-message.service';
 
 @NgModule({
     declarations: [
@@ -200,6 +202,8 @@ import { ActivatedRoute, Router } from '@angular/router';
             useFactory: appInitializerFactory,
             multi: true,
         },
+        GlobalConstsCustomService,
+        SelectMessageService
     ],
 })
 export class AppModule {}

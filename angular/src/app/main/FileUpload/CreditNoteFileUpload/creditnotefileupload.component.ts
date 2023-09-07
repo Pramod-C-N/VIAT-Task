@@ -36,6 +36,8 @@ export class NewFileCreditBatchUploadComponent extends AppComponentBase {
   fromdate: DateTime;
   todate: DateTime;
   batchid: number;
+  mappingList:any=[]
+  mappingId:number|null=null
   isLoading = false;
   constructor(
     injector: Injector,
@@ -51,6 +53,7 @@ export class NewFileCreditBatchUploadComponent extends AppComponentBase {
   ) {
     super(injector);
     this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/CreditNoteFileUpload/ImportFromExcel';
+    console.log(this.uploadUrl,'salescredit')
   }
 
   // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
@@ -59,6 +62,12 @@ export class NewFileCreditBatchUploadComponent extends AppComponentBase {
     this.tenantName = this._sessionService.tenancyName;
     this.loadNotifications();
     this.registerToEvents();
+    this._salesInvoicesAppService.getFileMappings().subscribe((e) => {
+      console.log(e);
+      if (e) {
+          this.mappingList = e.filter(v=>v.transactionType=="Credit").map(v=>{return {name:v.name,id:v.id}});
+      }
+  });
   }
   // eslint-disable-next-line @typescript-eslint/member-ordering
   setview = false;
@@ -114,6 +123,8 @@ export class NewFileCreditBatchUploadComponent extends AppComponentBase {
     formData.append('file', newFile);
     formData.append('fromdate', this.fromdate.toString());
     formData.append('todate', this.todate.toString());
+    if(this.mappingId!=null)
+    formData.append('id', this.mappingId.toString());
     this._httpClient
       .post<any>(this.uploadUrl, formData)
       .pipe(finalize(() => this.excelFileUpload.clear()))

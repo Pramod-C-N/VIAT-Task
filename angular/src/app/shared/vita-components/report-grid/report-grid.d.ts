@@ -6,6 +6,12 @@ declare type ReportGridColumns= {
     sortable: boolean ;
     type: string ;
     transform: (val: number | string) => number | string;
+    footer? : {
+        type:string,
+        value?:any
+    }
+    filter?:string
+    searchable?: boolean 
 }
 
 declare type ReportGridDecimalConfig ={

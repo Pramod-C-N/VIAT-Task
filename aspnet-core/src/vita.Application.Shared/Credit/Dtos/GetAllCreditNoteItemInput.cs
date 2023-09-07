@@ -65,5 +65,11 @@ namespace vita.Credit.Dtos
 
         public string ExcemptionReasonTextFilter { get; set; }
 
+        public string AdditionalData1Filter { get; set; }
+
+        public string AdditionalData2Filter { get; set; }
+
+        public string LanguageFilter { get; set; }
+
     }
 }

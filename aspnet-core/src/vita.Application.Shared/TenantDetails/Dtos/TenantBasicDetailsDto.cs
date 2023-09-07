@@ -39,5 +39,11 @@ namespace vita.TenantDetails.Dtos
 
         public string TimeZone { get; set; }
 
+        public bool isPhase1 { get; set; }
+
+        public string FaxNo { get; set; }
+
+        public string Website { get; set; }
+
     }
 }

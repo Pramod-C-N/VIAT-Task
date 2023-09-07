@@ -1,0 +1,248 @@
+<div class="col-lg-8">
+    <div class="card-body py-3">
+        <div class="row gx-10 mb-2" style="text-align: center">
+            <div class="col-lg-3 px-1">
+                <div  [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="cusid"
+                        name="cusid"
+                        placeholder="Customer Id"
+                        formControlName="CustomerId"
+                        value=""
+                    />
+                    <label style="text-align: left" for="cusid">Customer Id</label>
+                </div>
+                <div class="fv-plugins-message-container invalid-feedback"></div>
+            </div>
+            <div [formGroup]="formName" class="col-lg-4 px-1">
+                <div  class="form-floating">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="name"
+                        name="name"
+                        placeholder="Customer Name"
+                        value=""
+                        formControlName="Name"
+                    />
+                    <label style="text-align: left" for="name">Customer Name</label>
+                </div>
+                <div class="fv-plugins-message-container invalid-feedback"></div>
+            </div>
+          
+        </div>
+        <div class="row gx-10 mb-2" style="text-align: center">
+            <div [formGroup]="formName" class="col-lg-3 px-1">
+                <div  class="form-floating">
+                    <input
+                        type="text"
+                        pattern="^[0-9]*$"
+                        class="form-control form-control-lg form-control-solid"
+                        id="build"
+                        name="build"
+                        placeholder="Building No"
+                        value=""
+                        formControlName="Buildno"
+                    />
+                    <label style="text-align: left" for="build">Building No </label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+            <div class="col-lg-9 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        name="street"
+                        class="form-control form-control-lg form-control-solid"
+                        id="street"
+                        formControlName="street"
+                        placeholder="Street "
+                    />
+                    <label style="text-align: left" for="street">Street </label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+        </div>
+
+        <div class="row gx-10 mb-2" style="text-align: center">
+            <div [formGroup]="formName" class="col-lg-6 px-1 form-floating">
+                <input
+                    type="text"
+                    name="additionalStreet"
+                    class="form-control form-control-lg form-control-solid"
+                    id="additionalStreet"
+                    placeholder="Additional Street"
+                    formControlName="additionalstreet"
+                />
+                <label style="text-align: left" for="additionalStreet">Additional Street</label>
+
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+
+            <div class="col-lg-6 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        name="neighbourhood"
+                        class="form-control form-control-lg form-control-solid"
+                        id="neighbourhood"
+                        placeholder="Neighbourhood"
+                        formControlName="Neighbourhood"
+                    />
+                    <label style="text-align: left" for="neighbourhood">Neighbourhood</label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+        </div>
+        <div class="row gx-10 mb-2 h-10" style="text-align: center">
+            <div class="col-lg-3 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        name="city"
+                        class="form-control form-control-lg form-control-solid"
+                        id="city"
+                        formControlName="city"
+                        placeholder="City"
+                    />
+                    <label style="text-align: left" for="city">City</label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+            <div class="col-lg-3 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        name="state"
+                        class="form-control form-control-lg form-control-solid"
+                        id="state"
+                        placeholder="Province"
+                        formControlName="state"
+                    />
+                    <label style="text-align: left" for="state">Province </label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+            <div class="col-lg-3 px-1">
+                <div  [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        pattern="^[0-9]*$"
+                        class="form-control form-control-lg form-control-solid"
+                        id="post"
+                        name="post"
+                        placeholder="Postal Code"
+                        value=""
+                        formControlName="pin"
+                    />
+                    <label style="text-align: left" for="post">Postal Code </label>
+                </div>
+                <div
+                    class="fv-plugins-message-container invalid-feedback"
+                    style="text-align: left"
+                ></div>
+            </div>
+            <div class="col-lg-3 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="countrycode"
+                        name="countrycode"
+                        placeholder="Country"
+                        value=""
+                        formControlName="nationality"
+                    />
+                        <!-- <p-autoComplete
+                            id="SingleSelectInput"
+                            field=""
+                            [minLength]="1"
+                            inputStyleClass="form-control form-control-lg form-control-solid pb-0"
+                            [style]="{ width: '100%', 'text-align': 'left'}"
+                            formControlName="nationality"
+
+                        ></p-autoComplete> -->
+                      <label style="text-align: left;" for="countrycode">Country</label>
+                </div>
+            </div>
+        </div>
+        <div class="row gx-10 mb-2" style="text-align: center">
+            <div class="col-lg-6 mb-1 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="number"
+                        class="form-control form-control-lg form-control-solid"
+                        id="contactNo"
+                        name="contactNo"
+                        placeholder="Contact Number"
+                        value=""
+                        formControlName="ContactNo"
+                    />
+                    <label style="text-align: left" for="contactNo">Contact Number</label>
+                </div>
+            </div>
+            <div  [formGroup]="formName" class="col-lg-6 px-1 form-floating">
+                <input
+                    type="email"
+                    class="form-control form-control-lg form-control-solid"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value=""
+                    formControlName="Email"
+                />
+                <label style="text-align: left" for="email">Email</label>
+            </div>
+        </div>
+        <div class="row gx-6 mb-2" style="text-align: center">
+            <div class="col-lg-6 px-1">
+                <div [formGroup]="formName" class="form-floating mb-7">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        id="billToAttn"
+                        name="billToAttn"
+                        placeholder="Bill To Attn"
+                        value=""
+                        formControlName="billToAttn"
+                    />
+                    <label style="text-align: left" for="billToAttn">Bill To Attn</label>
+                </div>
+            </div>
+            <div class="col-lg-6 px-1">
+                <div [formGroup]="formName" class="form-floating">
+                    <input
+                        type="text"
+                        class="form-control form-control-lg form-control-solid"
+                        placeholder="Buyer Type"
+                        value=""
+                        name="BuyerType"
+                        id="BuyerType"
+                        formControlName="buyertype"
+                    />                      
+                    <label style="text-align: left;" for="BuyerType">Buyer Type</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

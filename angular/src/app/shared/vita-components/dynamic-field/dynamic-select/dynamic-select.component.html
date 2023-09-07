@@ -1,0 +1,30 @@
+<form [formGroup]="formName">
+    <div *ngIf="field.formGroupName != ''" formGroupName="{{ field.formGroupName }}">
+        <label *ngIf="field?.label" class="form-label" [ngClass]="{'required': field?.rules?.required}">{{field?.label}}</label>
+        <select
+            #dynamicSelect
+            class="form-control form-control-lg form-control-solid"
+            [formControlName]="field.fieldName"
+            (change)="changedValue(dynamicSelect.value)"
+        >
+            <option [value]="undefined" disabled selected>{{ field?.placeholder || field?.label }}</option>
+            <option *ngFor="let option of field.options" [value]="option.value">
+                {{ option.label }}
+            </option>
+        </select>
+    </div>
+    <div *ngIf="field.formGroupName == ''">
+        <label *ngIf="field?.label" class="form-label" [ngClass]="{'required': field?.rules?.required}">{{field?.label}}</label>
+        <select
+            #dynamicSelect
+            class="form-control form-control-lg form-control-solid"
+            [formControlName]="field.fieldName"
+            (change)="changedValue(dynamicSelect.value)"
+        >
+            <option [value]="undefined" disabled selected>{{ field.label }}</option>
+            <option *ngFor="let option of field.options" [value]="option.value">
+                {{ option.label }}
+            </option>
+        </select>
+    </div>
+</form>

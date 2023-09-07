@@ -1,0 +1,10 @@
+<div
+    *ngIf="
+        formName.controls[fieldName].invalid &&
+        (formName.controls[fieldName].dirty || formName.controls[fieldName].touched)
+    "
+    class="fv-plugins-message-container invalid-feedback"
+    style="text-align: left"
+>
+    <div *ngIf="formName.controls[fieldName].errors.required">This field is required</div>
+</div>

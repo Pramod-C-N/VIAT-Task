@@ -1,36 +1,33 @@
 <div class="content d-flex flex-column flex-column-fluid">
-    <div class="d-flex flex-stack mt-3">
-        <sub-header [title]="'Reconciliation Report' | localize"></sub-header>
-        <div class="d-flex align-items-center" id="alignitems">
-            <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" id="navtabs">
-                <li class="nav-item">
-                    <input class="form-control" id="StartEndRange" name="StartEndRange" #drp="bsDaterangepicker"
-                        readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
-                        placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
-                </li>
-            </ul>
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-9">
+            <sub-header [title]="'Reconciliation Report' | localize"></sub-header>
+        </div>
+
+        <div class="col-md-3">
+            <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
+                #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker 
+                [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier [(date)]="dateRange"
+                placement="bottom right" (bsValueChange)="getSalesDetailedReport()" />
         </div>
     </div>
-    <div class="app-container container-fluid">
+    <div class="app-container container-fluid mt-3">
         <div class="card px-0">
             <div *ngIf="searched" class="card">
                 <div class="card-body py-3">
                     <div class="row gx-10 mb-5 pt-5">
-                        <div class="col-lg-9">
+                        <div class="col-lg-8">
                             <h3 class="card-title align-items-start flex-column">
                                 <span class="card-label text-gray-800 fw-bold fs-2 mb-1">
                                     Sales Debit Note - VAT Return Reconciliation Report
                                 </span>
                             </h3>
                         </div>
-                        <div class="col-lg-3">
-                            <button id="buttonstyle"
-                                class="btn btn-outline btn-outline-success btn-active-light-success me-1"
-                                (click)="downloadExcel()">
+                        <div class="col-lg-4">
+                            <button id="buttonstyle" type="button"
+                                class="btn btn-outline btn-outline-success me-1 w-100" (click)="downloadExcel()">
                                 <i class="far fa-file-excel btn-md-icon"></i>
-                                <span class="d-none d-md-inline-block">
-                                    {{ 'Download Report' | localize }}
-                                </span>
+                                Download Report
                             </button>
                             <div class="fv-plugins-message-container invalid-feedback"></div>
                         </div>

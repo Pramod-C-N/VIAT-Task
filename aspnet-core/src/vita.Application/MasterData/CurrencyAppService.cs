@@ -15,6 +15,10 @@ using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Abp.UI;
 using vita.Storage;
+using Abp.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using vita.EntityFrameworkCore;
 
 namespace vita.MasterData
 {
@@ -23,18 +27,24 @@ namespace vita.MasterData
     {
         private readonly IRepository<Currency> _currencyRepository;
         private readonly ICurrencyExcelExporter _currencyExcelExporter;
+        private readonly IDbContextProvider<vitaDbContext> _dbContextProvider;
 
-        public CurrencyAppService(IRepository<Currency> currencyRepository, ICurrencyExcelExporter currencyExcelExporter)
+        public CurrencyAppService(IRepository<Currency> currencyRepository, ICurrencyExcelExporter currencyExcelExporter, IDbContextProvider<vitaDbContext> dbContextProvider)
         {
             _currencyRepository = currencyRepository;
             _currencyExcelExporter = currencyExcelExporter;
+            _dbContextProvider = dbContextProvider;
 
         }
 
+
+
         public async Task<PagedResultDto<GetCurrencyForViewDto>> GetAll(GetAllCurrencyInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredCurrency = _currencyRepository.GetAll()
+                var filteredCurrency = _currencyRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.NumericCode.Contains(input.Filter) || e.MinorUnit.Contains(input.Filter) || e.Country.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -44,55 +54,56 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CountryFilter), e => e.Country.Contains(input.CountryFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredCurrency = filteredCurrency
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredCurrency = filteredCurrency
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var currency = from o in pagedAndFilteredCurrency
-                           select new
-                           {
+                var currency = from o in pagedAndFilteredCurrency
+                               select new
+                               {
 
-                               o.Name,
-                               o.Description,
-                               o.Code,
-                               o.NumericCode,
-                               o.MinorUnit,
-                               o.Country,
-                               o.IsActive,
-                               Id = o.Id
-                           };
+                                   o.Name,
+                                   o.Description,
+                                   o.Code,
+                                   o.NumericCode,
+                                   o.MinorUnit,
+                                   o.Country,
+                                   o.IsActive,
+                                   Id = o.Id
+                               };
 
-            var totalCount = await filteredCurrency.CountAsync();
+                var totalCount = await filteredCurrency.CountAsync();
 
-            var dbList = await currency.ToListAsync();
-            var results = new List<GetCurrencyForViewDto>();
+                var dbList = await currency.ToListAsync();
+                var results = new List<GetCurrencyForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetCurrencyForViewDto()
+                foreach (var o in dbList)
                 {
-                    Currency = new CurrencyDto
+                    var res = new GetCurrencyForViewDto()
                     {
+                        Currency = new CurrencyDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        NumericCode = o.NumericCode,
-                        MinorUnit = o.MinorUnit,
-                        Country = o.Country,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            NumericCode = o.NumericCode,
+                            MinorUnit = o.MinorUnit,
+                            Country = o.Country,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetCurrencyForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetCurrencyForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetCurrencyForViewDto> GetCurrencyForView(int id)

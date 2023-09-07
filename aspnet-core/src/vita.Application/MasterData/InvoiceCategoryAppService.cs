@@ -33,56 +33,59 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetInvoiceCategoryForViewDto>> GetAll(GetAllInvoiceCategoryInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredInvoiceCategory = _invoiceCategoryRepository.GetAll()
+                var filteredInvoiceCategory = _invoiceCategoryRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredInvoiceCategory = filteredInvoiceCategory
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredInvoiceCategory = filteredInvoiceCategory
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var invoiceCategory = from o in pagedAndFilteredInvoiceCategory
-                                  select new
-                                  {
+                var invoiceCategory = from o in pagedAndFilteredInvoiceCategory
+                                      select new
+                                      {
 
-                                      o.Name,
-                                      o.Description,
-                                      o.Code,
-                                      o.IsActive,
-                                      Id = o.Id
-                                  };
+                                          o.Name,
+                                          o.Description,
+                                          o.Code,
+                                          o.IsActive,
+                                          Id = o.Id
+                                      };
 
-            var totalCount = await filteredInvoiceCategory.CountAsync();
+                var totalCount = await filteredInvoiceCategory.CountAsync();
 
-            var dbList = await invoiceCategory.ToListAsync();
-            var results = new List<GetInvoiceCategoryForViewDto>();
+                var dbList = await invoiceCategory.ToListAsync();
+                var results = new List<GetInvoiceCategoryForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetInvoiceCategoryForViewDto()
+                foreach (var o in dbList)
                 {
-                    InvoiceCategory = new InvoiceCategoryDto
+                    var res = new GetInvoiceCategoryForViewDto()
                     {
+                        InvoiceCategory = new InvoiceCategoryDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetInvoiceCategoryForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetInvoiceCategoryForViewDto>(
-                totalCount,
-                results
-            );
 
         }
 

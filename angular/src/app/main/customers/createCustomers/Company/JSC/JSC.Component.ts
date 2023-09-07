@@ -24,6 +24,7 @@ import {CustomerAddressDto,CountryServiceProxy,GetCountryForViewDto,CustomersesS
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomerModule } from '@app/main/customers/customers.module';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -60,13 +61,14 @@ export class JSCompanyComponent extends AppComponentBase {
   companyRequiredForm: FormGroup;
   individualRequiredForm: FormGroup;
   addressRequiredForm: FormGroup;
+  documentrequiredform: FormGroup;
   isSaving: boolean;
   basicForm: FormGroup;
   loadjscdt:boolean=false;
   loadjscadd:boolean=false;
   loadjscReg:boolean=false;
   loadjscPartInf:boolean=false;
-  vatid:number;
+  vatid:string;
   uniqueidvat:string;
   
 
@@ -90,11 +92,7 @@ export class JSCompanyComponent extends AppComponentBase {
               state: ['', Validators.required ],
               nationality: ['', Validators.required ],
               ContactNo: ['', Validators.required ],
-              vatid:['', [
-                Validators.maxLength(15),
-                Validators.minLength(15),
-              Validators.pattern("^3[0-9]*3$"),
-              Validators.required]]
+              Email: ['', []],
             });
             this.companyRequiredForm = this.fb.group({
               operatingModel: ['', Validators.required ],
@@ -103,10 +101,42 @@ export class JSCompanyComponent extends AppComponentBase {
               vatcategory: ['', Validators.required ],
               invoiceType: ['', Validators.required ]
                     });
+                    this.documentrequiredform = this.fb.group({
+                      //basic Form
+                      doctype: ['', []],
+                      registrationnum: ['', []],
+                  });
+                  this.documentrequiredform.get('doctype').valueChanges.subscribe((val) => {
+                      if (this.documentrequiredform.get('doctype').value == 'VAT') {
+                          // for setting validations
+                          this.documentrequiredform.get('registrationnum').clearValidators();
+                          this.documentrequiredform
+                              .get('registrationnum')
+                              .addValidators([
+                                  Validators.minLength(15),
+                                  Validators.maxLength(15),
+                                  Validators.pattern('^3[0-9]*3$')
+                              ]);
+                      }
+                      else if (this.documentrequiredform.get('doctype').value == 'CRN') {
+                          this.documentrequiredform.get('registrationnum').clearValidators();
+                          this.documentrequiredform
+                              .get('registrationnum')
+                              .addValidators([
+                                  Validators.minLength(10),
+                                  Validators.maxLength(10),
+                                  Validators.pattern('^[0-9]*$')
+                              ]);
+                      }
+                      else{
+                        this.documentrequiredform.get('registrationnum').clearValidators();
+                    }
+                      this.documentrequiredform.get('registrationnum').updateValueAndValidity();
+                  });
   }
-   isFormValid() {
-    return(this.basicForm.valid);
-} 
+  isFormValid() {
+    return (this.basicForm.valid && this.documentrequiredform.valid);
+}
   constructor(
     injector: Injector,
     private fb: FormBuilder,
@@ -145,6 +175,12 @@ export class JSCompanyComponent extends AppComponentBase {
      this.getFileType();
       this.getIdentifier();
       this.loadjscdt=true;
+      this.Documentitem.documentTypeCode = ' ';
+      this.taxdetails.businessCategory = ' ';
+      this.taxdetails.businessSupplies=' ';
+      this.taxdetails.invoiceType=' ';
+      this.taxdetails.operatingModel=' ';
+      this.taxdetails.salesVATCategory=' ';
       this.show(this.id);     
    }
 
@@ -239,26 +275,22 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
           this.taxdetails.salesVATCategory=result[0].salesVATCategory;
           this.taxdetails.invoiceType=result[0].invoiceType;
           this.taxdetails.operatingModel=result[0].operatingModel;
-          for(var i=0;i<result.length;i++)
-          {
-  
-            if(result[i].documentTypeCode=='VAT')
+          for (var i = 0; i < result.length; i++) {
+            if(result[i].docunique != null)
             {
-              this.uniqueidvat=result[i].docunique;
-              this.vatid=result[i].documentNumber;
-            }
-            else
-            {
-              this.Documentitem.uniqueId=result[i].docunique
-            this.Documentitem.documentName=result[i].documentName;
-            this.Documentitem.documentNumber=result[i].documentNumber;
-            this.Documentitem.documentTypeCode=result[i].documentTypeCode;
-            this.Documentitem.doumentDate=result[i].doumentDate;
+              if(result[i].documentTypeCode == 'VAT')
+              {
+                  this.vatid=result[i].documentNumber;
+              }
+            this.Documentitem.uniqueId = result[i].docunique;
+            this.Documentitem.documentName = result[i].documentName;
+            this.Documentitem.documentNumber = result[i].documentNumber;
+            this.Documentitem.documentTypeCode = result[i].documentTypeCode;
+            this.Documentitem.doumentDate = result[i].documentDate;
             this.Documentitems.push(this.Documentitem);
-            }
             this.Documentitem = new CreateOrEditCustomerDocumentsDto();
-          }     
-          console.log(result,'e');
+            }
+        }
         });
       }
     }
@@ -293,7 +325,6 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
      this.address.city = this.basicForm.get('city').value || " ";
      this.address.countryCode=this.basicForm.get('nationality').value || " ";
      this.address.neighbourhood=this.basicForm.get('Neighbourhood').value || " ";
-     this.Documents.documentNumber=this.basicForm.get('vatid').value || " ";
 
      if(this.customer.id>0){
      this.address.customerID=(this.customer.id).toString();
@@ -339,16 +370,10 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
      {
       this.Documentitems[j].doumentDate=this.parseDate(this.Documentitems[j].doumentDate.toString())
     }
-    this.Documentitem.uniqueId=this.uniqueidvat;
-    this.Documentitem.documentNumber=this.vatid.toString();
-    this.Documentitem.documentTypeCode='VAT'
-    this.Documentitem.documentName='VAT'
-    this.Documentitems.push(this.Documentitem);
      this.customer.address=this.address;
      this.customer.documents=this.Documentitems;
      this.customer.taxdetails=this.taxdetails;
      this.customer.foreign=this.foreign;
-     console.log(this.customer);
      this._customerServiceProxy.createCustomer(this.customer).subscribe(() => {
 
          this.notify.success(this.l('SavedSuccessfully'));
@@ -369,16 +394,10 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
        {
         this.Documentitems[j].doumentDate=this.parseDate(this.Documentitems[j].doumentDate.toString())
       }
-      this.Documentitem.uniqueId=this.uniqueidvat;
-      this.Documentitem.documentNumber=this.vatid.toString();
-      this.Documentitem.documentTypeCode='VAT'
-      this.Documentitem.documentName='VAT'
-      this.Documentitems.push(this.Documentitem);
        this.customer.address=this.address;
        this.customer.documents=this.Documentitems;
        this.customer.taxdetails=this.taxdetails;
        this.customer.foreign=this.foreign;
-       console.log(this.customer);
        this._customerServiceProxy.upadateCustomer(this.customer) .subscribe(() => {
            this.notify.success(this.l('UpdatedSuccessfully'));
            this.editMode = true;
@@ -441,13 +460,15 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
    }
    updateGrid(k:number){
     Swal.fire({
-      title: "Do you want to overwrite the existing document details?",
+      title: "Document type already exists, Do you want to overwrite the existing document details?",
       text: "",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, overwrite it!'
+      confirmButtonText: 'Yes, overwrite it!',
+      timer: 10000
+
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire(
@@ -455,7 +476,6 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
           'Document details has been updated.',
           'success'
         )
-        console.log(k)
         this.Documentitems[k].documentNumber=this.Documentitem?.documentNumber;
         this.Documentitems[k].doumentDate=this.Documentitem?.doumentDate;
         this.Documentitems[k].documentName=this.Documentitem?.documentName;       
@@ -465,35 +485,67 @@ this._masterConstitutionServiceProxy.getAll("","","",undefined,undefined,undefin
     })
    
   }
-
-   additem(){
-    if (!(this.Documentitem.documentName && this.Documentitem.documentNumber && this.Documentitem.doumentDate
-      && this.Documentitem.documentTypeCode)) {
-
-      this.notify.error(this.l('Please fill all  document details to add a document.'));
-      return;
-    }
-    var UPDATED=false
-    if(this.Documentitems.length>0)
+  async isvatRegistered(vatid: string){
+    //return false 
+    if(this.vatid != vatid)
     {
-      for(var k=0;k<this.Documentitems.length;k++)
-      {
-          if(this.Documentitems[k].documentTypeCode==this.Documentitem.documentTypeCode)
+   var res = await firstValueFrom(this._customerServiceProxy.checkIfCustomerVatExists(vatid,true))
+    return res
+    }
+    else
+    {
+        return false;
+    }
+}
+  async additem() {
+    if (this.documentrequiredform.valid) {
+        if (
+            !(
+                this.Documentitem.documentName &&
+                this.Documentitem.documentNumber &&
+                this.Documentitem.doumentDate &&
+                this.Documentitem.documentTypeCode
+            )
+        ) {
+            this.notify.error(this.l('Please fill all  document details to add a document.'));
+            return;
+        }
+        if(this.Documentitem.documentTypeCode == 'VAT')
+        {
+            if(this.Documentitem.documentNumber.charAt(10)!='1')
+            {
+            if(await this.isvatRegistered(this.Documentitem.documentNumber)){
+                this.notify.error(this.l('Entered VAT Number  already exists'));
+              return null;
+            }
+            }
+        }
+        for (var i = 0; i < this.Documentitems.length; i++) {
+          if(this.Documentitems[i].documentTypeCode==this.Documentitem.documentTypeCode)
           {
-            this.updateGrid(k);
-            UPDATED=true;
-            break;
+            this.notify.error(this.l(this.Documentitem.documentTypeCode +' document type already exists'));
           }
-          
-      }
-    
-    }
-    if(!UPDATED){
-      this.Documentitems.push(this.Documentitem);
-      this.Documentitem = new CreateOrEditCustomerDocumentsDto();
-    }
+        }
 
-   }
+        var UPDATED = false;
+        if (this.Documentitems.length > 0) {
+            for (var k = 0; k < this.Documentitems.length; k++) {
+                if (this.Documentitems[k].documentTypeCode == this.Documentitem.documentTypeCode) {
+                    this.updateGrid(k);
+                    UPDATED = true;
+                    break;
+                }
+            }
+        }
+        if (!UPDATED) {
+            this.Documentitems.push(this.Documentitem);
+            this.Documentitem = new CreateOrEditCustomerDocumentsDto();
+        }
+    } else {
+        this.notify.error(this.l('Please fill valid  document details to add a document.'));
+        return;
+    }
+}
 
    clearitem(){
     this.Documentitem = new CreateOrEditCustomerDocumentsDto();

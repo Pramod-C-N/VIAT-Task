@@ -9,6 +9,7 @@ import {
     CreditNoteServiceProxy,
     DebitNotesServiceProxy,
     PurchaseEntriesServiceProxy,
+    PurchaseCreditNoteServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/common/app-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
@@ -38,30 +39,31 @@ export class PurchaseTransactionComponent extends AppComponentBase {
     creditColumns: any[] = [
         { field: 'invoiceId', header: 'Credit Note Number' },
         { field: 'invoiceDate', header: 'Credit Note Date' },
-        { field: 'customerName', header: 'Customer Name' },
+        { field: 'referenceNumber', header: 'Purchase Number' },
+        { field: 'customerName', header: 'Vendor Name' },
         { field: 'contactNo', header: 'Contact Number' },
         { field: 'amount', header: 'Amount (SAR)' },
     ];
     debitColumns: any[] = [
-        { field: 'invoiceId', header: 'InvoiceId' },
-        { field: 'invoiceDate', header: 'Invoice Date' },
-        { field: 'referenceNumber', header: 'Reference Number' },
-        { field: 'customerName', header: 'Customer Name' },
-        { field: 'contactNo', header: 'Contact No' },
-        { field: 'amount', header: 'Amount' },
+        { field: 'invoiceId', header: 'Debit Note Number' },
+        { field: 'invoiceDate', header: 'Debit Note Date' },
+        { field: 'referenceNumber', header: 'Purchase Number' },
+        { field: 'customerName', header: 'Vendor Name' },
+        { field: 'contactNo', header: 'Contact Number' },
+        { field: 'amount', header: 'Amount (SAR)' },
     ];
     salesColumns: any[] = [
-        { field: 'invoiceId', header: 'Purchase Id' },
+        { field: 'invoiceId', header: 'Purchase Number' },
         { field: 'invoiceDate', header: 'Purchase Date' },
-        { field: 'customerName', header: 'Customer Name' },
-        { field: 'contactNo', header: 'Contact No' },
-        { field: 'amount', header: 'Amount' },
+        { field: 'customerName', header: 'Vendor Name' },
+        { field: 'contactNo', header: 'Contact Number' },
+        { field: 'amount', header: 'Amount (SAR)' },
     ];
     columns: any[] = this.salesColumns;
-
     constructor(
         injector: Injector,
         private _invoiceServiceProxy: PurchaseEntriesServiceProxy,
+        private _PurchaseCreditNoteServiceProxy: PurchaseCreditNoteServiceProxy,
         private _debitNoteProxy: DebitNotesServiceProxy,
         private _sessionService: AppSessionService,
         private _salesServiceProxy: SalesInvoicesServiceProxy,
@@ -79,7 +81,6 @@ export class PurchaseTransactionComponent extends AppComponentBase {
         this.getSalesData();
         this.tab = this.location.getState().tabvaule !== undefined ? this.location.getState().tabvaule : 'Sales Invoice';
     }
-
     getSalesData() {
         this._invoiceServiceProxy
             .getPurchaseData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
@@ -89,14 +90,14 @@ export class PurchaseTransactionComponent extends AppComponentBase {
     }
 
     getDebitData() {
-        this._debitNoteProxy.getDebitData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
+        this._PurchaseCreditNoteServiceProxy.getPurchaseDebitData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
             this.invoices = result;
         });
     }
 
     getCreditData() {
-        this._creditServiceProxy
-            .getCreditData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
+        this._PurchaseCreditNoteServiceProxy
+            .getPurchaseCreditData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
             .subscribe((result) => {
                 this.invoices = result;
             });
@@ -132,11 +133,11 @@ export class PurchaseTransactionComponent extends AppComponentBase {
         } else if (tab === 'Credit Note') {
             this.getCreditData();
             this.columns = this.creditColumns;
-            this.createUrl = '/app/main/sales/createCreditNote';
+            this.createUrl = '/app/main/sales/purchaseCreateCreditNote';
         } else {
             this.getDebitData();
             this.columns = this.debitColumns;
-            this.createUrl = '/app/main/sales/createDebitNote';
+            this.createUrl = '/app/main/sales/createPurchaseDebitNote';
         }
     }
 

@@ -24,7 +24,6 @@ using Abp.Timing.Timezone;
 
 namespace vita.TenantDetails
 {
-    [AbpAuthorize(AppPermissions.Pages_TenantBasicDetails)]
     public class TenantBasicDetailsAppService : vitaAppServiceBase, ITenantBasicDetailsAppService
     {
         private readonly IRepository<TenantBasicDetails> _tenantBasicDetailsRepository;
@@ -72,7 +71,7 @@ namespace vita.TenantDetails
                         conn.Close();
 
                         return dt;
-                    }   
+                    }
 
 
                     return dt;
@@ -131,7 +130,7 @@ namespace vita.TenantDetails
         {
 
             var json = JsonConvert.SerializeObject(input);
-            DataTable dt = new DataTable(); 
+            DataTable dt = new DataTable();
             try
             {
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();

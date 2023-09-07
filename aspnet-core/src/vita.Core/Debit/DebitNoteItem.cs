@@ -64,5 +64,13 @@ namespace vita.Debit
 
         public virtual string ExcemptionReasonText { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string AdditionalData2 { get; set; }
+
+        public virtual string Language { get; set; }
+
+        public virtual bool isOtherCharges { get; set; }
+
     }
 }

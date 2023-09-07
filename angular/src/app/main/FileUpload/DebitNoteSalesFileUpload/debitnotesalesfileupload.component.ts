@@ -38,6 +38,8 @@ export class NewFileDebitSalesBatchUploadComponent extends AppComponentBase {
   fromdate: DateTime;
   todate: DateTime;
   isLoading = false;
+  mappingList:any=[]
+  mappingId:number|null=null
   constructor(
     injector: Injector,
     private _httpClient: HttpClient,
@@ -60,6 +62,12 @@ export class NewFileDebitSalesBatchUploadComponent extends AppComponentBase {
     this.tenantName = this._sessionService.tenancyName;
     this.loadNotifications();
     this.registerToEvents();
+    this._salesInvoicesAppService.getFileMappings().subscribe((e) => {
+      console.log(e);
+      if (e) {
+          this.mappingList = e.filter(v=>v.transactionType=="Debit").map(v=>{return {name:v.name,id:v.id}});
+      }
+    })
   }
   // eslint-disable-next-line @typescript-eslint/member-ordering
   setview = false;
@@ -125,6 +133,8 @@ export class NewFileDebitSalesBatchUploadComponent extends AppComponentBase {
     formData.append('file', newFile);
     formData.append('fromdate', this.fromdate.toString());
     formData.append('todate', this.todate.toString());
+    if(this.mappingId!=null)
+    formData.append('id', this.mappingId.toString());
     this._httpClient
       .post<any>(this.uploadUrl, formData)
       .pipe(finalize(() => this.excelFileUpload.clear()))

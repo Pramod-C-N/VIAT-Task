@@ -12,3 +12,19 @@
 .bluecolor{
     background-color: #e3f2fd;
 }
+.rejected {
+    color: red;
+  }
+  
+  .accepted {
+    color: green;
+  }
+
+
+  /* Style for the up arrow icon */
+  .custom-icon {
+    position: absolute;
+    top: 50%; /* Align the icon vertically in the middle of the container */
+    right: 10px; /* Adjust this value as needed to control the distance from the right edge */
+    transform: translateY(-50%); /* Center the icon vertically after positioning */
+  }

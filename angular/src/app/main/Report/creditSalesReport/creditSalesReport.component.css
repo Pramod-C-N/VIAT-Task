@@ -34,3 +34,10 @@ tr.p-selectable-row:nth-child(even) {
 .table-row{
   width: 150px; text-align: end
 }
+.table-record-center {
+  width: 100%;
+  text-align: center;
+}
+.footerright{
+  justify-content: end;
+}

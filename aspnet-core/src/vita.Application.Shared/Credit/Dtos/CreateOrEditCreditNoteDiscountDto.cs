@@ -19,6 +19,8 @@ namespace vita.Credit.Dtos
         public decimal VATRate { get; set; }
 
         public string TaxSchemeId { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
 
     }
 }

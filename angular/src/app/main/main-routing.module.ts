@@ -8,6 +8,38 @@ import { RouterModule } from '@angular/router';
                 path: '',
                 children: [
                     {
+                        path: 'Report/ReconciliationReports/OverHeadGapAnalysisReport',
+                        loadChildren: () =>
+                            import('./Report/Reconciliation Reports/OverHeadGapAnalysisReport/overHeadGapAnalysisReport.module').then(
+                                (m) => m.overHeadGapAnalysisReportNewModule
+                            ),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
+                        path: 'FileUpload/NominalSupplies',
+                        loadChildren: () =>
+                            import('./FileUpload/NominalSupplies/nominalSupplies.module').then(
+                                (m) => m.NominalSuppliesModule
+                            ),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
+                        path: 'FileUpload/MasterConfiguration',
+                        loadChildren: () =>
+                            import('./FileUpload/MasterConfiguration/masterConfiguration.module').then(
+                                (m) => m.MasterConfigurationModule
+                            ),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
+                        path: 'FileUpload/OverHeadApportionment',
+                        loadChildren: () =>
+                            import('./FileUpload/OverHeadApportionment/overHeadApportionment.module').then(
+                                (m) => m.OverHeadApportionmentModule
+                            ),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
                         path: 'fileUpload/results',
                         loadChildren: () =>
                             import('./FileUpload/FileUploadOutput/fileUploadOutput.module').then(
@@ -21,7 +53,6 @@ import { RouterModule } from '@angular/router';
                             import('./masterData/designation/designation.module').then((m) => m.DesignationModule),
                         data: { permission: 'Pages.Designation' },
                     },
-
                     {
                         path: 'TenantDetails',
                         loadChildren: () =>
@@ -63,9 +94,21 @@ import { RouterModule } from '@angular/router';
                         data: { permission: 'Pages.Activecurrency' },
                     },
                     {
+                        path: 'sales/phase2',
+                        loadChildren: () =>
+                            import('./sales/phase-2/phase-2.module').then((m) => m.Phase2Module),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
                         path: 'sales/transactions',
                         loadChildren: () =>
                             import('./sales/transactions/transactions.module').then((m) => m.TransactionsModule),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/bradytransactions',
+                        loadChildren: () =>
+                            import('./sales/bradyTransaction/bradytransactions.module').then((m) => m.BradyTransactionsModule),
                         data: { permission: 'Pages.InvoiceType' },
                     },
                     {
@@ -81,6 +124,38 @@ import { RouterModule } from '@angular/router';
                         loadChildren: () =>
                             import('./sales/createSalesInvoice/createSalesInvoice.module').then(
                                 (m) => m.CreateSalesInvoiceModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/viewInvoice',
+                        loadChildren: () =>
+                            import('./sales/ViewInvoice/viewInvoice.module').then(
+                                (m) => m.ViewInvoiceModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/editInvoice',
+                        loadChildren: () =>
+                            import('./sales/editDraft/editDraft.module').then(
+                                (m) => m.EditDraftModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createSalesInvoiceBrady',
+                        loadChildren: () =>
+                            import('./sales/createSalesInvoiceBrady/createSalesInvoiceBrady.module').then(
+                                (m) => m.CreateSalesInvoiceBradyModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createSalesInvoiceProfessional',
+                        loadChildren: () =>
+                            import('./sales/createSalesProfessional/createSalesInvoiceProf.module').then(
+                                (m) => m.CreateSalesInvoiceProfModule
                             ),
                         data: { permission: 'Pages.InvoiceType' },
                     },
@@ -152,6 +227,46 @@ import { RouterModule } from '@angular/router';
                         data: { permission: 'Pages.InvoiceType' },
                     },
                     {
+                        path: 'sales/createCreditNoteProfessional',
+                        loadChildren: () =>
+                            import('./sales/createCreditProfessional/createCreditNoteProf.module').then(
+                                (m) => m.CreateCreditNoteProfModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createCreditNoteBrady',
+                        loadChildren: () =>
+                            import('./sales/createCreditNoteBrady/createCreditNotebrady.module').then(
+                                (m) => m.CreateCreditNotebradyModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/purchaseCreateCreditNote',
+                        loadChildren: () =>
+                            import('./sales/purchaseCreateCreditNote/createPurchaseCreditNote.module').then(
+                                (m) => m.CreatePurchaseCreditNoteModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createDebitNoteBrady',
+                        loadChildren: () =>
+                            import('./sales/createDebitNoteBrady/createDebitNotebrady.module').then(
+                                (m) => m.CreateDebitNotebradyModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createPurchaseDebitNote',
+                        loadChildren: () =>
+                            import('./sales/createPurchaseDebitNote/createPurchaseDebitNote.module').then(
+                                (m) => m.CreatePurchaseDebitNoteModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
                         path: 'Report/OverrideReport',
                         loadChildren: () =>
                             import('./Report/OverrideReport/overridereport.module').then((m) => m.OverrideReportModule),
@@ -176,6 +291,14 @@ import { RouterModule } from '@angular/router';
                         loadChildren: () =>
                             import('./sales/createDebitNote/createDebitNote.module').then(
                                 (m) => m.CreateDebitNoteModule
+                            ),
+                        data: { permission: 'Pages.InvoiceType' },
+                    },
+                    {
+                        path: 'sales/createDebitNoteProfessional',
+                        loadChildren: () =>
+                            import('./sales/createDebitProfessional/createDebitNoteProf.module').then(
+                                (m) => m.CreateDebitNoteProfModule
                             ),
                         data: { permission: 'Pages.InvoiceType' },
                     },
@@ -534,6 +657,12 @@ import { RouterModule } from '@angular/router';
                         data: { permission: 'Pages.Title' },
                     },
                     {
+                        path: 'FileUpload/file-mapper',
+                        loadChildren: () =>
+                            import('./FileUpload/FileMapper/file-mapper.module').then((m) => m.FileMapperModule),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
                         path: 'sales/MasterBatchSummary',
                         loadChildren: () =>
                             import('./FileUpload/Master Batch Summary/MasterbatchUpload.module').then(
@@ -580,9 +709,17 @@ import { RouterModule } from '@angular/router';
                         data: { permission: 'Pages.Title' },
                     },
                     {
+                        path: 'FileUpload/integratedsalesFileUpload',
+                        loadChildren: () =>
+                            import('./FileUpload/integratedSales/integratedsalesInvoiceFileUpload.module').then(
+                                (m) => m.IntegratedSalesInvoiceFileUploadModule
+                            ),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
                         path: 'FileUpload/customerFileUpload',
                         loadChildren: () =>
-                            import('./FileUpload/customerFileUpload/customerFileUpload.module').then(
+                            import('./FileUpload/CustomerFileUpload/customerfileupload.module').then(
                                 (m) => m.CustomerUploadModule
                             ),
                         data: { permission: 'Pages.Title' },
@@ -598,7 +735,7 @@ import { RouterModule } from '@angular/router';
                     {
                         path: 'FileUpload/vendorFileUpload',
                         loadChildren: () =>
-                            import('./FileUpload/vendorFileUpload/vendorFileUpload.module').then(
+                            import('./FileUpload/VendorFileUpload/vendorfileupload.module').then(
                                 (m) => m.VendorUploadModule
                             ),
                         data: { permission: 'Pages.Title' },
@@ -662,7 +799,7 @@ import { RouterModule } from '@angular/router';
                     {
                         path: 'FileUpload/DebitNotePurchaseFileUpload',
                         loadChildren: () =>
-                            import('./FileUpload/DebitNotePurchaseFileUpload/DebitNotePurchaseFileUpload.module').then(
+                            import('./FileUpload/DebitNotePurchaseFileUpload/debitnotepurchasefileupload.module').then(
                                 (m) => m.NewFileDebitPurchaseBatchUploadModule
                             ),
                         data: { permission: 'Pages.Title' },
@@ -730,6 +867,12 @@ import { RouterModule } from '@angular/router';
                         data: { permission: 'Pages.HeadOfPayment' },
                     },
                     {
+                        path: 'FileUpload/clearBatchSummery',
+                        loadChildren: () =>
+                            import('./FileUpload/clearBatchSummery/clearBatchSummery.module').then((m) => m.ClearBatchSummeryModule),
+                        data: { permission: 'Pages.Title' },
+                    },
+                    {
                         path: 'Report/CreditNotePurchaseDetailedReport',
                         loadChildren: () =>
                             import(
@@ -753,4 +896,4 @@ import { RouterModule } from '@angular/router';
     ],
     exports: [RouterModule],
 })
-export class MainRoutingModule {}
+export class MainRoutingModule { }

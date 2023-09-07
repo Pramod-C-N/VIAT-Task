@@ -30,7 +30,7 @@ namespace vita.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> ImportFromExcel(DateTime? fromdate, DateTime? todate)
+        public async Task<JsonResult> ImportFromExcel(DateTime? fromdate, DateTime? todate,int? id)
         {
             try
             {
@@ -64,7 +64,8 @@ namespace vita.Web.Controllers
                     User = AbpSession.ToUserIdentifier(),
                     filename = file.FileName,
                     fromdate = fromdate,
-                    todate = todate
+                    todate = todate,
+                    configurationId = id
                 });
 
                 return Json(new AjaxResponse(new { }));

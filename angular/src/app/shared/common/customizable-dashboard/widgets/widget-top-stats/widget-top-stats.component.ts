@@ -6,6 +6,9 @@ import { WidgetComponentBaseComponent } from '../widget-component-base';
 import { ApexOptions } from 'ng-apexcharts';
 import { getCSSVariableValue } from '@metronic/app/kt/_utils';
 import { DateTimeService } from '@app/shared/common/timing/date-time.service';
+import { DateTimeCustomService } from '@shared/customService/date-time-service';
+import { AppSessionService } from '@shared/common/session/app-session.service';
+import { GlobalConstsCustomService } from '@shared/customService/global-consts-service';
 
 class DashboardTopStats extends DashboardChartBase {
     items: any = {};
@@ -23,6 +26,7 @@ class DashboardTopStats extends DashboardChartBase {
 })
 export class WidgetTopStatsComponent extends WidgetComponentBaseComponent implements OnInit {
     dashboardTopStats: DashboardTopStats;
+    selectedDate:[DateTime, DateTime]=[DateTime.local().startOf('month'), DateTime.local().endOf('month')];
     public dateRange: DateTime[] = [this._dateTimeService.getStartOfDay(), this._dateTimeService.getEndOfDay()];
     loading: boolean = false;
     items: any = {};
@@ -46,23 +50,56 @@ export class WidgetTopStatsComponent extends WidgetComponentBaseComponent implem
     dlabelColor: string;
     dbaseColor: string;
     dlightColor: string;
+    tenantId: Number;
+    isVita: boolean = false;
+    isGoods: boolean = false;
+    isServices: boolean = false;
     chartSize = 100;
     chartLine = 15;
     chartRotate = 145;
-    constructor(
+    salescreateUrl = '/app/main/sales/createSalesInvoice';
+    creditcreateUrl = '/app/main/sales/createSalesInvoice';
+    debitcreateUrl = '/app/main/sales/createSalesInvoice';
+
+        constructor(
         injector: Injector,
         private _tenantDashboardServiceProxy: TenantDashboardServiceProxy,
         private _dateTimeService: DateTimeService,
-        private _salesInvoiceServiceProxy: SalesInvoicesServiceProxy
+        private _dateTimeCustomService:DateTimeCustomService,
+        private _salesInvoiceServiceProxy: SalesInvoicesServiceProxy,
+        private _sessionService: AppSessionService,
+        private _globalConstsService: GlobalConstsCustomService
+
+
     ) {
         super(injector);
         this.dashboardTopStats = new DashboardTopStats();
+        this._globalConstsService.data$.subscribe((e) => {
+            this.isVita = e.isVita;
+        });
+
+        this._globalConstsService.tenantType$.subscribe((e: string) => {
+            this.isServices = e.includes('S');
+            this.isGoods = e.includes('G');
+        });
     }
 
     ngOnInit() {
-      this.getData();
-        this.onDateChange();
-        this.height = 150;
+      this._dateTimeCustomService.data$.subscribe(e=>{
+        console.log(e,"here")
+        if(e){
+        this.selectedDate = e;
+        this.getData(e);
+        }else{
+            console.log("else")
+            this.getData(this.selectedDate);
+        }
+        this.tenantId =  this._sessionService.tenantId;
+        this.salescreateUrl = this.isServices ? ('/app/main/sales/createSalesInvoiceProfessional'):( this._sessionService.tenancyName.toLowerCase()=='brady'?  '/app/main/sales/createSalesInvoiceBrady':'/app/main/sales/createSalesInvoice');
+        this.creditcreateUrl = this.isServices ? ('/app/main/sales/createCreditNoteProfessional'):( this._sessionService.tenancyName.toLowerCase()=='brady'?  '/app/main/sales/createCreditNoteBrady':'/app/main/sales/createCreditNote');
+        this.debitcreateUrl = this.isServices ? ('/app/main/sales/createDebitNoteProfessional'):( this._sessionService.tenancyName.toLowerCase()=='brady'?  '/app/main/sales/createDebitNoteBrady':'/app/main/sales/createDebitNote');
+    })        
+    this.height = 150;
         this.labelColor = getCSSVariableValue('--kt-gray-800');
         this.baseColor = getCSSVariableValue('--kt-' + this.color);
         this.lightColor = getCSSVariableValue('--kt-' + this.color + '-light');
@@ -84,27 +121,18 @@ export class WidgetTopStatsComponent extends WidgetComponentBaseComponent implem
 
     //----------------------custom implementation-----------------------------
 
-    //subscribe to an event
-    private onDateChange(): void {
-        abp.event.on('app.dashboardFilters.dateRangePicker.onDateChange', (selectedDate) => {
-            if (this.loading) {
-                this.getData();
-            } else {
-                this.getData();
-            }
-
-            this.loading = false;
-        });
-    }
     parseDate(dateString: string): DateTime {
       if (dateString) {
           return DateTime.fromISO(new Date(dateString).toISOString());
       }
       return null;
-  }
-    getData() {
-        this._salesInvoiceServiceProxy.getStatsDashboardData(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString())).subscribe((result) => {
-                result.forEach((e) => {
+  }     
+    getData(selectedDate:any) {
+        console.log(selectedDate,'sss')
+
+        this._salesInvoiceServiceProxy.getStatsDashboardData(selectedDate[0],selectedDate[1]).subscribe((result) => {
+            console.log(result,"erroror")
+            result.forEach((e) => {
                     console.log(result, 'ds');
                     this.totalamount = result[3].amount;
                     this.totalvatamount = result[3].vatAmount;

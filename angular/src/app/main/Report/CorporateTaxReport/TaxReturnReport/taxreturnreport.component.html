@@ -1,19 +1,16 @@
 <div class="content d-flex flex-column flex-column-fluid">
-    <div class="d-flex flex-stack mt-3">
-        <sub-header [title]="'Tax Return Report' | localize"></sub-header>
-        <div class="d-flex align-items-center" id="alignitems">
-            <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" id="navtabs">
-                <li class="nav-item col-md-9">
-                    <label class="d-flex align-items-center col-md-6">
-                        <span class="">Date Range</span>
-                    </label>
-                    <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
-                        #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
-                        [(date)]="dateRange" placement="bottom right" (bsValueChange)="getTaxDetailedReport()" />
-                </li>
-            </ul>
+
+    <div class="row col-md-12 mt-3">
+        <div class="col-md-9">
+            <sub-header [title]="'Tax Return Report' | localize"></sub-header>
         </div>
-    </div>
+       
+        <div class="col-md-3">
+            <input class="form-control ultypes col-md-6" id="StartEndRange" name="StartEndRange"
+            #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
+            [(date)]="dateRange" placement="bottom right" (bsValueChange)="getTaxDetailedReport()" />
+        </div>
+    </div>    
     <div class="app-container container-fluid">
         <div *ngIf="searched" class="card">
             <div class="card-body py-3">

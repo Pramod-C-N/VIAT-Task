@@ -33,8 +33,9 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetHeadOfPaymentForViewDto>> GetAll(GetAllHeadOfPaymentInput input)
         {
-
-            var filteredHeadOfPayment = _headOfPaymentRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredHeadOfPayment = _headOfPaymentRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter) || e.NatureOfService.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
@@ -42,51 +43,51 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NatureOfServiceFilter), e => e.NatureOfService.Contains(input.NatureOfServiceFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredHeadOfPayment = filteredHeadOfPayment
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredHeadOfPayment = filteredHeadOfPayment
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var headOfPayment = from o in pagedAndFilteredHeadOfPayment
-                                select new
-                                {
+                var headOfPayment = from o in pagedAndFilteredHeadOfPayment
+                                    select new
+                                    {
 
-                                    o.Name,
-                                    o.Description,
-                                    o.Code,
-                                    o.NatureOfService,
-                                    o.IsActive,
-                                    Id = o.Id
-                                };
+                                        o.Name,
+                                        o.Description,
+                                        o.Code,
+                                        o.NatureOfService,
+                                        o.IsActive,
+                                        Id = o.Id
+                                    };
 
-            var totalCount = await filteredHeadOfPayment.CountAsync();
+                var totalCount = await filteredHeadOfPayment.CountAsync();
 
-            var dbList = await headOfPayment.ToListAsync();
-            var results = new List<GetHeadOfPaymentForViewDto>();
+                var dbList = await headOfPayment.ToListAsync();
+                var results = new List<GetHeadOfPaymentForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetHeadOfPaymentForViewDto()
+                foreach (var o in dbList)
                 {
-                    HeadOfPayment = new HeadOfPaymentDto
+                    var res = new GetHeadOfPaymentForViewDto()
                     {
+                        HeadOfPayment = new HeadOfPaymentDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        NatureOfService = o.NatureOfService,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            NatureOfService = o.NatureOfService,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetHeadOfPaymentForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetHeadOfPaymentForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetHeadOfPaymentForViewDto> GetHeadOfPaymentForView(int id)

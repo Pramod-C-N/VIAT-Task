@@ -48,5 +48,7 @@ namespace vita.Credit.Dtos
         public decimal? MaxAdvanceVatFilter { get; set; }
         public decimal? MinAdvanceVatFilter { get; set; }
 
+        public string AdditionalData1Filter { get; set; }
+
     }
 }

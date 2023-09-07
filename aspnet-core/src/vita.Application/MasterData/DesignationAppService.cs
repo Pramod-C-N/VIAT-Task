@@ -33,57 +33,60 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetDesignationForViewDto>> GetAll(GetAllDesignationInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredDesignation = _designationRepository.GetAll()
+                var filteredDesignation = _designationRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredDesignation = filteredDesignation
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredDesignation = filteredDesignation
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var designation = from o in pagedAndFilteredDesignation
-                              select new
-                              {
+                var designation = from o in pagedAndFilteredDesignation
+                                  select new
+                                  {
 
-                                  o.Name,
-                                  o.Description,
-                                  o.Code,
-                                  o.IsActive,
-                                  Id = o.Id
-                              };
+                                      o.Name,
+                                      o.Description,
+                                      o.Code,
+                                      o.IsActive,
+                                      Id = o.Id
+                                  };
 
-            var totalCount = await filteredDesignation.CountAsync();
+                var totalCount = await filteredDesignation.CountAsync();
 
-            var dbList = await designation.ToListAsync();
-            var results = new List<GetDesignationForViewDto>();
+                var dbList = await designation.ToListAsync();
+                var results = new List<GetDesignationForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetDesignationForViewDto()
+                foreach (var o in dbList)
                 {
-                    Designation = new DesignationDto
+                    var res = new GetDesignationForViewDto()
                     {
+                        Designation = new DesignationDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetDesignationForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetDesignationForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetDesignationForViewDto> GetDesignationForView(int id)

@@ -684,7 +684,7 @@
                             </label>
                         </div>
                     </tab>
-                    <tab
+                    <!-- <tab
                         class="p-5"
                         heading="{{ 'EmailSmtp' | localize }}"
                         *ngIf="!isMultiTenancyEnabled || appSession.application.allowTenantsToChangeEmailSettings"
@@ -864,7 +864,7 @@
                                 </button>
                             </div>
                         </div>
-                    </tab>
+                    </tab> -->
                     <tab class="p-5" *ngIf="true" heading="{{ 'Invoice' | localize }}">
                         <!-- *ngIf="true" is a workaround for https://github.com/valor-software/ng2-bootstrap/issues/823 -->
                         <h5 class="mt-5 mb-5">{{ 'InvoiceInformation' | localize }}</h5>
@@ -903,6 +903,500 @@
                                 [(ngModel)]="settings.billing.taxVatNo"
                                 maxlength="32"
                             />
+                        </div>
+                    </tab>
+                    <tab class="p-5" heading="{{ 'Configurations' | localize }}">
+                        <tabset>
+                            <tab class="p-5" heading="General" [active]="activeTabIndex == 0">
+                                <div class="row">
+                                    <div class="col-lg-4 mb-5">
+                                        <label
+                                            for="isPhase1"
+                                            class="form-check form-check-custom form-check-solid py-1"
+                                        >
+                                            <span class="form-check-label">Select Phase</span>
+                                        </label>
+                                        <select class="form-select" id="isPhase1" [(ngModel)]="configurations.isPhase1">
+                                            <option [value]="true">Phase 1</option>
+                                            <option [value]="false">Phase 2</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-4 mb-5">
+                                        <label
+                                            for="isPhase1"
+                                            class="form-check form-check-custom form-check-solid py-1"
+                                        >
+                                            <span class="form-check-label">Select Language Type</span>
+                                        </label>
+                                        <select class="form-select" id="isPhase1" [(ngModel)]="configurations.language">
+                                            <option value="single">Single Language</option>
+                                            <option value="dual">Dual Language</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-4 mb-5">
+                                        <label
+                                            for="tenantType"
+                                            class="form-check form-check-custom form-check-solid py-1"
+                                        >
+                                            <span class="form-check-label">Select Tenant Type</span>
+                                        </label>
+                                        <select
+                                            class="form-select"
+                                            id="tenantType"
+                                            [(ngModel)]="configurations.additionalData1"
+                                        >
+                                            <option value="G">Goods</option>
+                                            <option value="S">Services</option>
+                                            <option value="GS">Goods And Services</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-check mb-5">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            value=""
+                                            id="draftInvoice"
+                                            name="draftInvoice"
+                                            [(ngModel)]="generateDraft"
+                                        />
+                                        <label class="form-check-label" for="enableemail">Generate Draft Invoice</label>
+                                    </div>
+                                </div>
+                            </tab>
+                            <tab class="p-5" heading="Email">
+                                <div>
+                                    <div class="form-check mb-5">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            value=""
+                                            id="enableemail"
+                                            name="enableemail"
+                                            [(ngModel)]="emailCongiguration.isenableemail"
+
+
+                                        />
+                                        <label class="form-check-label" for="enableemail">Enable Email</label>
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="DefaultFromAddress">
+                                            {{ 'DefaultFromAddress' | localize }}
+                                        </label>
+                                        <input
+                                            id="DefaultFromAddress"
+                                            type="email"
+                                            name="DefaultFromAddress"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.fromAddress"
+                                            maxlength="128"
+                                            email
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="DefaultFromDisplayName">
+                                            {{ 'DefaultFromDisplayName' | localize }}
+                                        </label>
+                                        <input
+                                            id="DefaultFromDisplayName"
+                                            type="text"
+                                            name="DefaultFromDisplayName"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.defaultFromDisplayName"
+                                            maxlength="128"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="DefaultSubject">Subject</label>
+                                        <input
+                                            id="DefaultSubject"
+                                            type="text"
+                                            name="DefaultSubject"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.subject"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="DefaultBody">Body</label>
+                                        <textarea
+                                            id="DefaultBody"
+                                            type="text"
+                                            name="DefaultBody"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.body"
+                                        ></textarea>
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="SmtpHost">{{ 'SmtpHost' | localize }}</label>
+                                        <input
+                                            id="SmtpHost"
+                                            type="text"
+                                            name="SmtpHost"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.smtpHost"
+                                            maxlength="64"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="SmtpPort">{{ 'SmtpPort' | localize }}</label>
+                                        <input
+                                            id="SmtpPort"
+                                            type="number"
+                                            name="SmtpPort"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.smtpPort"
+                                            maxlength="5"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="SmtpDomainName">{{ 'DomainName' | localize }}</label>
+                                        <input
+                                            id="SmtpDomainName"
+                                            type="text"
+                                            name="SmtpDomainName"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.smtpDomain"
+                                            maxlength="128"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="SmtpUserName">{{ 'UserName' | localize }}</label>
+                                        <input
+                                            id="SmtpUserName"
+                                            type="text"
+                                            name="SmtpUserName"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.smtpUserName"
+                                            maxlength="128"
+                                        />
+                                    </div>
+                                    <div class="mb-5" *ngIf="!setRandomPassword">
+                                        <label for="SmtpPassword">{{ 'Password' | localize }}</label>
+                                        <input
+                                            id="SmtpPassword"
+                                            type="password"
+                                            name="SmtpPassword"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.smtpPassword"
+                                            maxlength="128"
+                                        />
+                                    </div>
+                                    <div class="mb-5">
+                                        <label for="ccEmails">{{ 'ccEmails' | localize }}</label>
+                                        <input
+                                            id="ccEmails"
+                                            type="text"
+                                            name="ccEmails"
+                                            class="form-control"
+                                            [(ngModel)]="emailCongiguration.ccEmails"
+                                            maxlength="128"
+                                        />
+                                    </div>
+                                </div>
+                            </tab>
+                            <tab class="p-5" heading="Additional Fields">
+                                <div class="mb-5">
+                                    <label
+                                        for="transactionType"
+                                        class="form-check form-check-custom form-check-solid py-1"
+                                    >
+                                        <span class="form-check-label">Select Transaction Type</span>
+                                    </label>
+                                    <select
+                                        class="form-select"
+                                        id="transactionType"
+                                        [(ngModel)]="configurations.transactionType"
+                                    >
+                                        <option value="Sales">Sales</option>
+                                        <option value="Credit Note">Credit Note</option>
+                                        <option value="Debit Note">Debit Note</option>
+                                    </select>
+                                </div>
+                                <div class="mb-5">
+                                    <label for="isActive" class="form-check form-check-custom form-check-solid py-1">
+                                        <input
+                                            id="isActive"
+                                            type="checkbox"
+                                            name="isActive"
+                                            [(ngModel)]="configurations.isActive"
+                                            class="form-check-input"
+                                        />
+                                        <span class="form-check-label">Active</span>
+                                    </label>
+                                </div>
+                                <div class="mb-5">
+                                    <label
+                                        for="isShipmentEnabled"
+                                        class="form-check form-check-custom form-check-solid py-1"
+                                    >
+                                        <input
+                                            id="isShipmentEnabled"
+                                            type="checkbox"
+                                            name="isShipmentEnabled"
+                                            [(ngModel)]="isShipmentEnabled"
+                                            class="form-check-input"
+                                        />
+                                        <span class="form-check-label">Enable Shipment Details</span>
+                                    </label>
+                                </div>
+                                <div class="mb-5">
+                                    <button class="btn btn-dark btn-sm" (click)="addField()">Add New Field</button>
+                                </div>
+
+                                <div *ngFor="let a of additionalFieldList; let i = index" class="mb-5">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="fieldName">Field Name</label>
+                                            <input
+                                                id="fieldName{{ i }}"
+                                                type="text"
+                                                name="fieldName{{ i }}"
+                                                class="form-control"
+                                                [(ngModel)]="additionalFieldList[i].name"
+                                            />
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label for="columnSize">Column Size</label>
+                                            <br />
+                                            <input
+                                                id="columnSize{{ i }}"
+                                                type="number"
+                                                name="columnSize{{ i }}"
+                                                class="form-control"
+                                                [(ngModel)]="additionalFieldList[i].col"
+                                                max="12"
+                                                min="1"
+                                            />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="columnSize">Field Type</label>
+                                            <select
+                                                class="form-select"
+                                                id="fieldType{{ i }}"
+                                                type="number"
+                                                name="fieldType{{ i }}"
+                                                [(ngModel)]="additionalFieldList[i].type"
+                                            >
+                                                <option value="text">Text</option>
+                                                <option value="textarea">Text Area</option>
+                                                <option value="date">Date</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="columnSize">Required</label>
+                                            <input
+                                                id="isRequired{{ i }}"
+                                                type="checkbox"
+                                                name="isRequired{{ i }}"
+                                                [(ngModel)]="additionalFieldList[i].isRequired"
+                                                class="form-check-input"
+                                                style="margin-left: 5px"
+                                            />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div role="actions" style="text-align: left">
+                                                <!-- <span *ngIf="enablecharge==false" style="font-size: 2rem;color:black" class="bi bi-plus-circle" (click)="enablecharges(true)"></span> -->
+                                                <span
+                                                    style="font-size: 2rem; color: black"
+                                                    class="bi bi-x-circle"
+                                                    (click)="deleteField(i)"
+                                                ></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-5">
+                                    <button class="btn btn-success btn-sm" (click)="addConfiguration()">
+                                        Add Configuration
+                                    </button>
+                                </div>
+                            </tab>
+                        </tabset>
+
+                        <hr />
+                        <!-- <h5 class="mt-5">{{ 'TestEmailSettingsHeader' | localize }}</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <form class="form" #emailSmtpSettingsTestForm="ngForm">
+                                    <div class="mb-5">
+                                        <input
+                                            type="email"
+                                            name="testEmailAddress"
+                                            #testEmailAddressInput="ngModel"
+                                            class="form-control"
+                                            [ngClass]="{ edited: testEmailAddress }"
+                                            [(ngModel)]="testEmailAddress"
+                                            maxlength="256"
+                                            email
+                                        />
+                                        <validation-messages [formCtrl]="testEmailAddressInput"></validation-messages>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="mb-5 col-md-2">
+                                <button
+                                    class="btn btn-primary"
+                                    type="button"
+                                    (click)="sendTestEmail()"
+                                    [disabled]="!emailSmtpSettingsTestForm.form.valid"
+                                >
+                                    {{ 'SendTestEmail' | localize }}
+                                </button>
+                            </div>
+                        </div> -->
+
+                        <div class="card">
+                            <div class="card-body py-3">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead style="text-align: center">
+                                            <tr class="fw-bolder text-muted">
+                                                <th class="min-w-50px">Sl No</th>
+                                                <th class="min-w-100px">Transaction Type</th>
+                                                <th class="min-w-100px">Shipment Details</th>
+                                                <th class="min-w-100px">Additional Fields</th>
+                                                <th class="min-w-150px">Status</th>
+                                                <th class="min-w-100px">Edit</th>
+                                                <th class="min-w-100px">Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="text-align: center">
+                                            <ng-container *ngFor="let it of configurationsList; let i = index">
+                                                <tr *ngIf="it?.transactionType != 'General'">
+                                                    <td>
+                                                        <span
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            {{ i + 1 }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            {{ it?.transactionType }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            *ngIf="it.shipmentJson == null"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Disabled
+                                                        </span>
+                                                        <span
+                                                            *ngIf="it.shipmentJson != null"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Enabled
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            *ngIf="it.additionalFieldsJson == null"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Not configured
+                                                        </span>
+                                                        <span
+                                                            *ngIf="it.additionalFieldsJson != null"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Configured
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            *ngIf="it.isActive"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Active
+                                                        </span>
+                                                        <span
+                                                            *ngIf="!it.isActive"
+                                                            class="
+                                                                text-dark
+                                                                fw-bolder
+                                                                text-hover-primary
+                                                                d-block
+                                                                mb-1
+                                                                fs-6
+                                                            "
+                                                        >
+                                                            Inactive
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            class="btn btn-warning btn-sm"
+                                                            (click)="editConfiguration(i)"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            class="btn btn-danger btn-sm"
+                                                            (click)="deleteConfiguration(i)"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="separator separator-dashed my-1"></div>
                         </div>
                     </tab>
                     <tab class="p-5" *ngIf="!isMultiTenancyEnabled" heading="{{ 'OtherSettings' | localize }}">

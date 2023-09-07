@@ -119,7 +119,7 @@ namespace vita.Sales
 
         public async Task CreateOrEdit(CreateOrEditSalesInvoiceContactPersonDto input)
         {
-                await Create(input);
+            await Create(input);
         }
 
         [AbpAuthorize(AppPermissions.Pages_SalesInvoiceContactPersons_Create)]

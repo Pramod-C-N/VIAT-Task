@@ -24,16 +24,16 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class CreateSalesInvoiceComponent extends AppComponentBase {
 
   date = new Date();
-  month = (this.date.getMonth() + 1).toString().length > 1 ? this.date.getMonth() + 1 : "0" + (this.date.getMonth() + 1)
-  day = (this.date.getDate()).toString().length > 1 ? this.date.getDate() : "0" + (this.date.getDate())
-  maxDate = this.date.getFullYear() + "-" + this.month + "-" + this.day;
-  editMode: boolean = false;
-  issueDate=new Date().toISOString().slice(0, 10);
+  month = (this.date.getMonth() + 1).toString().length > 1 ? this.date.getMonth() + 1 : '0' + (this.date.getMonth() + 1);
+  day = (this.date.getDate()).toString().length > 1 ? this.date.getDate() : '0' + (this.date.getDate());
+  maxDate = this.date.getFullYear() + '-' + this.month + '-' + this.day;
+  editMode = false;
+  issueDate = new Date().toISOString().slice(0, 10);
 
-  profileType: string = "";
+  profileType = '';
 
-  discount: number = 0.0
-  quantity: number = 0.0
+  discount = 0.0;
+  quantity = 0.0;
   invoice: CreateOrEditSalesInvoiceDto = new CreateOrEditSalesInvoiceDto();
   supplier: CreateOrEditSalesInvoicePartyDto = new CreateOrEditSalesInvoicePartyDto();
   customer: CreateOrEditSalesInvoicePartyDto = new CreateOrEditSalesInvoicePartyDto();
@@ -51,7 +51,7 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
 
   paymentDetails: CreateOrEditSalesInvoicePaymentDetailDto[] = [];
   paymentDetail: CreateOrEditSalesInvoicePaymentDetailDto = new CreateOrEditSalesInvoicePaymentDetailDto();
-  tenants:CreateOrEditTenantBasicDetailsDto=new CreateOrEditTenantBasicDetailsDto();
+  tenants: CreateOrEditTenantBasicDetailsDto = new CreateOrEditTenantBasicDetailsDto();
 
   //product: CreateOrEditProductDto = new CreateOrEditProductDto();
 
@@ -62,9 +62,9 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
   customers: CustomersDto[] = new Array<CustomersDto>();
   filteredCustomers: CustomersDto[];
   countries: GetCountryForViewDto[] = [];
-  isSaving: boolean = false;
-  basicForm: FormGroup
-  
+  isSaving = false;
+  basicForm: FormGroup;
+
 
 
 
@@ -76,14 +76,14 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
     private _salesInvoiceServiceProxy: SalesInvoicesServiceProxy,
     // private _invoiceHeaderServiceProxy: InvoiceHeadersServiceProxy,
     private _masterCountriesServiceProxy: CountryServiceProxy,
-    private _tenantbasicdetailsServiceProxy : TenantBasicDetailsServiceProxy,
+    private _tenantbasicdetailsServiceProxy: TenantBasicDetailsServiceProxy,
     private _notifyService: NotifyService,
     private _tokenAuth: TokenAuthServiceProxy,
     private _activatedRoute: ActivatedRoute,
     private _fileDownloadService: FileDownloadService,
     private _dateTimeService: DateTimeService,
     private _sessionService: AppSessionService,
-    private router : Router
+    private router: Router
 
   ) {
     super(injector);
@@ -92,64 +92,58 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
 
   salesForm() {
     this.basicForm = this.fb.group({
-      Name:['',Validators.required],
+      Name: ['', Validators.required],
       Buildno: ['', [Validators.required,
-        Validators.maxLength(4),
-      Validators.pattern("^[0-9]*$") ]],      
-      street: ['', Validators.required ],      
-      Neighbourhood:['',Validators.required],
+      Validators.maxLength(4),
+      Validators.pattern('^[0-9]*$')]],
+      street: ['', Validators.required],
+      Neighbourhood: ['', Validators.required],
       pin: ['', [Validators.required,
-        Validators.maxLength(5),
-    Validators.pattern("^[0-9]*$") ] ],
-      city: ['', Validators.required ],
-      state: ['', Validators.required ],
-      nationality: ['', Validators.required ],
-      ContactNo: ['', [Validators.required, Validators.pattern("^[0-9]*$")] ],
-      vatid:['', [Validators.required,
-        Validators.maxLength(15),
-        Validators.minLength(15),
-      Validators.pattern("^3[0-9]*3$")]]
-    })
+      Validators.maxLength(5),
+      Validators.pattern('^[0-9]*$')]],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      nationality: ['', Validators.required],
+      ContactNo: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      vatid: ['', [Validators.required,
+      Validators.maxLength(15),
+      Validators.minLength(15),
+      Validators.pattern('^3[0-9]*3$')]]
+    });
   }
 
   isFormValid() {
     return (this.basicForm.valid);
   }
-  //ngoninit
 
+  // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
   ngOnInit(): void {
-    this.address.countryCode=null;
+    this.address.countryCode = null;
     this.getCountriesDropdown();
     this.create();
     this.onSelectCustomer();
-    //this.getProducts();
-    this.invoiceSummary.totalAmountWithVAT = 0
-    this.invoiceSummary.totalAmountWithoutVAT = 0
-    this.invoiceSummary.sumOfInvoiceLineNetAmount = 0
-    this.invoiceSummary.netInvoiceAmount = 0
-    this.discount = 0
-    this.invoiceItem.quantity = 0
+        //this.getProducts();
+    this.invoiceSummary.totalAmountWithVAT = 0;
+    this.invoiceSummary.totalAmountWithoutVAT = 0;
+    this.invoiceSummary.sumOfInvoiceLineNetAmount = 0;
+    this.invoiceSummary.netInvoiceAmount = 0;
+    this.discount = 0;
+    this.invoiceItem.quantity = 0;
     this.invoiceItem.discountPercentage = 0;
-    this.invoiceItem.vatRate=15;
+    this.invoiceItem.vatRate = 15;
     this.supplier.registrationName = this._sessionService.tenant.name;
-    this.supplier.vatid = "5672345"
-    this.supplier.contactPerson.email = this._sessionService.user.emailAddress
-    this.supplier.contactPerson.contactNumber = "567898084"
-    this.invoice.customerId = "567"
+    this.supplier.contactPerson.email = this._sessionService.user.emailAddress;
+    this.invoice.customerId = '567';
 
-    //get all invoice headers
-    this._salesInvoiceServiceProxy.getAll("", "", "", undefined, undefined, undefined, undefined, "", "", "", "", "", undefined, undefined, "", "", "", "", 0, 0, 0, "", "", "", "", "", "", 0, 1234567).subscribe((result) => {
-      console.log(result);
-    });
+
 
 
   }
   //get countries from master data
   getCountriesDropdown() {
-    this._masterCountriesServiceProxy.getAll("", "", "", "", "", undefined, undefined, "", "", undefined, undefined, undefined, undefined, 200)
+    this._masterCountriesServiceProxy.getAll('', '', '', '', '', undefined, undefined, '', '', undefined, undefined, undefined, undefined, 200)
       .subscribe(result => {
         this.countries = result.items;
-        console.warn(this.countries);
       });
   }
   //--------------------------------------auto complete starts---------------------------------------------------------
@@ -163,16 +157,31 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
   //   });
   // }
 
+
   onSelectCustomer() {
-    this._tenantbasicdetailsServiceProxy.getTenantById(this._sessionService.tenant.id).subscribe((data) => {       
-        this.address.city = data[0].city?.trim();
-        this.address.state = data[0].state;
-        this.address.countryCode = data[0].country;
-        this.address.postalCode = data[0].postalCode;
-      });
+    this._tenantbasicdetailsServiceProxy.getTenantById(this._sessionService.tenant.id).subscribe((data) => {
+      console.log(data,'data');
+      this.address.city = data[0].city?.trim();
+      this.address.state = data[0].state;
+      this.address.countryCode = data[0].country;
+      this.address.postalCode = data[0].postalCode;
+      //supplier
+      this.supplier.address.city=data[0].city;
+      this.supplier.address.state=data[0].state;
+      this.supplier.address.countryCode = data[0].country;
+      this.supplier.address.postalCode = data[0].postalCode;
+      this.supplier.address.additionalNo=data[0].additionalNo;
+      this.supplier.address.additionalStreet=data[0].additionalStreet;
+      this.supplier.address.buildingNo=data[0].buildingNo;
+      this.supplier.address.neighbourhood=data[0].neighbourhood;
+      this.supplier.address.street=data[0].street;
+      this.supplier.vatid=data[0].vatid;
+      this.supplier.crNumber=data[0].crNumber;
+      this.supplier.contactPerson.contactNumber=data[0].contactNumber;
+    });
   }
   changedata(event) {
-    this.customer.registrationName = event.registrationName
+    this.customer.registrationName = event.registrationName;
   }
   //--------------------------------------auto complete ends---------------------------------------------------------
 
@@ -213,6 +222,7 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
   create() {
     this.customer.contactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
     this.supplier.contactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
+    this.supplier.address= new CreateOrEditSalesInvoiceAddressDto();
     // this.invoice.buyer.contactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
 
     // this.invoiceItem.
@@ -223,16 +233,16 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
   addItem() {
 
 
-    if (this.invoiceItem.quantity < 0) {
-      this.message.warn("Quantity cannot be less than 0 ");
+    if (this.invoiceItem.quantity < 0 || this.invoiceItem.quantity == 0) {
+      this.message.warn('Quantity cannot be less than or equal to 0 ');
       return;
     }
-    if (this.invoiceItem.unitPrice < 0) {
-      this.message.warn("Rate cannot be less than 0 ");
+    if (this.invoiceItem.unitPrice < 0 || this.invoiceItem.unitPrice == 0) {
+      this.message.warn('Rate cannot be less than or equal to 0 ');
       return;
     }
     if (this.invoiceItem.discountPercentage < 0 || this.invoiceItem.discountPercentage > 100) {
-      this.message.warn("Discount must be in between 0 to 100");
+      this.message.warn('Discount must be in between 0 to 100');
       return;
     }
     if (!(this.invoiceItem.name && this.invoiceItem.description && this.invoiceItem.quantity
@@ -241,66 +251,65 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
       this.notify.error(this.l('Please fill all required fields to add item to invoice.'));
       return;
     }
-    if (this.invoiceItem.vatRate != 15 && this.invoiceItem.vatRate != 0) {
+    if (this.invoiceItem.vatRate !== 15 && this.invoiceItem.vatRate !== 0) {
       this.notify.error(this.l('VAT rate error'));
       return;
     }
 
-    if(this.address.countryCode!='SA' && this.invoiceItem.vatRate!=0)
-    {
+    if (this.address.countryCode !== 'SA' && this.invoiceItem.vatRate !== 0) {
       this.notify.error(this.l('Exports are exempt from VAT'));
       return;
     }
     //   if ( this.invoiceItem.discountPercentage >= 15|| this.invoiceItem.discountPercentage<=100 ) {
     //     this.notify.error(this.l('Discount rate error'));
-    //   return; 
+    //   return;
     // }
-    this.invoiceItem.discountAmount = this.invoiceItem.quantity * this.invoiceItem.unitPrice * this.invoiceItem.discountPercentage / 100.0
-    this.invoiceItem.vatAmount = ((this.invoiceItem.quantity * this.invoiceItem.unitPrice) - this.invoiceItem.discountAmount) * this.invoiceItem.vatRate / 100.0
-    this.invoiceItem.lineAmountInclusiveVAT = ((this.invoiceItem.quantity * this.invoiceItem.unitPrice) - this.invoiceItem.discountAmount) + this.invoiceItem.vatAmount
-    this.invoiceItem.netPrice = this.invoiceItem.lineAmountInclusiveVAT - this.invoiceItem.vatAmount
-    this.invoiceItem.currencyCode = "SAR"
-    this.invoiceItem.identifier = "Sales"
-    this.invoiceItem.vatCode = this.invoiceItem.vatRate == 15 ? "S" : "Z"
-    this.invoiceItem.uom = "1"
+    this.invoiceItem.discountAmount = this.invoiceItem.quantity * this.invoiceItem.unitPrice * this.invoiceItem.discountPercentage / 100.0;
+    this.invoiceItem.vatAmount = ((this.invoiceItem.quantity * this.invoiceItem.unitPrice) - this.invoiceItem.discountAmount) * this.invoiceItem.vatRate / 100.0;
+    this.invoiceItem.lineAmountInclusiveVAT = ((this.invoiceItem.quantity * this.invoiceItem.unitPrice) - this.invoiceItem.discountAmount) + this.invoiceItem.vatAmount;
+    this.invoiceItem.netPrice = this.invoiceItem.lineAmountInclusiveVAT - this.invoiceItem.vatAmount;
+    this.invoiceItem.currencyCode = 'SAR';
+    this.invoiceItem.identifier = 'Sales';
+    this.invoiceItem.vatCode = this.invoiceItem.vatRate === 15 ? 'S' : 'Z';
+    this.invoiceItem.uom = '1';
     this.invoiceItems.push(this.invoiceItem);
     this.invoiceItem = new CreateOrEditSalesInvoiceItemDto();
-    this.calculateInvoiceSummary()
-    this.invoiceItem.quantity = 0
+    this.calculateInvoiceSummary();
+    this.invoiceItem.quantity = 0;
     this.invoiceItem.discountPercentage = 0;
-    this.invoiceItem.vatRate=15;
+    this.invoiceItem.vatRate = 15;
   }
 
   deleteItem(index: number) {
     this.invoiceItems.splice(index, 1);
 
-    this.calculateInvoiceSummary()
+    this.calculateInvoiceSummary();
   }
 
   clearItem() {
     this.invoiceItem = new CreateOrEditSalesInvoiceItemDto();
-    //this.product = new CreateOrEditProductDto();  
+    //this.product = new CreateOrEditProductDto();
     this.invoiceItem.discountPercentage = 0;
   }
 
 
   calculateInvoiceSummary() {
 
-    this.invoiceSummary.totalAmountWithVAT = 0
-    this.invoiceSummary.totalAmountWithoutVAT = 0
-    this.invoiceSummary.sumOfInvoiceLineNetAmount = 0
-    this.invoiceSummary.netInvoiceAmount = 0
-    this.invoiceSummary.totalVATAmount=0
-    this.discount = 0
+    this.invoiceSummary.totalAmountWithVAT = 0;
+    this.invoiceSummary.totalAmountWithoutVAT = 0;
+    this.invoiceSummary.sumOfInvoiceLineNetAmount = 0;
+    this.invoiceSummary.netInvoiceAmount = 0;
+    this.invoiceSummary.totalVATAmount = 0;
+    this.discount = 0;
 
     this.invoiceItems.forEach(invoiceItem => {
-      this.invoiceSummary.totalAmountWithVAT += invoiceItem.lineAmountInclusiveVAT
-      this.invoiceSummary.totalAmountWithoutVAT += (invoiceItem.quantity * invoiceItem.unitPrice - invoiceItem.discountAmount)
-      this.invoiceSummary.sumOfInvoiceLineNetAmount += invoiceItem.netPrice
-      this.invoiceSummary.netInvoiceAmount += invoiceItem.quantity * invoiceItem.unitPrice
-      this.discount += invoiceItem.discountAmount
-      this.invoiceSummary.totalVATAmount = this.invoiceSummary.totalAmountWithVAT - this.invoiceSummary.totalAmountWithoutVAT
-    })
+      this.invoiceSummary.totalAmountWithVAT += invoiceItem.lineAmountInclusiveVAT;
+      this.invoiceSummary.totalAmountWithoutVAT += (invoiceItem.quantity * invoiceItem.unitPrice - invoiceItem.discountAmount);
+      this.invoiceSummary.sumOfInvoiceLineNetAmount += invoiceItem.netPrice;
+      this.invoiceSummary.netInvoiceAmount += invoiceItem.quantity * invoiceItem.unitPrice;
+      this.discount += invoiceItem.discountAmount;
+      this.invoiceSummary.totalVATAmount = this.invoiceSummary.totalAmountWithVAT - this.invoiceSummary.totalAmountWithoutVAT;
+    });
 
 
 
@@ -310,60 +319,46 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
 
 
   fillDummy() {
-    this.invoice.status = "Paid"
-    this.invoice.paymentType = "Cash"
+    this.invoice.status = 'Paid';
+    this.invoice.paymentType = 'Cash';
     this.invoice.dateOfSupply = DateTime.utc();
+    this.invoice.invoiceCurrencyCode = 'SAR';
+    //this.invoice.buyer.crNumber = '1234567890';
+    this.invoice.invoiceSummary.currencyCode = 'SAR';
+    this.invoice.invoiceSummary.paidAmountCurrency = 'SAR';
+    this.invoice.invoiceSummary.payableAmountCurrency = 'SAR';
+    this.invoice.invoiceSummary.netInvoiceAmountCurrency = 'SAR';
+    this.invoice.invoiceSummary.totalAmountWithoutVATCurrency = 'SAR';
+    this.invoice.invoiceNumber = '-1'; //!this.invoice.billingReferenceId ? " " : this.invoice.billingReferenceId
 
-    this.invoice.invoiceCurrencyCode = "SAR"
-    this.invoice.buyer.crNumber = "1234567890"
-    this.invoice.supplier.crNumber = "1234567890";
-    this.invoice.supplier.vatid = "5672345";
-    this.invoice.invoiceSummary.currencyCode = "SAR";
-    this.invoice.invoiceSummary.paidAmountCurrency = "SAR";
-    this.invoice.invoiceSummary.payableAmountCurrency = "SAR";
-    this.invoice.invoiceSummary.netInvoiceAmountCurrency = "SAR";
-    this.invoice.invoiceSummary.totalAmountWithoutVATCurrency = "SAR";
-    this.invoice.invoiceNumber = '-1' //!this.invoice.billingReferenceId ? " " : this.invoice.billingReferenceId 
-
-    this.invoice.supplier.contactPerson.name = !this.invoice.supplier.contactPerson.name ? "Admin" : this.invoice.supplier.contactPerson.name;
-    this.invoice.supplier.contactPerson.contactNumber = !this.invoice.supplier.contactPerson.contactNumber ? "567898084" : this.invoice.supplier.contactPerson.contactNumber;
-    this.invoice.supplier.address.city = !this.invoice.supplier.address.city ? "Bengaluru" : this.invoice.supplier.address.city;
-    // this.invoice.supplier.contactPerson.type = !this.customer.contactPerson.type?.trim() ? "NA" : this.customer.contactPerson.type;
-    this.invoice.supplier.address.type = !this.invoice.supplier.address.type?.trim() ? "NA" : this.invoice.supplier.address.type;
-    this.invoice.supplier.address.additionalNo = !this.invoice.supplier.address.additionalNo ? "Gurappa Ave" : this.invoice.supplier.address.additionalNo;
-    this.invoice.supplier.address.countryCode = !this.invoice.supplier.address.countryCode ? "UAE" : this.invoice.supplier.address.countryCode;
-    this.invoice.supplier.address.postalCode = !this.invoice.supplier.address.postalCode ? "560025" : this.invoice.supplier.address.postalCode;
-    this.invoice.supplier.address.state = !this.invoice.supplier.address.state ? "Karnataka" : this.invoice.supplier.address.state;
-    this.invoice.supplier.address.street = !this.invoice.supplier.address.street ? "Diamond House, OFF" : this.invoice.supplier.address.street;
-    this.invoice.supplier.address.buildingNo = !this.invoice.supplier.address.buildingNo ? "11" : this.invoice.supplier.address.buildingNo;
-    this.invoice.supplier.address.neighbourhood = !this.invoice.supplier.address.neighbourhood ? "Ashok Nagar" : this.invoice.supplier.address.neighbourhood;
-    this.invoice.buyer.vatid = !this.customer.vatid?.trim() ? "NA" : this.customer.vatid;
-    this.invoice.buyer.contactPerson.name = !this.customer.registrationName?.trim() ? "NA" : this.customer.registrationName;
-    //  this.invoice.buyer.contactPerson.type = !this.customer.contactPerson.type?.trim() ? "NA" : this.customer.contactPerson.type;
-    this.invoice.buyer.address.type = !this.address.type?.trim() ? "NA" : this.address.type;
-    this.invoice.buyer.address.additionalNo = !this.address.additionalNo?.trim() ? "NA" : this.address.additionalNo;
-    this.invoice.buyer.address.city = !this.invoice.buyer.address.city?.trim() ? "NA" : this.invoice.buyer.address.city;
-    this.invoice.buyer.address.countryCode = !this.invoice.buyer.address.countryCode?.trim() ? "NA" : this.invoice.buyer.address.countryCode;
-    this.invoice.buyer.address.postalCode = !this.invoice.buyer.address.postalCode?.trim() ? "NA" : this.invoice.buyer.address.postalCode;
-    this.invoice.buyer.address.state = !this.invoice.buyer.address.state?.trim() ? "NA" : this.invoice.buyer.address.state;
-    this.invoice.buyer.address.street = !this.invoice.buyer.address.street?.trim() ? "NA" : this.invoice.buyer.address.street;
-    this.invoice.buyer.address.state = !this.invoice.buyer.address.state?.trim() ? "NA" : this.invoice.buyer.address.state;
-    this.invoice.buyer.address.buildingNo = !this.invoice.buyer.address.buildingNo?.trim() ? "NA" : this.invoice.buyer.address.buildingNo;
-    this.invoice.buyer.address.neighbourhood = !this.invoice.buyer.address.neighbourhood?.trim() ? "NA" : this.invoice.buyer.address.neighbourhood;
-    this.invoice.buyer.contactPerson.email = !this.customer.contactPerson.email?.trim() ? "NA" : this.customer.contactPerson.email;
+   
+    // this.invoice.buyer.vatid = !this.customer.vatid?.trim() ? 'NA' : this.customer.vatid;
+    // this.invoice.buyer.contactPerson.name = !this.customer.registrationName?.trim() ? 'NA' : this.customer.registrationName;
+    // //  this.invoice.buyer.contactPerson.type = !this.customer.contactPerson.type?.trim() ? "NA" : this.customer.contactPerson.type;
+    // this.invoice.buyer.address.type = !this.address.type?.trim() ? 'NA' : this.address.type;
+    // this.invoice.buyer.address.additionalNo = !this.address.additionalNo?.trim() ? 'NA' : this.address.additionalNo;
+    // this.invoice.buyer.address.city = !this.invoice.buyer.address.city?.trim() ? 'NA' : this.invoice.buyer.address.city;
+    // this.invoice.buyer.address.countryCode = !this.invoice.buyer.address.countryCode?.trim() ? 'NA' : this.invoice.buyer.address.countryCode;
+    // this.invoice.buyer.address.postalCode = !this.invoice.buyer.address.postalCode?.trim() ? 'NA' : this.invoice.buyer.address.postalCode;
+    // this.invoice.buyer.address.state = !this.invoice.buyer.address.state?.trim() ? 'NA' : this.invoice.buyer.address.state;
+    // this.invoice.buyer.address.street = !this.invoice.buyer.address.street?.trim() ? 'NA' : this.invoice.buyer.address.street;
+    // this.invoice.buyer.address.state = !this.invoice.buyer.address.state?.trim() ? 'NA' : this.invoice.buyer.address.state;
+    // this.invoice.buyer.address.buildingNo = !this.invoice.buyer.address.buildingNo?.trim() ? 'NA' : this.invoice.buyer.address.buildingNo;
+    // this.invoice.buyer.address.neighbourhood = !this.invoice.buyer.address.neighbourhood?.trim() ? 'NA' : this.invoice.buyer.address.neighbourhood;
+    // this.invoice.buyer.contactPerson.email = !this.customer.contactPerson.email?.trim() ? 'NA' : this.customer.contactPerson.email;
   }
 
   parseDate(dateString: string): DateTime {
 
-    var time = new Date().toLocaleTimeString();
-    var date = new Date(dateString);
+    let time = new Date().toLocaleTimeString();
+    let date = new Date(dateString);
 
-    if (time.includes("PM")) {
-      date.setHours(parseInt(time.split(":")[0]) + 12)
+    if (time.includes('PM')) {
+      date.setHours(parseInt(time.split(':')[0]) + 12);
     } else {
-      date.setHours(parseInt(time.split(":")[0]));
-    } date.setMinutes(parseInt(time.split(":")[1]));
-    date.setSeconds(parseInt(time.split(":")[2]));
+      date.setHours(parseInt(time.split(':')[0]));
+    } date.setMinutes(parseInt(time.split(':')[1]));
+    date.setSeconds(parseInt(time.split(':')[2]));
     dateString = date.toISOString();
 
 
@@ -377,18 +372,16 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
   validateFields() {
 
     return (this.address.buildingNo && this.address.city && this.address.countryCode && this.address.street &&
-      this.address.postalCode && this.address.state && this.address.neighbourhood)
+      this.address.postalCode && this.address.state && this.address.neighbourhood && this.invoice.issueDate);
   }
 
 
   save() {
-
-    if(this.address.neighbourhood==null || this.address.neighbourhood==undefined)
-    {
+    if (this.address.neighbourhood == null || this.address.neighbourhood === undefined) {
       this.basicForm.get('Neighbourhood').setValue('.');
     }
 
-    var isSimplified = this.invoiceSummary.totalAmountWithVAT < 1000
+    let isSimplified = this.invoiceSummary.totalAmountWithVAT < 1000;
     if (parseInt(this.address.buildingNo) > 9999 && !isSimplified) {
       this.notify.error(this.l('Building number cannot be greater than 4 digits'));
       this.isSaving = false;
@@ -397,6 +390,13 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
     }
     if ((parseInt(this.address.postalCode) > 99999 || parseInt(this.address.postalCode) <= 9999) && !isSimplified) {
       this.notify.error(this.l('Please enter a valid postal code.'));
+      this.isSaving = false;
+
+      return;
+    }
+
+    if ((this.issueDate.toString() > DateTime.now().toString())) {
+      this.notify.error(this.l('Invoice Date Should not be greater than Current Date.'));
       this.isSaving = false;
 
       return;
@@ -419,37 +419,33 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
       return;
     }
 
-    if (!isSimplified && !this.validateFields()) {
-      this.notify.error(this.l('Please add required fields.'));
-      this.isSaving = false;
 
-      return;
-    }    
-  
+
     if (this.isFormValid()) {
-      
-      this.invoice.invoiceSummary = this.invoiceSummary
-      this.invoice.items = this.invoiceItems
-      this.invoice.supplier = this.supplier
-      this.invoice.buyer = this.customer
+
+      this.invoice.invoiceSummary = this.invoiceSummary;
+      this.invoice.items = this.invoiceItems;
+      console.log(this.supplier,'sup');
+      this.invoice.supplier = [this.supplier];
+
+      this.invoice.buyer = [this.customer];
 
 
       try {
-        this.invoice.issueDate = this.parseDate(this.issueDate.toString())
+        this.invoice.issueDate = this.parseDate(this.issueDate.toString());
       } catch (e) {
         this.notify.error(this.l('Please enter valid issue date.'));
         this.isSaving = false;
-        return
+        return;
 
       }
       this.isSaving = true;
-      this.invoice.supplier.address = new CreateOrEditSalesInvoiceAddressDto()
-      this.invoice.buyer.address = this.address
+      this.invoice.buyer[0].address = this.address;
+      this.invoice.supplier[0].address=this.supplier.address;
 
 
 
       this.fillDummy();
-      console.log(this.invoice)
       this._salesInvoiceServiceProxy.createSalesInvoice(this.invoice)
         .subscribe((result) => {
           // this._salesInvoiceServiceProxy.insertSalesReportData(Number(result.invoiceId)).subscribe((result) => {
@@ -457,19 +453,19 @@ export class CreateSalesInvoiceComponent extends AppComponentBase {
           this.notify.success(this.l('SavedSuccessfully'));
           this.editMode = false;
           this.isSaving = false;
-          this.router.navigate(['/app/main/transactions'],{state: {tabvaule:'Sales Invoice'}});
-          this.download(result.invoiceId, result.uuid)
-          
+          this.router.navigate(['/app/main/transactions'], { state: { tabvaule: 'Sales Invoice' } });
+          this.download(result.invoiceId, result.uuid);
+
         });
     } else {
-      this.notify.error(this.l('Please fill all the required fields'));      
+      this.notify.error(this.l('Please fill all the required fields'));
     }
 
   }
   download(id, uid) {
     //window.location.reload();
-    var pdfUrl = AppConsts.pdfUrl + '/InvoiceFiles/' + this._sessionService.tenantId + "/" + uid + "/" + uid + "_" + id + ".pdf";
-    window.open(pdfUrl)
+    let pdfUrl = AppConsts.pdfUrl + '/InvoiceFiles/' + this._sessionService.tenantId + '/' + uid + '/' + uid + '_' + id + '.pdf';
+    window.open(pdfUrl);
   }
 
 

@@ -16,6 +16,8 @@ using System.Text;
 using System;
 using vita.CreditNoteFileUpload.Importing;
 using System.Collections.Generic;
+using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace vita.CreditNotePurchaseFileUpload.Importing
 {
@@ -45,6 +47,45 @@ namespace vita.CreditNotePurchaseFileUpload.Importing
         public CreditNotePurchaseListExcelDataReader(ILocalizationManager localizationManager)
         {
             _localizationSource = localizationManager.GetSource(vitaConsts.LocalizationSourceName);
+        }
+
+        public byte[] ConvertCsvToExcel(byte[] csvBytes)
+        {
+            using (MemoryStream csvStream = new MemoryStream(csvBytes))
+            {
+                // Read CSV using StreamReader
+                using (StreamReader csvReader = new StreamReader(csvStream))
+                {
+                    // Create a new Excel workbook
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("Sheet1");
+
+                    int rowIndex = 0;
+                    string line;
+                    while ((line = csvReader.ReadLine()) != null)
+                    {
+                        string[] values = line.Split(',');
+
+                        // Create a new Excel row
+                        IRow row = sheet.CreateRow(rowIndex);
+
+                        for (int colIndex = 0; colIndex < values.Length; colIndex++)
+                        {
+                            // Set cell values for each column in the row
+                            row.CreateCell(colIndex).SetCellValue(values[colIndex]);
+                        }
+
+                        rowIndex++;
+                    }
+
+                    // Convert Excel data to byte array
+                    using (MemoryStream excelStream = new MemoryStream())
+                    {
+                        workbook.Write(excelStream);
+                        return excelStream.ToArray();
+                    }
+                }
+            }
         }
 
         public List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes)

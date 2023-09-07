@@ -9,7 +9,7 @@ namespace vita.Credit.Dtos
     public class CreateOrEditCreditNoteDto : EntityDto<Guid?>
     {
 
- 
+
         public string IRNNo { get; set; }
 
         public string InvoiceNumber { get; set; }
@@ -74,13 +74,23 @@ namespace vita.Credit.Dtos
 
         public string InvoiceNotes { get; set; }
 
-        public CreateOrEditCreditNotePartyDto Supplier { get; set; }
-        public CreateOrEditCreditNotePartyDto Buyer { get; set; }
+        public string XmlUuid { get; set; }
+        public string InvoiceTypeCode { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+        public string AdditionalData2 { get; set; }
+        public string AdditionalData3 { get; set; }
+        public string AdditionalData4 { get; set; }
+
+        public List<CreateOrEditCreditNotePartyDto> Supplier { get; set; } = new List<CreateOrEditCreditNotePartyDto>();
+        public List<CreateOrEditCreditNotePartyDto> Buyer { get; set; } = new List<CreateOrEditCreditNotePartyDto>();
+        public List<CreateOrEditCreditNotePartyDto> Delivery { get; set; } = new List<CreateOrEditCreditNotePartyDto>();
         public List<CreateOrEditCreditNoteItemDto> Items { get; set; }
         public CreateOrEditCreditNoteSummaryDto InvoiceSummary { get; set; }
         public List<CreateOrEditCreditNoteDiscountDto> Discount { get; set; }
         public List<CreateOrEditCreditNoteVATDetailDto> VATDetails { get; set; }
         public List<CreateOrEditCreditNotePaymentDetailDto> PaymentDetails { get; set; }
+
 
     }
 }

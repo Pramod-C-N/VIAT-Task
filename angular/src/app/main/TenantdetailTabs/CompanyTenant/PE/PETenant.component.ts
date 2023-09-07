@@ -48,7 +48,8 @@ import {
     CreateOrEditTenantPurchaseVatCateoryDto,
     CreateOrEditTenantSupplyVATCategoryDto,
     DesignationServiceProxy,
-    GetDesignationForViewDto
+    GetDesignationForViewDto,
+    TenantRegistrationServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppSessionService } from '@shared/common/session/app-session.service';
@@ -56,6 +57,7 @@ import { Location } from '@angular/common';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'PETenant',
@@ -113,6 +115,7 @@ export class PETenantComponent extends AppComponentBase {
     businessSupplies: CreateOrEditTenantBusinessSuppliesDto =  new CreateOrEditTenantBusinessSuppliesDto();
     purchaseVatCateory: CreateOrEditTenantPurchaseVatCateoryDto = new CreateOrEditTenantPurchaseVatCateoryDto();
     supplyVATCategory: CreateOrEditTenantSupplyVATCategoryDto = new CreateOrEditTenantSupplyVATCategoryDto();
+    vatid: string;
 
     partnerShareHolderItems: CreateOrEditTenantShareHoldersDto[] = [];
     partnerShareHolderItem: CreateOrEditTenantShareHoldersDto = new CreateOrEditTenantShareHoldersDto();     constructor(
@@ -133,6 +136,7 @@ export class PETenantComponent extends AppComponentBase {
         private _masterBusinessCategoryServiceProxy: TransactionCategoryServiceProxy,
         private _masterTaxCategoryServiceProxy: TaxCategoryServiceProxy,
         private _designationServiceProxy: DesignationServiceProxy,
+        private _tenantRegistrationService: TenantRegistrationServiceProxy,
         private fb: FormBuilder,
         private _tokenService: TokenService
     ) {
@@ -309,8 +313,7 @@ export class PETenantComponent extends AppComponentBase {
             this.tenants.businessCategory = data[0].businessCategory?.trim();
             this.tenants.operationalModel = data[0].operationalModel?.trim();
             this.tenants.turnoverSlab = data[0].turnoverSlab?.trim();
-            this.tenants.lastReturnFiled = data[0].lastReturnFiled?.trim();
-            this.tenants.parentEntityCountryCode = data[0].parentEntityCountryCode?.trim();
+this.tenants.lastReturnFiled = data[0].lastReturnFiled1?.trim();            this.tenants.parentEntityCountryCode = data[0].parentEntityCountryCode?.trim();
             this.tenants.parentEntityName = data[0].parentEntityName?.trim();
             this.tenants.legalRepresentative = data[0].legalRepresentative?.trim();
             this.tenants.vatReturnFillingFrequency = data[0].vatReturnFillingFrequency?.trim();
@@ -324,14 +327,16 @@ export class PETenantComponent extends AppComponentBase {
             this.address.postalCode = data[0]?.postalCode;
             this.address.neighbourhood = data[0]?.neighbourhood?.trim();
             this.documents.documentNumber = data[0].documentNumber?.trim();
-
             this.BusinessPurchase.businessPurchase = data[0].businessPurchase?.trim();
             this.businessSupplies.businessSupplies = data[0].businessSupplies?.trim();
             this.supplyVATCategory.vatCategoryName = data[0].vatCategoryName?.trim();
             this.purchaseVatCateory.vatCategoryName = data[0].vatCategoryName?.trim();
+            this.vatid=data[0]?.vatid;
 
 
             for (let i = 0; i < data.length; i++) {
+                if(data[i].documentType != null || data[i].documentType != undefined)
+                {
                 this.Documentitem.docUniqueId = data[i].docunique;
               this.Documentitem.documentId = data[i].documentId;
               this.Documentitem.documentNumber = data[i].documentNumber;
@@ -339,6 +344,7 @@ export class PETenantComponent extends AppComponentBase {
               this.Documentitem.registrationDate = data[i].registrationDate;
               this.Documentitems.push(this.Documentitem);
               this.Documentitem = new CreateOrEditTenantDocumentsDto();
+                }
             }
             this.tenants.address = this.address;
             this.tenants.documents = this.Documentitems;
@@ -346,6 +352,8 @@ export class PETenantComponent extends AppComponentBase {
 
         this._tenantbasicdetailsServiceProxy.getTenantpartnerinfoById(tenantId).subscribe((patdata) => {
             for (let i = 0; i < patdata.length; i++) {
+                if(patdata[i].patunique != null || patdata[i].patunique != undefined)
+                {
             this.partnerShareHolderItem.shareUniqueId = patdata[i].patunique;
               this.partnerShareHolderItem.partnerName = patdata[i].partnerName;
               this.partnerShareHolderItem.constitutionName = patdata[i].constitutionName;
@@ -358,17 +366,41 @@ export class PETenantComponent extends AppComponentBase {
               this.partnerShareHolderItem.nationality = patdata[i].nationality;
               this.partnerShareHolderItems.push(this.partnerShareHolderItem);
               this.partnerShareHolderItem = new CreateOrEditTenantShareHoldersDto();
+                }
             }
         });
     }
-    updatedetails() {
+    async isvatRegistered(){
+        //return false 
+        if((this.tenants.vatid).charAt(10)!='1')
+        {
+            if(this.vatid != this.tenants.vatid)
+            {
+           var res = await firstValueFrom(this._tenantRegistrationService.checkIfVatExists(this.tenants.vatid,true))
+            return res
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return res;
+        }
+    }
+    async updatedetails() {
+        if(await this.isvatRegistered()){
+            this.notify.error(this.l('Entered VAT Number  already exists'));
+          return null;
+        }
             if (
                 (this.tenants.vatid == null || this.tenants.vatid === undefined || !this.tenants.vatid) &&
                 (this.documents.documentNumber === null ||
                     this.documents.documentNumber === undefined ||
                     !this.documents.documentNumber)
             ) {
-                this.notify.error(this.l('Please fill either CR number or VAT ID to save.'));
+                this.notify.error(this.l('Please fill either CR number or VAT number to save.'));
             } else {
                 if (this.type === 'Update') {
                     this.tenants.id = this.tenantid;
@@ -385,6 +417,7 @@ export class PETenantComponent extends AppComponentBase {
                         .pipe(finalize(() => (this.saving = false)))
                         .subscribe(() => {
                             this.notify.success(this.l('UpdatedSuccessfully'));
+                            window.location.reload()
                             this.state.emit();
                         });
                 } else {

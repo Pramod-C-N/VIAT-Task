@@ -33,57 +33,60 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetNatureofServicesForViewDto>> GetAll(GetAllNatureofServicesInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredNatureofServices = _natureofServicesRepository.GetAll()
+                var filteredNatureofServices = _natureofServicesRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredNatureofServices = filteredNatureofServices
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredNatureofServices = filteredNatureofServices
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var natureofServices = from o in pagedAndFilteredNatureofServices
-                                   select new
-                                   {
+                var natureofServices = from o in pagedAndFilteredNatureofServices
+                                       select new
+                                       {
 
-                                       o.Name,
-                                       o.Description,
-                                       o.Code,
-                                       o.IsActive,
-                                       Id = o.Id
-                                   };
+                                           o.Name,
+                                           o.Description,
+                                           o.Code,
+                                           o.IsActive,
+                                           Id = o.Id
+                                       };
 
-            var totalCount = await filteredNatureofServices.CountAsync();
+                var totalCount = await filteredNatureofServices.CountAsync();
 
-            var dbList = await natureofServices.ToListAsync();
-            var results = new List<GetNatureofServicesForViewDto>();
+                var dbList = await natureofServices.ToListAsync();
+                var results = new List<GetNatureofServicesForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetNatureofServicesForViewDto()
+                foreach (var o in dbList)
                 {
-                    NatureofServices = new NatureofServicesDto
+                    var res = new GetNatureofServicesForViewDto()
                     {
+                        NatureofServices = new NatureofServicesDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetNatureofServicesForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetNatureofServicesForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetNatureofServicesForViewDto> GetNatureofServicesForView(int id)

@@ -149,6 +149,7 @@ namespace vita
 
             IocManager.Resolve<ChatUserStateWatcher>().Initialize();
             IocManager.Resolve<AppTimes>().StartupTime = Clock.Now;
-        }
+
+          }
     }
 }

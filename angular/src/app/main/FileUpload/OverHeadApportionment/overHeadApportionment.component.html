@@ -1,0 +1,682 @@
+﻿<style>
+  .ui-autocomplete .inputTest {
+    background-color: red;
+  }
+
+  .panelTest .ui-autocomplete-items .ui-state-highlight {
+    background-color: blue;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+  <sub-header [title]="'Configuration' | localize">
+    <div role="actions">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Overhead Apportionment
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="app/main/FileUpload/NominalSupplies">Nominal Supplies</a>
+          <!-- <a class="dropdown-item" href="app/main/FileUpload/OverHeadApportionment">Overhead Apportionment</a> -->
+          <a class="dropdown-item" href="app/main/FileUpload/MasterConfiguration">Master Validation</a>
+          <a class="dropdown-item" href="app/main/FileUpload/clearBatchSummery">Batch Delete</a>
+        </div>
+      </div>
+    </div>
+  </sub-header>
+  <div class="ng-tns-c327-6 app-container container-fluid">
+    <div class="card">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="row" style="border-bottom: solid; border-color: #f5f8fa">
+            <div class="card-header  border-0 col-lg-4">
+              <h3 class="card-title align-items-start flex-column col-lg-12">
+                <span class="card-label fw-bolder fs-3 mb-1">OverHead Apportionment &nbsp;</span>
+              </h3>
+            </div>
+            <div class="col-lg-3 mb-3 px-5"></div>
+            <div class="col-lg-5 mb-3 px-5 mt-5">
+              <div class="div10">
+                <ul
+                  class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder flex-nowrap">
+                  <li class="nav-item">
+                    <a class="nav-link text-active-primary me-6" [ngClass]="{active : loadprevui == true}"
+                      (click)="loadpreviousui()">
+                      Previous Year Tax ({{ previousYear }})
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link text-active-primary me-6" [ngClass]="{active : loadprevui == false}"
+                      (click)="loadcurrentui()">
+                      Current Year Tax ({{ currentYear }})
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="loadprevui">
+            <div class="card-body py-3">
+              <div class="row gx-10 mb-2 col-lg-12" style="text-align: center">
+                <div class="col-lg-4 px-1">
+                  <h1 class="card-title align-items-start flex-column col-lg-6">
+                    <span class="card-label fw-bolder fs-3 mb-1">Supplies &nbsp;</span>
+                  </h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Taxable</b> Supplies As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.taxableSupplies"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Exempt</b> Supplies As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.exemptSupplies"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row" style="border-bottom: solid; border-color: #f5f8fa">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">(Taxable + Exempt)</b> Supplies As per VAT Return
+                      &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" disabled 
+                    
+                    value="{{ (OverHeadApportionment.exemptSupplies + OverHeadApportionment.taxableSupplies).toFixed(2) }}"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body py-3">
+              <div class="row gx-10 mb-2 col-lg-12" style="text-align: center">
+                <div class="col-lg-4 px-1">
+                  <h1 class="card-title align-items-start flex-column col-lg-6">
+                    <span class="card-label fw-bolder fs-3 mb-1">Purchase &nbsp;</span>
+                  </h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Taxable</b> Purchase As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.taxablePurchase"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Exempt</b> Purchase As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.exemptPurchase"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">(Taxable + Exempt)</b> Purchase As per VAT Return
+                      &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number"
+                    value="{{ (OverHeadApportionment.exemptPurchase + OverHeadApportionment.taxablePurchase).toFixed(2) }}" disabled />
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;"><b
+                        class="card-label fw-bolder fs-3 mb-1">% of Taxable To (Taxable + Exempt Supplies)</b>
+                      &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" disabled [(ngModel)]="OverHeadApportionment.percentageofTaxable"
+                    value="{{ ((OverHeadApportionment.taxableSupplies/(OverHeadApportionment.taxableSupplies+OverHeadApportionment.exemptSupplies))*100).toFixed(2) }}"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">% &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="gx-10 mb-2 col-lg-9">
+                </div>
+                <div class="gx-10 mb-2 col-lg-2">
+                  <div class="px-1 mt-3">
+                    <button type="button" class="btn btn-outline btn-outline-primary me-1 w-100"
+                    (click)="onSavePreviousData()">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="loadcurui">
+            <div class="card-body py-3">
+              <div class="row gx-10 mb-2" style="text-align: center">
+                <div class="col-lg-4 px-1">
+                  <h1 class="card-title align-items-start flex-column col-lg-6">
+                    <span class="card-label fw-bolder fs-3 mb-1">Supplies &nbsp;</span>
+                  </h1>
+                </div>
+                <div class="col-lg-4"></div>
+                <div class="col-lg-3 mb-3 px-5">
+                  <div style="display: flex; justify-content: start">
+                    <span>
+                      <a [ngClass]="
+                          tab == 'Detailed'
+                              ? 'blockquote w-100  fw-bolder text-primary'
+                              : 'blockquote w-100 fw-bolder text-dark'
+                      " data-bs-toggle="tab" style="border-radius: 0">
+                        Detailed
+                      </a>
+                    </span>
+                    <span class="form-check form-switch" style="margin-left:5%;">
+                      <input class="form-check-input" type="checkbox" data-toggle="toggle" [ngModel]="checkboxValue"
+                        (ngModelChange)="changeEvent($event)" checked />
+                    </span>
+                    <span style="margin-left:2%;">
+                      <a [ngClass]="
+                          tab == 'Summary'
+                              ? 'blockquote w-100  fw-bolder text-primary'
+                              : 'blockquote w-100 fw-bolder text-dark'
+                      " data-bs-toggle="tab" style="border-radius: 0">
+                        Summary
+                      </a>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="summaryColumns">
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-7">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                          class="card-label fw-bolder fs-3 mb-1">Taxable</b> Supplies As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.taxableSupplies"/>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-7">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                          class="card-label fw-bolder fs-3 mb-1">Exempt</b> Supplies As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.exemptSupplies"/>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="border-bottom: solid; border-color: #f5f8fa">
+                  <div class="gx-10 mb-2 col-lg-7">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                          class="card-label fw-bolder fs-3 mb-1">(Taxable + Exempt)</b> Supplies As per VAT Return
+                        &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" disabled 
+                      value = "{{ (OverHeadApportionment.exemptSupplies + OverHeadApportionment.taxableSupplies).toFixed(2) }}"/>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="detailedColumns">
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly Taxable Supplies As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [ngModel]="OverHeadApportionmentList[index].taxableSupplies" 
+                            (ngModelChange)="calculate($event,index,'taxableSupplies')"
+                            [readonly]="index > currentMonthIndex" 
+                            [style.background-color]="index > currentMonthIndex ? '#f2f2f2' : 'white'"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" >
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly Exempt Supplies As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [ngModel]="OverHeadApportionmentList[index].exemptSupplies" 
+                            (ngModelChange)="calculate($event,index,'exemptSupplies')"
+                            [readonly]="index > currentMonthIndex" 
+                            [style.background-color]="index > currentMonthIndex ? '#f2f2f2' : 'white'"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly (Taxable + Exempt) Supplies As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [(ngModel)]="OverHeadApportionmentList[index].exemptTaxableSupplies"
+                            [style.background-color]="'#f2f2f2'" disabled/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-3" style="border-top: solid; border-color: #f5f8fa">
+                <div class="col-lg-4 px-1">
+                  <h1 class="card-title align-items-start flex-column col-lg-6">
+                    <span class="card-label fw-bolder fs-3 mb-1">Purchase &nbsp;</span>
+                  </h1>
+                </div>
+              </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly Taxable Purchase As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [ngModel]="OverHeadApportionmentList[index].taxablePurchase" 
+                            (ngModelChange)="calculate($event,index,'taxablePurchase')"
+                            [readonly]="index > currentMonthIndex" 
+                            [style.background-color]="index > currentMonthIndex ? '#f2f2f2' : 'white'"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly Exempt Purchase As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [ngModel]="OverHeadApportionmentList[index].exemptPurchase" 
+                            (ngModelChange)="calculate($event,index,'exemptPurchase')"
+                            [readonly]="index > currentMonthIndex" 
+                            [style.background-color]="index > currentMonthIndex ? '#f2f2f2' : 'white'"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly (Taxable + Exempt) Purchase As per VAT Return &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="border-bottom: solid; border-color: #f5f8fa;background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            [(ngModel)]="OverHeadApportionmentList[index].exemptTaxablePurchase"
+                            [style.background-color]="'#f2f2f2'" disabled/>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="gx-10 mb-2 col-lg-12">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1">Total Monthly General OverHeads To Be Considered For Apportionment &nbsp;</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row" style="border-bottom: solid; border-color: #f5f8fa;background-color: #f5f8fa;border-radius: 20px;">
+                  <div class="gx-10 mb-2 col-lg-1" *ngFor="let o of OverHeadApportionmentList;let index=index">
+                    <div>
+                      <span style="margin-left: 10%;">{{ getMonthName(index) }} &nbsp;</span>
+                      <input class="form form-control" 
+                            type="number" 
+                            name="input{{index}}" 
+                            value="{{ (OverHeadApportionmentList[index].exemptTaxablePurchase + OverHeadApportionmentList[index].exemptTaxableSupplies).toFixed(2) }}"
+                            [style.background-color]="'#f2f2f2'" disabled/>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="row mt-2">
+                  <div class="gx-10 mb-2 col-lg-8">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1"><b
+                          class="card-label fw-bolder fs-3 mb-1">% of Taxable To (Taxable + Exempt Supplies) - Current Year ({{ currentYear }})</b>
+                        &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" disabled />
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-1" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">% &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div> -->
+                <div class="row mt-2">
+                  <div class="gx-10 mb-2 col-lg-8">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1"><b
+                          class="card-label fw-bolder fs-3 mb-1">% of Taxable To (Taxable + Exempt Supplies) - Previous Year ({{ previousYear }})</b>
+                        &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" disabled [ngModel]="previousYearPercentage"/>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-1" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">% &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="row mt-2">
+                  <div class="gx-10 mb-2 col-lg-8">
+                    <div class="px-1 mt-3">
+                      <span class="card-label fw-bold mb-1"><b
+                          class="card-label fw-bolder fs-3 mb-1">Allowable Input (OverHeads) Based on Current Year Apportionment</b>
+                        &nbsp;</span>
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                    <div class="px-1">
+                      <input class="form form-control" pInputText type="number" disabled />
+                    </div>
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-1" style="text-align: center">
+                    <div class="px-1 mt-3">
+                      <h1 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">% &nbsp;</span>
+                      </h1>
+                    </div>
+                  </div>
+                </div> -->
+                <div class="row mt-2">
+                  <div class="gx-10 mb-2 col-lg-9">
+                  </div>
+                  <div class="gx-10 mb-2 col-lg-2">
+                    <div class="px-1 mt-3">
+                      <button type="button" class="btn btn-outline btn-outline-primary me-1 w-100"
+                      (click)="onSaveDetailedData()">
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div *ngIf="summaryColumns" class="card-body py-3">
+              <div class="row gx-10 mb-2 col-lg-12" style="text-align: center">
+                <div class="col-lg-4 px-1">
+                  <h1 class="card-title align-items-start flex-column col-lg-6">
+                    <span class="card-label fw-bolder fs-3 mb-1">Purchase &nbsp;</span>
+                  </h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Taxable</b> Purchase As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.taxablePurchase"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">Exempt</b> Purchase As per VAT Return &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" [(ngModel)]="OverHeadApportionment.exemptPurchase"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;">Total Annual <b
+                        class="card-label fw-bolder fs-3 mb-1">(Taxable + Exempt)</b> Purchase As per VAT Return
+                      &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" disabled 
+                    value = "{{ (OverHeadApportionment.exemptPurchase + OverHeadApportionment.taxablePurchase).toFixed(2) }}"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">SAR &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="gx-10 mb-2 col-lg-7">
+                  <div class="px-1 mt-3">
+                    <span class="card-label fw-bold mb-1" style="margin-left: 10%;"><b
+                        class="card-label fw-bolder fs-3 mb-1">% of Taxable To (Taxable + Exempt Supplies)</b>
+                      &nbsp;</span>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-3" style="text-align: center">
+                  <div class="px-1">
+                    <input class="form form-control" pInputText type="number" disabled [(ngModel)]="OverHeadApportionment.percentageofTaxable"
+                    value="{{ ((OverHeadApportionment.taxableSupplies/(OverHeadApportionment.taxableSupplies+OverHeadApportionment.exemptSupplies))*100).toFixed(2) }}"/>
+                  </div>
+                </div>
+                <div class="gx-10 mb-2 col-lg-2" style="text-align: center">
+                  <div class="px-1 mt-3">
+                    <h1 class="card-title align-items-start flex-column col-lg-6">
+                      <span class="card-label fw-bolder fs-3 mb-1">% &nbsp;</span>
+                    </h1>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="gx-10 mb-2 col-lg-9">
+                </div>
+                <div class="gx-10 mb-2 col-lg-2">
+                  <div class="px-1 mt-3">
+                    <button type="button" class="btn btn-outline btn-outline-primary me-1 w-100"
+                    (click)="onSaveSummaryData()">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

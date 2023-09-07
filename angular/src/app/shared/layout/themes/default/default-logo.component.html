@@ -1,16 +1,17 @@
 <a href="/" [class]="customHrefClass" (window:resize)="onResize()">
-    <img
+    <img 
         alt="Logo"
         *ngIf="!appSession.tenant || !appSession.tenant.logoId"
-        [src]="defaultLogo"
-        class="h-25px app-sidebar-logo-default"
+        [src]="profilePicture"
+        class="dflogo h-50px app-sidebar-logo-default"
     />
-    <img
+    <img 
         alt="Logo"
-        *ngIf="!appSession.tenant || !appSession.tenant.logoId"
-        [src]="defaultSmallLogo"
-        class="h-20px app-sidebar-logo-minimize"
+        *ngIf="!appSession.tenant || !appSession.tenant.logoId "
+        [src]="profilePictureSmall"
+        class="defSmallLogo h-30px app-sidebar-logo-minimize"
     />
+
     <img
         alt="Logo"
         *ngIf="appSession.tenant && appSession.tenant.logoId"

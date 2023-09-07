@@ -33,57 +33,58 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetTaxSubCategoryForViewDto>> GetAll(GetAllTaxSubCategoryInput input)
         {
-
-            var filteredTaxSubCategory = _taxSubCategoryRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredTaxSubCategory = _taxSubCategoryRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredTaxSubCategory = filteredTaxSubCategory
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredTaxSubCategory = filteredTaxSubCategory
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var taxSubCategory = from o in pagedAndFilteredTaxSubCategory
-                                 select new
-                                 {
+                var taxSubCategory = from o in pagedAndFilteredTaxSubCategory
+                                     select new
+                                     {
 
-                                     o.Name,
-                                     o.Description,
-                                     o.Code,
-                                     o.IsActive,
-                                     Id = o.Id
-                                 };
+                                         o.Name,
+                                         o.Description,
+                                         o.Code,
+                                         o.IsActive,
+                                         Id = o.Id
+                                     };
 
-            var totalCount = await filteredTaxSubCategory.CountAsync();
+                var totalCount = await filteredTaxSubCategory.CountAsync();
 
-            var dbList = await taxSubCategory.ToListAsync();
-            var results = new List<GetTaxSubCategoryForViewDto>();
+                var dbList = await taxSubCategory.ToListAsync();
+                var results = new List<GetTaxSubCategoryForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetTaxSubCategoryForViewDto()
+                foreach (var o in dbList)
                 {
-                    TaxSubCategory = new TaxSubCategoryDto
+                    var res = new GetTaxSubCategoryForViewDto()
                     {
+                        TaxSubCategory = new TaxSubCategoryDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetTaxSubCategoryForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetTaxSubCategoryForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetTaxSubCategoryForViewDto> GetTaxSubCategoryForView(int id)

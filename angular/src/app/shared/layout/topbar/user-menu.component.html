@@ -264,6 +264,20 @@
                 {{ 'LoginAttempts' | localize }}
             </a>
         </div>
+
+        <div class="menu-item px-5">
+            <a href="javascript:;"  class="menu-link px-5" >
+                <div class="symbol symbol-30px bg-light me-3">
+                    <div class="symbol-label">
+                        <span class="form-check form-switch mt-1 div12">
+                            <input class="toggle form-check-input" type="checkbox" data-toggle="toggle" [ngModel]="isVita"
+                            (ngModelChange)="changeToggle($event)" checked>
+                          </span>
+                    </div>
+                </div>
+                Enable VITA 
+            </a>
+        </div>
         <!-- Profile Picture -->
         <!-- <div class="menu-item px-5 d-flex">
             <a

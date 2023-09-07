@@ -46,6 +46,8 @@ export class SalesInvoiceFileUploadComponent extends AppComponentBase {
   notifications: IFormattedUserNotification[] = [];
   unreadNotificationCount = 0;
   isLoading = false;
+  mappingList:any=[]
+  mappingId:number|null=null
   constructor(
     injector: Injector,
     private _httpClient: HttpClient,
@@ -60,6 +62,7 @@ export class SalesInvoiceFileUploadComponent extends AppComponentBase {
   ) {
     super(injector);
     this.uploadUrl = AppConsts.remoteServiceBaseUrl + '/SalesFileUpload/ImportFromExcel';
+    console.log(this.uploadUrl,'this.uploadUrl')
   }
 
   // eslint-disable-next-line @angular-eslint/use-lifecycle-interface
@@ -68,6 +71,12 @@ export class SalesInvoiceFileUploadComponent extends AppComponentBase {
     this.tenantName = this._sessionService.tenancyName;
     this.loadNotifications();
     this.registerToEvents();
+    this._salesInvoicesAppService.getFileMappings().subscribe((e) => {
+      console.log(e);
+      if (e) {
+          this.mappingList = e.filter(v=>v.transactionType=="Sales").map(v=>{return {name:v.name,id:v.id}});
+      }
+    })
   }
   //----------------------begin notification service-------------------------------
   loadNotifications(): void {
@@ -126,6 +135,8 @@ export class SalesInvoiceFileUploadComponent extends AppComponentBase {
     formData.append('file', newFile);
     formData.append('fromdate', this.fromdate.toString());
     formData.append('todate', this.todate.toString());
+    if(this.mappingId!=null)
+    formData.append('id', this.mappingId.toString());
     this._httpClient
       .post<any>(this.uploadUrl, formData)
       .pipe(finalize(() => this.excelFileUpload.clear()))

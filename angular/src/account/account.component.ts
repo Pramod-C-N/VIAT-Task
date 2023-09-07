@@ -20,7 +20,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
     skin = this.appSession.theme.baseSettings.layout.darkMode ? 'dark' : 'light';
     defaultLogo = AppConsts.appBaseUrl + '/assets/common/images/app-logo-on-' + this.skin + '.svg';
     backgroundImageName = this.appSession.theme.baseSettings.layout.darkMode ? 'login-dark' : 'login';
-    registerpage:boolean=false;
+    registerpage = false;
     profilePicture = AppConsts.appBaseUrl + '/assets/common/images/logo-vita.png';
     profilelogo = AppConsts.appBaseUrl + '/assets/common/images/agency.png';
     tenantChangeDisabledRoutes: string[] = [
@@ -41,6 +41,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
     ];
 
     private viewContainerRef: ViewContainerRef;
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     fromOnboardingPage = false;
 
     public constructor(
@@ -55,26 +56,21 @@ export class AccountComponent extends AppComponentBase implements OnInit {
         super(injector);
         this._activatedRoute.queryParams.subscribe(
             params => {
-              this.fromOnboardingPage = params['fromOnboardingPage'];
-              console.log(this.fromOnboardingPage); // this consoles the correct true/false value
+                this.fromOnboardingPage = params['fromOnboardingPage'];
             }
-          );
-        // We need this small hack in order to catch application root view container ref for modals
+        );
         this.viewContainerRef = viewContainerRef;
     }
-
     showTenantChange(): boolean {
         if (!this._router.url) {
             return false;
         }
-
         if (
             _filter(this.tenantChangeDisabledRoutes, (route) => this._router.url.indexOf('/account/' + route) >= 0)
                 .length
         ) {
             return false;
         }
-
         return abp.multiTenancy.isEnabled && !this.supportsTenancyNameInUrl();
     }
 
@@ -82,11 +78,7 @@ export class AccountComponent extends AppComponentBase implements OnInit {
         return this._router.url.indexOf('/account/select-edition') >= 0;
     }
 
-    
-
     ngOnInit(): void {
-
-
         this._loginService.init();
         document.body.className = this._uiCustomizationService.getAccountModuleBodyClass();
     }

@@ -1,218 +1,136 @@
-<!-- 
-      <p-fileUpload
-          customUpload="true"
-          name="ExcelFileUpload"
-          #ExcelFileUpload
-          maxFileSize="10000000"
-          auto="auto"
-          accept=".csv,.xls,.xlsx"
-          (uploadHandler)="uploadExcel($event)"
-          (onError)="onUploadExcelError()"
-          chooseLabel="{{ 'ImportFromExcel' | localize }}"
-          color="primary"
-      ></p-fileUpload> -->
-
-
-      <div class="content d-flex flex-column flex-column-fluid" *ngIf="setview==false">
-        <sub-header [title]="'Ledger Master File Upload' | localize" >
-            <div role="actions">
-                <a
-                    href="/app/main/sales/MasterBatchSummary"
-                    class="btn btn-primary"
-                >
-                    <i class="fa fa-eye btn-md-icon"></i>
-                    <span class="d-none d-md-inline-block">
-                        {{ 'View Batch Summary' | localize }}
-                    </span>
-                  </a>
-            </div>
-        </sub-header>
-      
-        <div class="card">
-        
-            <div class="card-body py-3">
-
-        <div class="row gx-10 mb-5" style="text-align:center">
-       
-          <div class="col-lg-4">
-            <label class="d-flex align-items-center">
-                <span class="">&nbsp;</span>
-            </label>
-          <label class="d-flex align-items-center">
-            <span class="card-label fw-bolder fs-3 mb-1">Tenant: {{tenantName}} (Id:{{tenantId}})</span>
-        </label>
-          
-          </div>
-
-<div class="col-lg-8 ">
-          <div  class="btn-group" style="float: right;" dropdown placement="button right">
-            <button
-                id="dropdownButtonExcelOperations"
-                dropdownToggle
-                type="button"
-                class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                aria-controls="dropdownMenuExcelOperations"
-            >
-                <i class="far fa-file-excel btn-md-icon"></i>
+<div class="content d-flex flex-column flex-column-fluid" *ngIf="setview==false">
+    <sub-header [title]="'Ledger Master File Upload' | localize">
+        <div role="actions">
+            <a href="/app/main/sales/MasterBatchSummary" class="btn btn-primary">
+                <i class="fa fa-eye btn-md-icon"></i>
                 <span class="d-none d-md-inline-block">
-                    {{ 'ExcelOperations' | localize }}
+                    {{ 'View Batch Summary' | localize }}
                 </span>
-            </button>
-            <ul
-                id="dropdownMenuExcelOperations"
-                class="dropdown-menu dropdown-menu-right dropdown-excel-operations"
-                role="menu"
-                *dropdownMenu
-                aria-labelledby="dropdownButtonExcelOperations"
-            >
-                <li  role="menuitem">
-                    <a href="javascript:;" class="no-padding">
-                        <span class="fileinput-button">
-                            <p-fileUpload
-                                customUpload="true"
-                                name="ExcelFileUpload"
-                                #ExcelFileUpload
-                                maxFileSize="10000000"
-                                auto="auto"
-                                accept=".csv,.xls,.xlsx"
-                                (uploadHandler)="uploadExcel($event)"
-                                (onError)="onUploadExcelError()"
-                                chooseLabel="{{ 'ImportFromExcel' | localize }}"
-                            ></p-fileUpload>
-                        </span>
-                    </a>
-                </li>
-                <li class="divider dropdown-divider"></li>
-                <li role="menuitem">
-                    <span class="dropdown-item-text text-muted pl-3" href="#">
-                        <small
-                            [innerHTML]="
+            </a>
+        </div>
+    </sub-header>
+    <div class="card">
+        <div class="card-body py-3">
+            <div class="row gx-10 mb-5" style="text-align:center">
+                <div class="col-lg-4">
+                    <label class="d-flex align-items-center">
+                        <span class="">&nbsp;</span>
+                    </label>
+                    <label class="d-flex align-items-center">
+                        <span class="card-label fw-bolder fs-3 mb-1">Tenant: {{tenantName}} (Id:{{tenantId}})</span>
+                    </label>
+                </div>
+                <div class="col-lg-8 ">
+                    <div class="btn-group" style="float: right;" dropdown placement="button right">
+                        <button id="dropdownButtonExcelOperations" dropdownToggle type="button"
+                            class="btn btn-outline btn-outline-success btn-active-light-success dropdown-toggle me-1"
+                            aria-haspopup="true" aria-expanded="false" aria-controls="dropdownMenuExcelOperations">
+                            <i class="far fa-file-excel btn-md-icon"></i>
+                            <span class="d-none d-md-inline-block">
+                                {{ 'ExcelOperations' | localize }}
+                            </span>
+                        </button>
+                        <ul id="dropdownMenuExcelOperations"
+                            class="dropdown-menu dropdown-menu-right dropdown-excel-operations" role="menu"
+                            *dropdownMenu aria-labelledby="dropdownButtonExcelOperations">
+                            <li role="menuitem">
+                                <a href="javascript:;" class="no-padding">
+                                    <span class="fileinput-button">
+                                        <p-fileUpload customUpload="true" name="ExcelFileUpload" #ExcelFileUpload
+                                            maxFileSize="10000000" auto="auto" accept=".csv,.xls,.xlsx"
+                                            (uploadHandler)="uploadExcel($event)" (onError)="onUploadExcelError()"
+                                            chooseLabel="{{ 'ImportFromExcel' | localize }}"></p-fileUpload>
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="divider dropdown-divider"></li>
+                            <li role="menuitem">
+                                <span class="dropdown-item-text text-muted pl-3" href="#">
+                                    <small [innerHTML]="
                                 l(
                                     'ImportToExcelSampleFileDownloadInfo',
                                     '<a href=/assets/sampleFiles/VendorsUploadSampleData.xlsx>' +
                                         l('ClickHere') +
                                         '</a>'
                                 )
-                            "
-                        ></small>
-                    </span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-          </div>
-      
-        
+                            "></small>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="separator separator-dashed my-1"></div>
-        
         </div>
-        
-      
-      
-      
-      <div
-                                          class="primeng-datatable-container"
-                                      >
-                                          <p-table
-                                              #dataTableAuditLogs
-                                              sortMode="multiple"
-                                              [value]="invoices"
-                                             
-              
-                                          >
-                                          <!--  -->
-                                              <ng-template pTemplate="header">
-                                                  <tr>
-                                                    
-                                                      <!-- <th style="width: 150px" >
-                                                          {{ 'Date' | localize }}
-                                                      </th>
-                                                     -->
-                                                      <th style="width: 150px">
-                                                          {{ 'File Name' | localize }}
-                                                      </th>
-                                                      <th style="width: 150px" >
-                                                          {{ 'Batch No' | localize }}
-                                                      </th>
-                                                      <th style="width: 150px" >
-                                                        {{ 'No of Valid Records' | localize }}
-                                                    </th>
-                                                    <th style="width: 150px" >
-                                                        {{ 'No of Invalid Records' | localize }}
-                                                    </th>
-                                                    <th style="width: 150px" >
-                                                        {{ 'Total Records' | localize }}
-                                                    </th>
-                                                    <th style="width: 150px" >
-                                                        {{ 'Invalid Records' | localize }}
-                                                    </th>
-                                                    <th style="width: 150px" >
-                                                        {{ 'Einvoice (Dashboard)' | localize }}
-                                                    </th>
-                                                  </tr>
-                                              </ng-template>
-                                              <ng-template pTemplate="body" let-record="$implicit">
-                                                <tr>
-                                                  <!-- <td style="width: 150px">
-                                                    <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Id' | localize }}</span>
-                                                    {{ record.fileDate | luxonFormat: 'yyyy' }}-{{ record.fileDate | luxonFormat: 'MM' }}-{{ record.fileDate | luxonFormat: 'dd' }} {{ record.fileDate | luxonFormat: 'HH' }}:{{ record.fileDate | luxonFormat: 'mm' }}:{{ record.fileDate | luxonFormat: 'ss' }}
-      
-                                                </td> -->
-                                                <td style="width: 150px">
-                                                  <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Issue Date' | localize }}</span>
-                                                  {{ record.fileName }}
-      
-      
-                                              </td>
-                                              <td style="width: 150px;text-align: end;">
-                                                <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Taxable amount' | localize }}</span>
-                                                {{ record.batchId  }}
-      
-                                            </td>
-                                            <td style="width: 150px;text-align: end;">
-                                              <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Zero Rated' | localize }}</span>
-                                              {{ record.successRecords }}
-      
-                                          </td>
-                                          <td style="width: 150px;text-align: end;">
-                                            <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Private health' | localize }}</span>
-                                            {{record.failedRecords }}
-      
-                                        </td>
-                                        <td style="width: 150px; text-align: end;">
-                                          <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Exports' | localize }}</span>
-                                          {{ record.totalRecords }}
-      
-                                      </td>
-                                      <td style="width: 150px; text-align: end;">
-                                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Exempt' | localize }}</span>
-                                        <button type="button" class="btn btn-danger" (click)="exportToExcel(record.batchId)">Download</button>
-      
-                                    </td>
-                                    <td style="width: 150px; text-align: end;">
-                                      <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'VAT Rate' | localize }}</span>
-                                      <a type="button" class="btn btn-success" (click)="view()">View</a>
-      
-                                  </td>     
-                                                </tr>
-      
-                                               
-      
-                                              
-                                              </ng-template>
-      
-      
-                                       
-                                          </p-table>
-                                         
-                                      </div>
-                                      <!--<Primeng-TurboTable-End>-->
-                                        
-      
-                                        </div>
-                                        <app-errorlist *ngIf="setview==true" [batchid]="batchid" [fileName]="fileName" ></app-errorlist>
+        <div class="separator separator-dashed my-1"></div>
+    </div>
+    <div class="primeng-datatable-container">
+        <p-table #dataTableAuditLogs sortMode="multiple" [value]="invoices">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 150px">
+                        {{ 'File Name' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'Batch No' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'No of Valid Records' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'No of Invalid Records' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'Total Records' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'Invalid Records' | localize }}
+                    </th>
+                    <th style="width: 150px">
+                        {{ 'Batch Summary' | localize }}
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-record="$implicit">
+                <tr>
+                    <td style="width: 150px">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Issue Date' | localize
+                            }}</span>
+                        {{ record.fileName }}
+                    </td>
+                    <td style="width: 150px;text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Taxable amount' |
+                            localize }}</span>
+                        {{ record.batchId }}
+                    </td>
+                    <td style="width: 150px;text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Zero Rated' | localize
+                            }}</span>
+                        {{ record.successRecords }}
+                    </td>
+                    <td style="width: 150px;text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Private health' |
+                            localize }}</span>
+                        {{record.failedRecords }}
+                    </td>
+                    <td style="width: 150px; text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Exports' | localize
+                            }}</span>
+                        {{ record.totalRecords }}
+                    </td>
+                    <td style="width: 150px; text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'Exempt' | localize
+                            }}</span>
+                        <button type="button" class="btn btn-danger" [disabled]="record.failedRecords==0"
+                            (click)="exportToExcel(record.batchId)">Download</button>
+                    </td>
+                    <td style="width: 150px; text-align: end;">
+                        <span class="p-column-title" style="width: 150px; text-align: end;">{{ 'VAT Rate' | localize
+                            }}</span>
+                        <a type="button" class="btn btn-success" (click)="view()">View</a>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<app-errorlist *ngIf="setview==true" [batchid]="batchid" [fileName]="fileName"></app-errorlist>

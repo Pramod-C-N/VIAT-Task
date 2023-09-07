@@ -1,0 +1,25 @@
+<form [formGroup]="formName" >
+    <div *ngIf="field.formGroupName != ''" formGroupName="{{ field.formGroupName }}" class="form-floating"> 
+        <textarea
+            class="form-control form-control-lg form-control-solid"
+            rows="{{ field?.rows || 1 }}"
+            [id]="field.fieldName"
+            type="text"
+            placeholder="{{ field?.placeholder }}"
+            [formControlName]="field.fieldName"
+        ></textarea>
+        <label style="text-align: left;" [for]="field.fieldName" class="form-label" [ngClass]="{'required': field?.rules?.required}">{{ field?.placeholder }}</label>
+
+    </div>
+    <div *ngIf="field.formGroupName == ''" class="form-floating">
+        <textarea
+            class="form-control form-control-lg form-control-solid"
+            rows="{{ field?.row || 1 }}"
+            type="text"
+            [id]="field.fieldName"
+            placeholder="{{ field?.placeholder }}"
+            [formControlName]="field.fieldName"
+        ></textarea>
+        <label style="text-align: left;" [for]="field.fieldName" class="form-label" [ngClass]="{'required': field?.rules?.required}">{{ field?.placeholder }}</label>
+    </div> 
+</form>

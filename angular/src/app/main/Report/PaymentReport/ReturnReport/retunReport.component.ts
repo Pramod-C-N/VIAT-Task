@@ -40,15 +40,16 @@ export class ReturnReportComponent extends AppComponentBase {
   taxrate = 0;
   totalamountPaid = 0;
   columns: any[] = [
-    { field: 'slno', header: 'Sl Number' },
+    { field: 'slno', header: 'Sl No' },
     { field: 'typeofpayments', header: 'Type of Payment' },
     { field: 'nameofPayee', header: 'Name of the Payee(from which tax is withheld)' },
     { field: 'paymentdate', header: 'Payment Date' },
     { field: 'totalamountPaid', header: 'Total Amount Paid (SAR)' },
     { field: 'taxrate', header: 'Tax Rate' },
-    { field: 'taxDue', header: 'Tax Due' }];
+    { field: 'taxDue', header: 'Tax Due' },
+    { field: 'style', header: 'style' }];
   exportColumns: any[] = this.columns.map(col => ({ title: col.header, dataKey: col.field }));
-  _selectedColumns: any[] = this.columns;
+  _selectedColumns: any[] = this.columns.filter(col => col.field !== 'style');;
 
   constructor(
     injector: Injector,
@@ -89,6 +90,7 @@ export class ReturnReportComponent extends AppComponentBase {
     this._WHTReportServiceProxy.getPayemntReturn(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()))
       .pipe(finalize(() => this.isdisable = false))
       .subscribe((result) => {
+        console.log(result,"whtreturn")
         this.data = result;
         this.data.forEach(element => {
           this.taxDue += element.taxDue;
@@ -125,4 +127,9 @@ export class ReturnReportComponent extends AppComponentBase {
       this._fileDownloadService.downloadTempFile(result);
     });
   }
+
+  styleMap: { [key: string]: string } = {
+    '0': 'normal',
+    '1': 'bold'
+  };
 }

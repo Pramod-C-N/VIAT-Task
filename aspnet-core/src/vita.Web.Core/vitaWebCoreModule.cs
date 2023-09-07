@@ -40,6 +40,10 @@ using vita.Web.Common;
 using vita.Web.Configuration;
 using vita.Web.DashboardCustomization;
 using Abp.Extensions;
+using Hangfire;
+using vita.PdfGenerator;
+using vita.IntegrationFileUpload;
+using vita.Authorization.Users.Dto;
 
 namespace vita.Web
 {
@@ -133,6 +137,8 @@ namespace vita.Web
 
             IocManager.Resolve<ApplicationPartManager>()
                 .AddApplicationPartsIfNotAddedBefore(typeof(vitaWebCoreModule).Assembly);
+            var clientDomainService = IocManager.Resolve<ImportIntegrationFileToExcelFTPJob>();
+            RecurringJob.AddOrUpdate("FTPJob", () => clientDomainService.ExecuteAsync(new ImportUsersFromExcelJobArgs()), Cron.MinuteInterval(3));
         }
 
         private void SetAppFolders()

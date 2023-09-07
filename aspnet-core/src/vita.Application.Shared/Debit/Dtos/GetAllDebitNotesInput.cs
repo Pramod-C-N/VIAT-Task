@@ -75,5 +75,17 @@ namespace vita.Debit.Dtos
 
         public string InvoiceNotesFilter { get; set; }
 
+        public string XmlUuidFilter { get; set; }
+
+        public string InvoiceTypeCodeFilter { get; set; }
+
+        public string LanguageFilter { get; set; }
+
+        public string AdditionalData2Filter { get; set; }
+
+        public string AdditionalData3Filter { get; set; }
+
+        public string AdditionalData4Filter { get; set; }
+
     }
 }

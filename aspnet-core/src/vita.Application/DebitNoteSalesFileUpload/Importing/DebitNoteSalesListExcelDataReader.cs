@@ -16,6 +16,8 @@ using System.Text;
 using System;
 using vita.CreditNoteFileUpload.Importing;
 using System.Collections.Generic;
+using NPOI.XSSF.UserModel;
+using System.IO;
 
 namespace vita.DebitNoteSalesFileUpload.Importing
 {
@@ -124,198 +126,51 @@ namespace vita.DebitNoteSalesFileUpload.Importing
             return objResult;
         }
 
-        //public List<CreateOrEditImportBatchDataDto> GetInvoiceFromExcel(byte[] fileBytes)
-        //{
-        //    return ProcessExcelFile(fileBytes, ProcessExcelRow);
-        //}
+        private IEnumerable<string[]> ReadSV(StreamReader reader, params string[] separators)
+        {
+            var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(reader);
+            parser.SetDelimiters(separators);
+            parser.HasFieldsEnclosedInQuotes = true;
+            while (!parser.EndOfData)
+                yield return parser.ReadFields();
+        }
+        public byte[] ConvertCsvToExcel(byte[] csvBytes)
+        {
+            using (MemoryStream csvStream = new MemoryStream(csvBytes))
+            {
+                // Read CSV using StreamReader
+                using (StreamReader csvReader = new StreamReader(csvStream))
+                {
+                    var li = ReadSV(csvReader, new string[] { "," });
+                    // Create a new Excel workbook
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("Sheet1");
+                    int rowIndex = 0;
+                    foreach (var csvRow in li)
+                    {
+                        // Create a new Excel row
+                        IRow row = sheet.CreateRow(rowIndex);
 
-        //private CreateOrEditImportBatchDataDto ProcessExcelRow(ISheet worksheet, int row)
-        //{
-        //    if (IsRowEmpty(worksheet, row))
-        //    {
-        //        return null;
-        //    }
+                        for (int colIndex = 0; colIndex < csvRow.Length; colIndex++)
+                        {
+                            // Set cell values for each column in the row
+                            row.CreateCell(colIndex).SetCellValue(csvRow[colIndex]);
+                        }
 
-        //    var exceptionMessage = new StringBuilder();
-        //    var data = new CreateOrEditImportBatchDataDto();
+                        rowIndex++;
+                    }
 
-        //    try
-        //    {
 
-        //        data.InvoiceType = GetRequiredValueFromRowOrNull(worksheet, row, 0, nameof(data.InvoiceType), exceptionMessage, nullCheck: true);
-        //        data.IRNNo = GetOptionalValueFromRowOrNull(worksheet, row, 1, exceptionMessage, nameof(data.IRNNo), CellType.String);
-        //        data.InvoiceNumber = GetRequiredValueFromRowOrNull(worksheet, row, 2, nameof(data.InvoiceNumber), exceptionMessage,nullCheck:true);
-        //        data.IssueDate = Convert.ToDateTime(GetRequiredDateValueFromRowOrNull(worksheet, row, 3, nameof(data.IssueDate), exceptionMessage, nullCheck: true));
-        //        data.IssueTime = GetRequiredValueFromRowOrNull(worksheet, row, 4, nameof(data.IssueTime), exceptionMessage, nullCheck: true);
-        //        data.InvoiceCurrencyCode = GetRequiredValueFromRowOrNull(worksheet, row, 5, nameof(data.InvoiceCurrencyCode), exceptionMessage, nullCheck: true);
-        //        data.BillingReferenceId = GetRequiredValueFromRowOrNull(worksheet, row, 6, nameof(data.BillingReferenceId), exceptionMessage, nullCheck: true);
-        //        data.OrignalSupplyDate =Convert.ToDateTime(GetRequiredDateValueFromRowOrNull(worksheet, row, 7, nameof(data.OrignalSupplyDate), exceptionMessage, nullCheck: true));
-        //        data.ReasonForCN = GetOptionalValueFromRowOrNull(worksheet,row,8,exceptionMessage, nameof(data.ReasonForCN), CellType.String);
-        //        data.PurchaseOrderId = GetOptionalValueFromRowOrNull(worksheet,row,9,exceptionMessage, nameof(data.PurchaseOrderId), CellType.String);
-        //        data.ContractId = GetOptionalValueFromRowOrNull(worksheet,row,10,exceptionMessage, nameof(data.ContractId), CellType.String);
-        //        data.BuyerMasterCode = GetOptionalValueFromRowOrNull(worksheet,row,11,exceptionMessage, nameof(data.BuyerMasterCode), CellType.String);
-        //        data.BuyerName = GetOptionalValueFromRowOrNull(worksheet,row,12,exceptionMessage, nameof(data.BuyerName), CellType.String, nullCheck: true);
-        //        data.BuyerVatCode = GetOptionalValueFromRowOrNull(worksheet,row,13,exceptionMessage, nameof(data.BuyerVatCode), CellType.String);
-        //        data.BuyerContact = GetOptionalValueFromRowOrNull(worksheet,row,14,exceptionMessage, nameof(data.BuyerContact), CellType.String);
-        //        data.BuyerCountryCode = GetOptionalValueFromRowOrNull(worksheet,row,15,exceptionMessage, nameof(data.BuyerCountryCode), CellType.String);
-        //        data.InvoiceLineIdentifier = GetOptionalValueFromRowOrNull(worksheet,row,16,exceptionMessage, nameof(data.InvoiceLineIdentifier), CellType.String, nullCheck: true);
-        //        data.ItemMasterCode = GetOptionalValueFromRowOrNull(worksheet,row,17,exceptionMessage, nameof(data.ItemMasterCode), CellType.String);
-        //        data.ItemName = GetOptionalValueFromRowOrNull(worksheet,row,18,exceptionMessage, nameof(data.ItemName), CellType.String, nullCheck: true);
-        //        data.UOM = GetOptionalValueFromRowOrNull(worksheet,row,19,exceptionMessage, nameof(data.UOM), CellType.String);
-        //        data.GrossPrice = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,20,exceptionMessage, nameof(data.GrossPrice), CellType.String, nullCheck: true));
-        //        data.Discount = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,21,exceptionMessage, nameof(data.Discount), CellType.String));
-        //        data.NetPrice = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,22,exceptionMessage, nameof(data.NetPrice), CellType.String, nullCheck: true));
-        //        data.Quantity = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,23,exceptionMessage, nameof(data.Quantity), CellType.String, nullCheck: true));
-        //        data.LineNetAmount = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,24,exceptionMessage, nameof(data.LineNetAmount), CellType.String, nullCheck: true));
-        //        data.VatCategoryCode = GetOptionalValueFromRowOrNull(worksheet, row, 25, exceptionMessage, nameof(data.VatCategoryCode), CellType.String, nullCheck: true);
-        //        data.VatRate = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet,row,26,exceptionMessage, nameof(data.VatRate), CellType.String, nullCheck: true));
-        //        data.VatExemptionReasonCode = GetOptionalValueFromRowOrNull(worksheet, row, 27, exceptionMessage, nameof(data.VatExemptionReasonCode), CellType.String);
-        //        data.VatExemptionReason = GetOptionalValueFromRowOrNull(worksheet, row, 28, exceptionMessage, nameof(data.VatExemptionReason), CellType.String);
-        //        data.VATLineAmount = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet, row, 29, exceptionMessage, nameof(data.VATLineAmount), CellType.String, nullCheck: true));
-        //        data.LineAmountInclusiveVAT = Convert.ToDecimal(GetOptionalDecimalValueFromRowOrNull(worksheet, row, 30, exceptionMessage, nameof(data.LineAmountInclusiveVAT), CellType.String, nullCheck: true));
-        //        if (invoices.Contains(data.InvoiceNumber.ToUpper()))
-        //        {
-        //            exceptionMessage.Append("Duplicate Invoice number found;");
-        //        }
-        //        else
-        //        {
-        //            invoices.Add(data.InvoiceNumber.ToUpper());
-        //        }
-        //        if (buyervat.ContainsKey(data.BuyerVatCode.ToUpper()))
-        //        {
-        //            if (data.BuyerName.ToUpper() != buyervat.Where(a => a.Key == data.BuyerVatCode.ToUpper()).Select(p => p.Value).FirstOrDefault())
-        //            {
-        //                exceptionMessage.Append("Invalid buyer VAT combination;");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (!string.IsNullOrEmpty(data.BuyerVatCode))
-        //                buyervat.Add(data.BuyerVatCode.ToUpper(), data.BuyerName.ToUpper());
-        //        }
-        //        if (data.IssueDate > DateTime.Now)
-        //        {
-        //            exceptionMessage.Append("Issue Date can't be greater than current date;");
-        //        }
-        //        if (data.InvoiceCurrencyCode?.ToUpper() != "SAR")
-        //        {
-        //            exceptionMessage.Append("Invoice Currency code should be SAR;");
+                    // Convert Excel data to byte array
+                    using (MemoryStream excelStream = new MemoryStream())
+                    {
+                        workbook.Write(excelStream);
+                        return excelStream.ToArray();
+                    }
+                }
+            }
+        }
 
-        //        }
-        //        if (!string.IsNullOrWhiteSpace(data?.BuyerVatCode))
-        //        {
-        //            if (!data.BuyerVatCode.StartsWith("3"))
-        //            {
-        //                exceptionMessage.Append("Buyer VAT Code should start with 3;");
-        //            }
-        //            if (data.BuyerVatCode.Trim().Length != 15)
-        //            {
-        //                exceptionMessage.Append("Buyer VAT Code should have 15 character length;");
-        //            }
-        //            if (!Regex.IsMatch(data.BuyerVatCode, "\\d{15}"))
-        //            {
-        //                exceptionMessage.Append("Buyer VAT Code should be Numeric;");
-        //            }
-
-        //        }
-        //        if (!vatCode.Contains(data.VatCategoryCode?.ToUpper()))
-        //        {
-        //            exceptionMessage.Append("Invalid VAT Code;");
-        //        }
-        //        if (!uom.Contains(data.UOM?.ToUpper()))
-        //        {
-        //            exceptionMessage.Append("Invalid UOM;");
-        //        }
-        //        if (!countryCode.Contains(data.BuyerCountryCode?.ToUpper()))
-        //        {
-        //            exceptionMessage.Append("Invalid Buyer Country Code;");
-        //        }
-        //        if (!taxCurrencyCode.Contains(data.InvoiceCurrencyCode?.ToUpper()))
-        //        {
-        //            exceptionMessage.Append("Invalid Invoice Currency Code;");
-        //        }
-        //        if (data.GrossPrice <= 0)
-        //        {
-        //            exceptionMessage.Append("Invalid Gross Price;");
-        //        }
-        //        if (decimal.Round((data.GrossPrice - (data.GrossPrice * (data.Discount / 100))),2) != decimal.Round(data.NetPrice,2))
-        //        {
-        //            exceptionMessage.Append("Invalid Net Price;");
-        //        }
-
-        //        if (data.Quantity <= 0)
-        //        {
-        //            exceptionMessage.Append("Invalid Quantity;");
-        //        }
-        //        if (decimal.Round((data.Quantity * decimal.Round((data.GrossPrice - (data.GrossPrice * (data.Discount / 100))), 2)), 2) != decimal.Round(data.LineNetAmount, 2))
-        //        {
-        //            exceptionMessage.Append("Invalid Line net amount;");
-        //        }
-        //        if (data.Discount > 100)
-        //        {
-        //            exceptionMessage.Append("Invalid Discount;");
-        //            data.Discount = 100;
-        //        }
-        //        if (data.VatRate != 15)
-        //        {
-        //            if (data.VatRate != 0)
-        //            {
-        //                exceptionMessage.Append("Invalid Vat Rate;");
-        //                data.VatRate = 100;
-        //            }
-        //        }
-        //        if (data.InvoiceType.ToUpper() == "EXPORT")
-        //        {
-
-        //            if (data.BuyerCountryCode.ToUpper() == "SA")
-        //            {
-        //                exceptionMessage.Append("Invalid Transaction Type;");
-        //            }
-        //        }
-        //        if (data.BuyerCountryCode.ToUpper() != "SA")
-        //        {
-        //            if (data.InvoiceType.ToUpper() != "EXPORT")
-        //            {
-        //                exceptionMessage.Append("Invalid Transaction Type;");
-        //            }
-        //        }
-        //        if (data.VatCategoryCode.ToUpper() == "E")
-        //        {
-        //            if (string.IsNullOrWhiteSpace(data.VatExemptionReasonCode))
-        //            {
-        //                exceptionMessage.Append("Vat Exemption Reason Code is required;");
-        //            }
-        //            else
-        //            {
-        //                if (string.IsNullOrWhiteSpace(data.VatExemptionReason))
-        //                {
-        //                    exceptionMessage.Append("Vat Exemption Reason is required;");
-
-        //                }
-        //            }
-        //        }
-        //        if (decimal.Round(data.VATLineAmount, 2) != decimal.Round(((data.Quantity * decimal.Round((data.GrossPrice - (data.GrossPrice * (data.Discount / 100))), 2)) * (data.VatRate / 100)), 2))
-        //        {
-        //            exceptionMessage.Append("Invalid Vat Line Amount;");
-        //        }
-        //        decimal a = decimal.Round(data.GrossPrice - (data.GrossPrice * (data.Discount / 100)), 2);
-        //        decimal b = decimal.Round(((data.Quantity * a) * (data.VatRate / 100)), 2);
-        //        decimal c = decimal.Round((data.Quantity * a), 2);
-        //        decimal x = decimal.Round((b + c), 2);
-
-        //        if (decimal.Round(data.LineAmountInclusiveVAT, 2) != x)
-        //        {
-        //            exceptionMessage.Append("Invalid Line Amount Inclusive VAT;");
-        //        }
-        //        data.Error = exceptionMessage.ToString();
-        //    }
-        //    catch (System.Exception exception)
-        //    {
-        //        data.Error = exception.Message;
-        //    }
-
-        //    return data;
-        //}
 
         private string GetRequiredValueFromRowOrNull(
              ISheet worksheet,

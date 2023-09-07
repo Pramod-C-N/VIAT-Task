@@ -24,5 +24,9 @@ namespace vita.Sales
 
         public virtual string PaymentTerms { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string Language { get; set; }
+
     }
 }

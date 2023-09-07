@@ -13,6 +13,14 @@
 .gapbetweenbtn {
     padding-right: 0.7%;
 }
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.center-align {
+  text-align: center;
+}
 
 .p-datatable .p-datatable-tbody > tr > td {
     text-align: center;
@@ -35,4 +43,9 @@ tr.alternate-row:nth-child(even) {
     width: 80%;
   }
 
-
+  @media screen and (max-width: 480px) {
+    .gapbetweenbtn {
+      width: 100%; /* The width is 100%, when the viewport is 800px or smaller */
+    }
+  }
+  

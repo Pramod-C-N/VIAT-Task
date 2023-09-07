@@ -18,5 +18,6 @@ namespace vita.Dto
         public string FinancialNumber { get; set; }
 
         public string Type { get; set; }
+        public string code { get; set; }
     }
 }

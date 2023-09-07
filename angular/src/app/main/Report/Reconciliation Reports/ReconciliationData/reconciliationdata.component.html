@@ -141,7 +141,7 @@
             <div class="col-lg-4">
                 <input
                     type="text"
-                    value="{{ dt.adjustment.toFixed(2) }}"
+                    value="{{ dt.adjustment!=null ? dt.adjustment.toFixed(2) : '' }}"
                     disabled
                     class="form-control form-control-lg form-control-solid text-end"
                     id="customerName"

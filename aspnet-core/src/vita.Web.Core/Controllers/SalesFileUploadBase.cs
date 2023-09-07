@@ -13,6 +13,10 @@ using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Runtime.Session;
 using vita.Authorization.Users.Importing;
 using vita.StandardFileUpload;
+using vita.IntegrationFileUpload;
+using Abp.EntityFrameworkCore;
+using System.Data;
+using vita.Sales;
 
 namespace vita.Web.Controllers
 {
@@ -20,21 +24,29 @@ namespace vita.Web.Controllers
     {
         protected readonly IBinaryObjectManager BinaryObjectManager;
         protected readonly IBackgroundJobManager BackgroundJobManager;
+        private readonly ISalesInvoicesAppService _sales;
+
 
         protected SalesFileUploadBase(
             IBinaryObjectManager binaryObjectManager,
-            IBackgroundJobManager backgroundJobManager)
+            IBackgroundJobManager backgroundJobManager,
+                       ISalesInvoicesAppService sales
+)
         {
             BinaryObjectManager = binaryObjectManager;
             BackgroundJobManager = backgroundJobManager;
+            _sales = sales;
+
         }
 
         [HttpPost]
         [AbpMvcAuthorize(AppPermissions.Pages_Administration_Users_Create)]
-        public async Task<JsonResult> ImportFromExcel(DateTime? fromdate, DateTime? todate)
+        public async Task<JsonResult> ImportFromExcel(DateTime? fromdate, DateTime? todate,int? id)
         {
+
             try
             {
+                _sales.InsertUploadDatatoLogs("FileRecivedatBase", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
                 var file = Request.Form.Files.First();
 
                 if (file == null)
@@ -65,7 +77,9 @@ namespace vita.Web.Controllers
                     User = AbpSession.ToUserIdentifier(),
                     filename = file.FileName,
                     fromdate = fromdate,
-                    todate = todate
+                    todate = todate,
+                    configurationId = id
+                    
                 }) ;
 
                 return Json(new AjaxResponse(new { }));

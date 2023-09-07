@@ -20,7 +20,7 @@ namespace vita.Credit
 
         //Task Delete(EntityDto<long> input);
         Task<InvoiceResponse> CreateCreditNote(CreateOrEditCreditNoteDto input);
-        Task<DataTable> GetCreditData(DateTime fromDate, DateTime toDate);
+        Task<DataTable> GetCreditData(DateTime fromDate, DateTime toDate, DateTime? creationDate, string customername, string salesorderno, string purchaseorderno, string invoicerefno, string buyercode, string shippedcode);
 
         Task<bool> InsertBatchUploadCreditPurchase(string json, string fileName, int? tenantId, DateTime? fromDate, DateTime? toDate);
 

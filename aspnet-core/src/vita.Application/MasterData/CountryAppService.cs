@@ -15,6 +15,10 @@ using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Abp.UI;
 using vita.Storage;
+using Abp.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using vita.EntityFrameworkCore;
 
 namespace vita.MasterData
 {
@@ -23,18 +27,55 @@ namespace vita.MasterData
     {
         private readonly IRepository<Country> _countryRepository;
         private readonly ICountryExcelExporter _countryExcelExporter;
+        private readonly IDbContextProvider<vitaDbContext> _dbContextProvider;
 
-        public CountryAppService(IRepository<Country> countryRepository, ICountryExcelExporter countryExcelExporter)
+        public CountryAppService(IRepository<Country> countryRepository, ICountryExcelExporter countryExcelExporter, IDbContextProvider<vitaDbContext> dbContextProvider)
+
         {
             _countryRepository = countryRepository;
             _countryExcelExporter = countryExcelExporter;
-
+            _dbContextProvider = dbContextProvider;
+            
         }
-        [AbpAllowAnonymous]
-        public async Task<PagedResultDto<GetCountryForViewDto>> GetAll(GetAllCountryInput input)
+
+
+        public async Task<DataTable> GetCountriesList()
         {
 
-            var filteredCountry = _countryRepository.GetAll()
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetCountriesList";
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+
+
+        }
+
+        public async Task<PagedResultDto<GetCountryForViewDto>> GetAll(GetAllCountryInput input)
+        {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredCountry = _countryRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.StateName.Contains(input.Filter) || e.Sovereignty.Contains(input.Filter) || e.AlphaCode.Contains(input.Filter) || e.NumericCode.Contains(input.Filter) || e.InternetCCTLD.Contains(input.Filter) || e.SubDivisionCode.Contains(input.Filter) || e.Alpha3Code.Contains(input.Filter) || e.CountryGroup.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.StateNameFilter), e => e.StateName.Contains(input.StateNameFilter))
@@ -47,61 +88,62 @@ namespace vita.MasterData
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CountryGroupFilter), e => e.CountryGroup.Contains(input.CountryGroupFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredCountry = filteredCountry
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredCountry = filteredCountry
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var country = from o in pagedAndFilteredCountry
-                          select new
-                          {
+                var country = from o in pagedAndFilteredCountry
+                              select new
+                              {
 
-                              o.Name,
-                              o.StateName,
-                              o.Sovereignty,
-                              o.AlphaCode,
-                              o.NumericCode,
-                              o.InternetCCTLD,
-                              o.SubDivisionCode,
-                              o.Alpha3Code,
-                              o.CountryGroup,
-                              o.IsActive,
-                              Id = o.Id
-                          };
+                                  o.Name,
+                                  o.StateName,
+                                  o.Sovereignty,
+                                  o.AlphaCode,
+                                  o.NumericCode,
+                                  o.InternetCCTLD,
+                                  o.SubDivisionCode,
+                                  o.Alpha3Code,
+                                  o.CountryGroup,
+                                  o.IsActive,
+                                  Id = o.Id
+                              };
 
-            var totalCount = await filteredCountry.CountAsync();
+                var totalCount = await filteredCountry.CountAsync();
 
-            var dbList = await country.ToListAsync();
-            var results = new List<GetCountryForViewDto>();
+                var dbList = await country.ToListAsync();
+                var results = new List<GetCountryForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetCountryForViewDto()
+                foreach (var o in dbList)
                 {
-                    Country = new CountryDto
+                    var res = new GetCountryForViewDto()
                     {
+                        Country = new CountryDto
+                        {
 
-                        Name = o.Name,
-                        StateName = o.StateName,
-                        Sovereignty = o.Sovereignty,
-                        AlphaCode = o.AlphaCode,
-                        NumericCode = o.NumericCode,
-                        InternetCCTLD = o.InternetCCTLD,
-                        SubDivisionCode = o.SubDivisionCode,
-                        Alpha3Code = o.Alpha3Code,
-                        CountryGroup = o.CountryGroup,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            StateName = o.StateName,
+                            Sovereignty = o.Sovereignty,
+                            AlphaCode = o.AlphaCode,
+                            NumericCode = o.NumericCode,
+                            InternetCCTLD = o.InternetCCTLD,
+                            SubDivisionCode = o.SubDivisionCode,
+                            Alpha3Code = o.Alpha3Code,
+                            CountryGroup = o.CountryGroup,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetCountryForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetCountryForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetCountryForViewDto> GetCountryForView(int id)

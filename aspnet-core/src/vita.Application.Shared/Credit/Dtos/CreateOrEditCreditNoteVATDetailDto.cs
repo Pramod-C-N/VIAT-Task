@@ -25,6 +25,8 @@ namespace vita.Credit.Dtos
         public decimal TaxAmount { get; set; }
 
         public string CurrencyCode { get; set; }
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
 
     }
 }

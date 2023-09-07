@@ -1,4 +1,7 @@
-﻿using vita.TenantDetails;
+﻿using vita.DraftFee;
+using vita.PurchaseDebit;
+using vita.PurchaseCredit;
+using vita.TenantDetails;
 using vita.Vendor;
 using vita.Customer;
 using vita.Purchase;
@@ -22,6 +25,31 @@ namespace vita.EntityHistory
 
         public static readonly Type[] HostSideTrackedTypes =
         {
+            typeof(DraftVATDetail),
+            typeof(DraftPaymentDetail),
+            typeof(DraftParty),
+            typeof(DraftItem),
+            typeof(DraftDiscount),
+            typeof(DraftContactPerson),
+            typeof(DraftAddress),
+            typeof(Draft),
+            typeof(PurchaseDebitNoteDiscount),
+            typeof(PurchaseDebitNoteVATDetail),
+            typeof(PurchaseDebitNoteContactPerson),
+            typeof(PurchaseDebitNoteItem),
+            typeof(PurchaseDebitNotePaymentDetail),
+            typeof(PurchaseDebitNoteAddress),
+            typeof(PurchaseDebitNoteParty),
+            typeof(PurchaseDebitNoteSummary),
+            typeof(PurchaseDebitNote),
+            typeof(PurchaseCreditNoteItem),
+            typeof(PurchaseCreditNoteVATDetail),
+            typeof(PurchaseCreditNotePaymentDetail),
+            typeof(PurchaseCreditNoteContactPerson),
+            typeof(PurchaseCreditNoteAddress),
+            typeof(PurchaseCreditNoteParty),
+            typeof(PurchaseCreditNoteSummary),
+            typeof(PurchaseCreditNote),
             typeof(Module),
             typeof(Designation),
             typeof(BusinessOperationalModel),
@@ -124,6 +152,31 @@ namespace vita.EntityHistory
 
         public static readonly Type[] TenantSideTrackedTypes =
         {
+            typeof(DraftVATDetail),
+            typeof(DraftPaymentDetail),
+            typeof(DraftParty),
+            typeof(DraftItem),
+            typeof(DraftDiscount),
+            typeof(DraftContactPerson),
+            typeof(DraftAddress),
+            typeof(Draft),
+            typeof(PurchaseDebitNoteDiscount),
+            typeof(PurchaseDebitNoteVATDetail),
+            typeof(PurchaseDebitNoteContactPerson),
+            typeof(PurchaseDebitNoteItem),
+            typeof(PurchaseDebitNotePaymentDetail),
+            typeof(PurchaseDebitNoteAddress),
+            typeof(PurchaseDebitNoteParty),
+            typeof(PurchaseDebitNoteSummary),
+            typeof(PurchaseDebitNote),
+            typeof(PurchaseCreditNoteItem),
+            typeof(PurchaseCreditNoteVATDetail),
+            typeof(PurchaseCreditNotePaymentDetail),
+            typeof(PurchaseCreditNoteContactPerson),
+            typeof(PurchaseCreditNoteAddress),
+            typeof(PurchaseCreditNoteParty),
+            typeof(PurchaseCreditNoteSummary),
+            typeof(PurchaseCreditNote),
             typeof(Designation),
             typeof(BusinessOperationalModel),
             typeof(BusinessTurnoverSlab),

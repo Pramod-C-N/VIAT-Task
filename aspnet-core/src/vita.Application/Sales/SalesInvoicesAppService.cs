@@ -6,14 +6,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using vita.Sales.Dtos;
-using vita.Dto;
 using Abp.Application.Services.Dto;
 using vita.Authorization;
-using Abp.Extensions;
 using Abp.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Abp.UI;
-using vita.Storage;
 using vita.MasterData;
 using vita.MasterData.Dtos;
 using System.IO;
@@ -24,28 +20,41 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Abp.EntityFrameworkCore;
 using vita.EntityFrameworkCore;
-using NPOI.HPSF;
-using NPOI.POIFS.Crypt.Dsig;
 using vita.TenantDetails;
-using vita.Report.Dto;
 using Z.EntityFramework.Plus;
-using Abp.Domain.Uow;
 using System.Transactions;
 using Abp.Timing.Timezone;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using JsonFlatten;
-using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
 using System.Text;
-using NPOI.HSSF.Util;
+using vita.Filters;
+using static vita.Filters.VitaFilter_Validation;
+using DbDataReaderMapper;
+using System.Linq.Expressions;
+using System.DirectoryServices.Protocols;
+using AutoMapper;
+using vita.EInvoicing.Dto;
+using vita.MultiTenancy.Accounting.Dto;
+using Microsoft.AspNetCore.Authorization;
+using System.Data.Common;
+using vita.TenantConfigurations;
+using vita.TenantConfigurations.Dtos;
+using static vita.PdfFile.PdfReportAppService;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper.Mappers;
+using NPOI.SS.Formula.Functions;
+using IdentityServer4.Models;
+using NPOI.POIFS.Crypt.Dsig;
+using vita.Credit;
+using vita.Debit;
+using Abp.UI;
 
 namespace vita.Sales
 {
-    [AbpAuthorize(AppPermissions.Pages_SalesInvoices)]
+
     public class SalesInvoicesAppService : vitaAppServiceBase, ISalesInvoicesAppService
     {
+
         private readonly IRepository<SalesInvoice, long> _salesInvoiceRepository;
         private readonly ISalesInvoicePartiesAppService _partyAppService;
         private readonly ISalesInvoiceItemsAppService _invoiceItemsAppService;
@@ -61,8 +70,11 @@ namespace vita.Sales
         private readonly IDbContextProvider<vitaDbContext> _dbContextProvider;
         private readonly ITenantBasicDetailsAppService _tenantbasicdetails;
         private readonly ITimeZoneConverter _timeZoneConverter;
+      
 
-
+        private readonly IMapper mapper;
+        private readonly ITenantConfigurationAppService tenantConfigurationAppService;
+        private string connStr = "";
 
         public SalesInvoicesAppService(IRepository<SalesInvoice, long> salesInvoiceRepository,
             ISalesInvoicePartiesAppService partyAppService,
@@ -78,7 +90,9 @@ namespace vita.Sales
        IPdfReportAppService pdfReportAppService,
        ITenantBasicDetailsAppService tenantbasicdetails,
        IDbContextProvider<vitaDbContext> dbContextProvider,
-       ITimeZoneConverter timeZoneConverter)
+       ITimeZoneConverter timeZoneConverter,
+       IMapper mapper,
+       ITenantConfigurationAppService tenantConfigurationAppService)
         {
             _salesInvoiceRepository = salesInvoiceRepository;
             _contactPersonsAppService = contactPersonsAppService;
@@ -95,7 +109,8 @@ namespace vita.Sales
             _dbContextProvider = dbContextProvider;
             _tenantbasicdetails = tenantbasicdetails;
             _timeZoneConverter = timeZoneConverter;
-
+            this.mapper = mapper;
+            this.tenantConfigurationAppService = tenantConfigurationAppService;
         }
         public async Task<int> GetLatestBatchId()
         {
@@ -113,12 +128,14 @@ namespace vita.Sales
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = "GetLatestBatchId";
+                        cmd.Parameters.Add(new SqlParameter("tenantId", SqlDbType.Int));
+                        cmd.Parameters["tenantId"].Value = AbpSession.TenantId;
+                        cmd.Parameters["tenantId"].Direction = ParameterDirection.Input;
 
                         var reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
-                            batchId = Convert.ToInt32(reader.GetValue(0));
-                            break;
+                            batchId = Convert.ToInt32(reader["BatchId"]);
                         }
                         conn.Close();
                         return batchId;
@@ -132,16 +149,49 @@ namespace vita.Sales
             }
         }
 
-        public async Task<string> ValidateRequest<T>(T data,int RuleGroupId)
+        public async Task<List<GetPdfIrnData>> GetIrnForFileUpload(int batchid)
         {
-            var jsonString = JsonConvert.SerializeObject(data);
+            List<GetPdfIrnData> irnNos = new();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
 
-            var jObject = JObject.Parse(jsonString);
-            var flattened = jObject.Flatten();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetIrnForFileUpload";
+                        cmd.Parameters.Add(new SqlParameter("batchid", SqlDbType.Int));
+                        cmd.Parameters["batchid"].Value = batchid;
+                        cmd.Parameters["batchid"].Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("tenantId", SqlDbType.Int));
+                        cmd.Parameters["tenantId"].Value = AbpSession.TenantId;
+                        cmd.Parameters["tenantId"].Direction = ParameterDirection.Input;
+                        var reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            var data = reader.MapToObject<GetPdfIrnData>();
+                            irnNos.Add(data);
+                        }
+                        conn.Close();
+                        return irnNos;
+                    }
+                }
 
-            var flattenedJsonString = JsonConvert.SerializeObject(flattened, Formatting.Indented); 
+            }
+            catch (Exception e)
+            {
+                return irnNos;
+            }
+        }
 
-            string errors = null;
+
+        public async Task<bool> InsertSalesReportData(long IRNNo)
+        {
+
             SqlConnection conn = null;
             try
             {
@@ -155,32 +205,31 @@ namespace vita.Sales
                         conn.Open();
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = "ExecuteRulesAPI";
+                        cmd.CommandText = "InsertSalesReportData";
+
+                        //cmd.Parameters.AddWithValue("@IRNNo", IRNNo);
+                        cmd.Parameters.Add(new SqlParameter("IRNNo", SqlDbType.Int));
+                        cmd.Parameters["IRNNo"].Value = IRNNo;
+                        cmd.Parameters["IRNNo"].Direction = ParameterDirection.Input;
+
+                        //cmd.Parameters.AddWithValue("@TenantId", AbpSession.TenantId);
+                        cmd.Parameters.Add(new SqlParameter("TenantId", SqlDbType.Int));
+                        cmd.Parameters["TenantId"].Value = AbpSession.TenantId;
+                        cmd.Parameters["TenantId"].Direction = ParameterDirection.Input;
 
 
-                        cmd.Parameters.AddWithValue("@RuleGroupId", RuleGroupId);
-                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
-                        cmd.Parameters.AddWithValue("@json", flattenedJsonString);
-
-
-                        var reader = cmd.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            if (!reader.IsDBNull(0))
-                                errors = reader.GetString(0);
-                            break;
-                        }
+                        int i = cmd.ExecuteNonQuery();
                         conn.Close();
-                        return errors;
+                        return true;
                     }
                 }
 
-                return errors;
+                return true;
             }
             catch (Exception e)
             {
 
-                return e.Message.ToString();
+                return false;
 
             }
             finally
@@ -191,69 +240,76 @@ namespace vita.Sales
                 }
 
             }
-        }
-            public async Task<bool>InsertSalesReportData(long IRNNo)
-        {
-
-                SqlConnection conn = null;
-                try
-                {
-                    var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
-                    using (conn = new SqlConnection(connStr))
-                    {
-
-                        using (SqlCommand cmd = new SqlCommand())
-                        {
-
-                            conn.Open();
-                            cmd.Connection = conn;
-                            cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.CommandText = "InsertSalesReportData";
-
-                            //cmd.Parameters.AddWithValue("@IRNNo", IRNNo);
-                            cmd.Parameters.Add(new SqlParameter("IRNNo", SqlDbType.Int));
-                            cmd.Parameters["IRNNo"].Value = IRNNo;
-                            cmd.Parameters["IRNNo"].Direction = ParameterDirection.Input;
-
-                            //cmd.Parameters.AddWithValue("@TenantId", AbpSession.TenantId);
-                            cmd.Parameters.Add(new SqlParameter("TenantId", SqlDbType.Int));
-                            cmd.Parameters["TenantId"].Value = AbpSession.TenantId;
-                            cmd.Parameters["TenantId"].Direction = ParameterDirection.Input;
-
-
-                            int i = cmd.ExecuteNonQuery();
-                            conn.Close();
-                            return true;
-                        }
-                    }
-
-                    return true;
-                }
-                catch (Exception e)
-                {
-
-                    return false;
-
-                }
-                finally
-                {
-                    if (conn != null && conn.State == ConnectionState.Open)
-                    {
-                        conn.Close();
-                    }
-
-                }
 
 
         }
 
-
-        public async Task<bool> UpdateInvoiceStatus(string status, int batchId, string refNo, int priority = 0, string irnno = null, string errors = "")
+        public class InvoiceStatusType
         {
+            public int? TenantId { get; set; }
+            public string status { get; set; }
+            public int batchId { get; set; }
+            public string refNo { get; set; }
+            public string invoiceType { get; set; }
+            public string irnno { get; set; }
+            public string inputData { get; set; }
+            public string errors { get; set; } = "";
+            public bool isXmlSigned { get; set; } = false;
+            public bool isPdfGenerated { get; set; } = false;
+        }
 
+
+        public async Task<InvoiceStatusType> GetInvoiceStatus(string TenantId, string irnno)
+        {
+            InvoiceStatusType invoiceStatusType = null;
             try
             {
-                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                string connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetInvoiceStatus";
+                        cmd.Parameters.AddWithValue("@irnno", irnno);
+                        cmd.Parameters.AddWithValue("@TenantId", TenantId);
+
+                        var reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            invoiceStatusType = new InvoiceStatusType()
+                            {
+                                inputData = reader.GetString(0),
+                                irnno = irnno.ToString(),
+                                TenantId = Convert.ToInt32(TenantId)
+                            };
+                            break;
+                        }
+
+                        conn.Close();
+
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return invoiceStatusType;
+        }
+
+
+        public async Task<bool> UpdateInvoiceStatus(InvoiceStatusType invStatus)
+        {
+            try
+            {
+
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     using (SqlCommand cmd = new SqlCommand())
@@ -264,12 +320,55 @@ namespace vita.Sales
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = "UpdateInvoiceStatus";
 
-                        cmd.Parameters.AddWithValue("@status", status);
-                        cmd.Parameters.AddWithValue("@batchId", batchId);
-                        cmd.Parameters.AddWithValue("@refNo", refNo);
-                        cmd.Parameters.AddWithValue("@priority", priority);
-                        cmd.Parameters.AddWithValue("@irnno", irnno);
-                        cmd.Parameters.AddWithValue("@errors", errors);
+                        cmd.Parameters.AddWithValue("@status", invStatus.status);
+                        cmd.Parameters.AddWithValue("@batchId", invStatus.batchId);
+                        cmd.Parameters.AddWithValue("@refNo", invStatus.refNo);
+                        cmd.Parameters.AddWithValue("@irnno", invStatus.irnno);
+                        cmd.Parameters.AddWithValue("@errors", invStatus.errors);
+                        cmd.Parameters.AddWithValue("@invoiceType", invStatus.invoiceType);
+                        cmd.Parameters.AddWithValue("@isXmlSigned", invStatus.isXmlSigned);
+                        cmd.Parameters.AddWithValue("@isPdfGenerated", invStatus.isPdfGenerated);
+                        cmd.Parameters.AddWithValue("@inputData", invStatus.inputData);
+                        cmd.Parameters.AddWithValue("@TenantId", invStatus.TenantId);
+
+                        int i = cmd.ExecuteNonQuery();
+
+                        conn.Close();
+
+                        return i > 0;
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateInvoiceURL(InvoiceResponse response, string type)
+        {
+
+            try
+            {
+                var connStr1 = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr1))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "UpdateInvoiceURL";
+
+                        cmd.Parameters.AddWithValue("@pdfurl", response.PdfFileUrl);
+                        cmd.Parameters.AddWithValue("@xmlurl", response.PdfFileUrl);
+                        cmd.Parameters.AddWithValue("@qrurl", response.PdfFileUrl);
+                        cmd.Parameters.AddWithValue("@irn", response.InvoiceId.ToString());
+                        cmd.Parameters.AddWithValue("@type", type);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
 
                         int i = cmd.ExecuteNonQuery();
 
@@ -304,30 +403,11 @@ namespace vita.Sales
                     exceptionMessage.Append("Invoice Currency code should be SAR;");
 
                 }
-                if (!string.IsNullOrWhiteSpace(data.Buyer.VATID))
-                {
-                    if (!data.Buyer.VATID.StartsWith("3"))
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should start with 3;");
-                    }
-                    if (data.Buyer.VATID.Trim().Length != 15)
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should have 15 character length;");
-                    }
-                    if (!Regex.IsMatch(data.Buyer.VATID, "\\d{15}"))
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should be Numeric;");
-                    }
 
-                }
 
                 if (!uom.Contains(data.Items.FirstOrDefault()?.UOM?.ToUpper()))
                 {
                     exceptionMessage.Append("Invalid UOM;");
-                }
-                if (!countryCode.Contains(data.Buyer?.Address?.CountryCode?.ToUpper()))
-                {
-                    exceptionMessage.Append("Invalid Buyer Country Code;");
                 }
                 if (!taxCurrencyCode.Contains(data.InvoiceCurrencyCode.ToUpper()))
                 {
@@ -389,254 +469,334 @@ namespace vita.Sales
 
         }
 
-        public async Task<bool> GenerateInvoice_SG(CreateOrEditSalesInvoiceDto input, int batchId)
+        //public async Task<InvoiceResponse> GenerateInvoice_SG(CreateOrEditSalesInvoiceDto input, int batchId)
+        //{
+        //    TransactionDto data = new TransactionDto();
+        //    string invoiceno = "";
+        //    bool isPhase1 = true;
+
+        //    using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+        //    {
+        //        input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
+
+        //        input.InvoiceCurrencyCode = "SAR";
+        //        DataTable dt = new DataTable();
+        //        dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
+
+
+        //        if (input.Supplier == null)
+        //        {
+        //            input.Supplier = new List<CreateOrEditSalesInvoicePartyDto>();
+        //            input.Supplier[0].Address = new CreateOrEditSalesInvoiceAddressDto();
+        //        }
+        //        input.Supplier[0].ContactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
+
+        //        if (input.Buyer == null)
+        //        {
+        //            input.Buyer = new List<CreateOrEditSalesInvoicePartyDto>();
+        //        }
+
+
+        //        var i = 0;
+        //        foreach (DataRow row in dt.Rows)
+        //        {
+
+        //            input.Supplier[0].VATID = row["vatid"].ToString();
+        //            //Address
+        //            input.Supplier[0].Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
+        //            input.Supplier[0].Address.BuildingNo = row["BuildingNo"].ToString();
+        //            input.Supplier[0].Address.Street = row["Street"].ToString();
+        //            input.Supplier[0].Address.AdditionalStreet = row["AdditionalStreet"].ToString();
+        //            input.Supplier[0].Address.PostalCode = row["PostalCode"].ToString();
+        //            input.Supplier[0].Address.CountryCode = row["country"].ToString();
+        //            input.Supplier[0].Address.City = row["city"].ToString();
+        //            input.Supplier[0].Address.State = row["State"].ToString();
+        //            input.Supplier[0].CRNumber = row["DocumentNumber"].ToString();
+        //            input.Supplier[0].ContactPerson.ContactNumber = row["ContactNumber"].ToString();
+        //            isPhase1 = Convert.ToInt32(row["isPhase1"] ?? 0) == 1;
+
+        //            i++;
+
+        //        }
+
+        //        input.Supplier[0].Address.Type = "Supplier";
+        //        input.Supplier[0].ContactPerson.Type = "Supplier";
+        //        input.Supplier[0].ContactPerson.Type = "Supplier";
+        //        input.Supplier[0].Type = "Supplier";
+
+        //        var a = new CreateOrEditIRNMasterDto()
+        //        {
+        //            TransactionType = "SalesInvoice",
+        //        };
+
+        //        data = await _transactionsAppService.CreateOrEdit(a);
+        //        invoiceno = data.IRNNo.ToString();
+        //        input.IRNNo = invoiceno;
+        //        input.Supplier[0].IRNNo = invoiceno;
+        //        input.Supplier[0].Address.IRNNo = invoiceno;
+        //        input.Supplier[0].ContactPerson.IRNNo = invoiceno;
+        //        input.InvoiceSummary.IRNNo = invoiceno;
+
+        //        foreach(var buyer in input.Buyer)
+        //        {
+        //            buyer.IRNNo = invoiceno;
+        //            buyer.Address.IRNNo = invoiceno;
+        //            buyer.ContactPerson.IRNNo = invoiceno;
+
+        //            if (buyer.Address == null)
+        //            {
+        //                buyer.Address = new CreateOrEditSalesInvoiceAddressDto();
+        //            }
+        //            if (buyer.ContactPerson == null)
+        //            {
+        //                buyer.ContactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
+        //            }
+
+        //            buyer.Address.Type = "Buyer";
+        //            buyer.ContactPerson.Type = "Buyer";
+        //            buyer.Type = "Buyer";
+        //        }
+
+        //        foreach (var item in input.Items)
+        //        {
+        //            item.IRNNo = invoiceno;
+        //            if (string.IsNullOrWhiteSpace(item.VATCode))
+        //            {
+        //                if (item.VATRate == 15)
+        //                    item.VATCode = "S";
+        //                else if (item.VATRate == 0)
+        //                    item.VATCode = "Z";
+        //                else
+        //                    item.VATCode = "S";
+        //            }
+        //        }
+
+        //        string errors = await Validator(input, batchId);
+        //        connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+        //        if (errors != null && errors.Length > 0)
+        //            await UpdateInvoiceStatus(new InvoiceStatusType()
+        //            {
+        //                status = "R",
+        //                invoiceType = "Sales",
+        //                irnno = invoiceno,
+        //                batchId = batchId,
+        //                errors = errors,
+        //                refNo = input.InvoiceNumber,
+        //                inputData = JsonConvert.SerializeObject(input),
+        //                isPdfGenerated = false,
+        //                isXmlSigned = false,
+        //                TenantId = AbpSession.TenantId
+        //            });
+        //        else
+        //            await UpdateInvoiceStatus(new InvoiceStatusType()
+        //            {
+        //                status = "V",
+        //                invoiceType = "Sales",
+        //                irnno = invoiceno,
+        //                batchId = batchId,
+        //                errors = errors,
+        //                refNo = input.InvoiceNumber,
+        //                inputData = JsonConvert.SerializeObject(input),
+        //                isPdfGenerated = false,
+        //                isXmlSigned = false,
+        //                TenantId = AbpSession.TenantId
+        //            });
+
+        //        await CreateOrEdit(input);
+        //        await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
+
+        //        foreach(var buyer in input.Buyer)
+        //        {
+        //            await _partyAppService.CreateOrEdit(buyer);
+        //            await _invoiceAddressesAppService.CreateOrEdit(buyer.Address);
+        //            await _contactPersonsAppService.CreateOrEdit(buyer.ContactPerson);
+        //        }
+        //        await _partyAppService.CreateOrEdit(input.Supplier[0]);
+        //        await _invoiceAddressesAppService.CreateOrEdit(input.Supplier[0].Address);
+        //        await _contactPersonsAppService.CreateOrEdit(input.Supplier[0].ContactPerson);
+
+
+        //        //--------------------newly added---------------------------
+        //        if (input.PaymentDetails == null || input.PaymentDetails.Count == 0)
+        //        {
+        //            var paymentD = new CreateOrEditSalesInvoicePaymentDetailDto()
+        //            {
+        //                PaymentMeans = "Cash",
+        //                PaymentTerms = "",
+        //                IRNNo = invoiceno
+
+        //            };
+        //            input.PaymentDetails = new List<CreateOrEditSalesInvoicePaymentDetailDto>();
+        //            input.PaymentDetails.Add(paymentD);
+        //            await _paymentDetailsAppService.CreateOrEdit(paymentD);
+
+        //        }
+        //        else
+        //        {
+        //            foreach (var paymentDetail in input.PaymentDetails)
+        //            {
+        //                paymentDetail.IRNNo = invoiceno;
+        //                await _paymentDetailsAppService.CreateOrEdit(paymentDetail);
+        //            }
+        //        }
+
+        //        if (input.VATDetails == null || input.VATDetails.Count == 0)
+        //        {
+        //            var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
+        //            input.VATDetails = new List<CreateOrEditSalesInvoiceVATDetailDto>();
+
+        //            foreach (var item in details)
+        //            {
+        //                var vatdata = new CreateOrEditSalesInvoiceVATDetailDto();
+        //                vatdata.IRNNo = invoiceno;
+        //                vatdata.VATRate = (decimal)input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATRate;
+        //                vatdata.TaxSchemeId = "VAT";
+        //                vatdata.ExcemptionReasonCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonCode;
+        //                vatdata.ExcemptionReasonText = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonText;
+        //                vatdata.VATCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATCode;
+        //                vatdata.TaxAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.VATAmount);
+        //                vatdata.TaxableAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.NetPrice);
+        //                vatdata.CurrencyCode = "SAR";
+        //                input.VATDetails.Add(vatdata);
+        //                await _vatDetailsAppService.CreateOrEdit(vatdata);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            foreach (var vatDetail in input.VATDetails)
+        //            {
+        //                vatDetail.IRNNo = invoiceno;
+        //                await _vatDetailsAppService.CreateOrEdit(vatDetail);
+        //            }
+        //        }
+
+        //        //------------------------------------------------------
+
+        //        foreach (var item in input.Items)
+        //        {
+        //            await _invoiceItemsAppService.CreateOrEdit(item);
+        //        }
+        //        await unitOfWork.CompleteAsync();
+
+        //    }
+
+
+        //    // _dbContextProvider.GetDbContext().Database.CommitTransaction();
+
+        //    var response = new InvoiceResponse();
+        //    try
+        //    {
+        //        response.PdfFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".pdf";
+        //        response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
+        //        response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
+
+
+        //        _ = Task.Run(() =>
+        //            XmlPdfJob(input, data.UniqueIdentifier, invoiceno, batchId, isPhase1)
+        //        );
+        //        Guid uuid = data.UniqueIdentifier;
+        //        //await _generateXmlAppService.GenerateXmlRequest_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString(),input.Additional_Info);
+        //        //await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
+
+        //        //var pathToSave = string.Empty;
+        //        //if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
+        //        //    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
+        //        //else
+        //        //    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
+        //        //if (!Directory.Exists(pathToSave))
+        //        //    Directory.CreateDirectory(pathToSave);
+        //        //var xmlfileName = input.Supplier[0].VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
+        //        //var path = (Path.Combine(pathToSave, xmlfileName));
+        //        //await _pdfReportAppService.GetPDFFile_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
+        //        //await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
+
+        //        response.InvoiceNumber = invoiceno;
+        //        response.Uuid = data.UniqueIdentifier;
+
+        //        return response;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine(ex.ToString());
+        //    }
+        //    //  await _dbContextProvider.GetDbContext().SaveChangesAsync();
+        //    return null;
+
+        //}
+
+        public async void XmlPdfJob(CreateOrEditSalesInvoiceDto input, Guid uuid, string invoiceno, int batchId, bool isPhase1)
         {
-            TransactionDto data = new TransactionDto();
-            string invoiceno = "";
-
-            using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
-            {
-                await unitOfWork.CompleteAsync();
-                input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
-
-                input.InvoiceCurrencyCode = "SAR";
-                DataTable dt = new DataTable();
-                dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
-
-
-                if (input.Supplier == null)
-                {
-                    input.Supplier = new CreateOrEditSalesInvoicePartyDto();
-                    input.Supplier.Address = new CreateOrEditSalesInvoiceAddressDto();
-
-                }
-                input.Supplier.ContactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
-
-                if (input.Buyer == null)
-                {
-                    input.Buyer = new CreateOrEditSalesInvoicePartyDto();
-                    input.Buyer.Address = new CreateOrEditSalesInvoiceAddressDto();
-
-                }
-                input.Buyer.ContactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
-
-
-                var i = 0;
-                foreach (DataRow row in dt.Rows)
-                {
-
-                    input.Supplier.VATID = row["vatid"].ToString();
-                    //Address
-                    input.Supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
-                    input.Supplier.Address.BuildingNo = row["BuildingNo"].ToString();
-                    input.Supplier.Address.Street = row["Street"].ToString();
-                    input.Supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
-                    input.Supplier.Address.PostalCode = row["PostalCode"].ToString();
-                    input.Supplier.Address.CountryCode = row["country"].ToString();
-                    input.Supplier.Address.City = row["city"].ToString();
-                    input.Supplier.Address.State = row["State"].ToString();
-                    input.Supplier.CRNumber = row["DocumentNumber"].ToString();
-                    input.Supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
-
-                    i++;
-
-                }
-                input.Buyer.Address.Type = "Buyer";
-                input.Buyer.ContactPerson.Type = "Buyer";
-                input.Buyer.Type = "Buyer";
-                input.Supplier.Address.Type = "Supplier";
-                input.Supplier.ContactPerson.Type = "Supplier";
-                input.Supplier.ContactPerson.Type = "Supplier";
-                input.Supplier.Type = "Supplier";
-
-                var a = new CreateOrEditIRNMasterDto()
-                {
-                    TransactionType = "SalesInvoice",
-                };
-
-                data = await _transactionsAppService.CreateOrEdit(a);
-                invoiceno = data.IRNNo.ToString();
-                input.IRNNo = invoiceno;
-                input.Buyer.IRNNo = invoiceno;
-                input.Supplier.IRNNo = invoiceno;
-                input.Supplier.Address.IRNNo = invoiceno;
-                input.Buyer.Address.IRNNo = invoiceno;
-                input.Buyer.ContactPerson.IRNNo = invoiceno;
-                input.Supplier.ContactPerson.IRNNo = invoiceno;
-                input.InvoiceSummary.IRNNo = invoiceno;
-
-                foreach (var item in input.Items)
-                {
-                    item.IRNNo = invoiceno;
-                    if (string.IsNullOrWhiteSpace(item.VATCode))
-                    {
-                        if (item.VATRate == 15)
-                            item.VATCode = "S";
-                        else if (item.VATRate == 0)
-                            item.VATCode = "Z";
-                        else
-                            item.VATCode = "S";
-                    }
-                }
-
-                string errors = await Validator(input, batchId);
-
-                if (errors != null && errors.Length > 0)
-                    await UpdateInvoiceStatus("R", batchId, input.InvoiceNumber, 0, invoiceno, errors);
-                else
-                    await UpdateInvoiceStatus("V", batchId, input.InvoiceNumber, 1, invoiceno, errors);
-
-                await CreateOrEdit(input);
-                await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
-                await _partyAppService.CreateOrEdit(input.Buyer);
-                await _partyAppService.CreateOrEdit(input.Supplier);
-                await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
-                await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
-                await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
-                await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
-
-
-                //--------------------newly added---------------------------
-                if (input.PaymentDetails == null)
-                {
-                    var paymentD = new CreateOrEditSalesInvoicePaymentDetailDto()
-                    {
-                        PaymentMeans = "Cash",
-                        PaymentTerms = "",
-                        IRNNo = invoiceno
-
-                    };
-                    input.PaymentDetails = new List<CreateOrEditSalesInvoicePaymentDetailDto>();
-                    input.PaymentDetails.Add(paymentD);
-                    await _paymentDetailsAppService.CreateOrEdit(paymentD);
-
-                }
-                else
-                {
-                    foreach (var paymentDetail in input.PaymentDetails)
-                    {
-                        paymentDetail.IRNNo = invoiceno;
-                        await _paymentDetailsAppService.CreateOrEdit(paymentDetail);
-                    }
-                }
-
-                if (input.VATDetails == null)
-                {
-                    var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
-                    input.VATDetails = new List<CreateOrEditSalesInvoiceVATDetailDto>();
-
-                    foreach (var item in details)
-                    {
-                        var vatdata = new CreateOrEditSalesInvoiceVATDetailDto();
-                        vatdata.IRNNo = invoiceno;
-                        vatdata.VATRate = (decimal)input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATRate;
-                        vatdata.TaxSchemeId = "VAT";
-                        vatdata.ExcemptionReasonCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonCode;
-                        vatdata.ExcemptionReasonText = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonText;
-                        vatdata.VATCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATCode;
-                        vatdata.TaxAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.VATAmount);
-                        vatdata.TaxableAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.NetPrice);
-                        vatdata.CurrencyCode = "SAR";
-                        input.VATDetails.Add(vatdata);
-                        await _vatDetailsAppService.CreateOrEdit(vatdata);
-                    }
-                }
-                else
-                {
-                    foreach (var vatDetail in input.VATDetails)
-                    {
-                        vatDetail.IRNNo = invoiceno;
-                        await _vatDetailsAppService.CreateOrEdit(vatDetail);
-                    }
-                }
-
-                //------------------------------------------------------
-
-                foreach (var item in input.Items)
-                {
-                    await _invoiceItemsAppService.CreateOrEdit(item);
-                }
-            }
-
-
-            // _dbContextProvider.GetDbContext().Database.CommitTransaction();
-
-            var response = new InvoiceResponse();
             try
             {
-                response.PdfFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".pdf";
-                response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
-                response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
+                using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+                {
+                    var TenantId = AbpSession.TenantId;
+
+                    await _generateXmlAppService.GenerateXmlRequest(input, new UblSharp.Dtos.XMLRequestParam
+                    {
+                        invoiceno = invoiceno,
+                        uniqueIdentifier = uuid.ToString(),
+                        tenantId = TenantId.ToString(),
+                        xml_uid = input.Additional_Info,
+                        isPhase1 = isPhase1,
+                        invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Sales
+                    });
+
+                    using (var uow = UnitOfWorkManager.Begin())
+                    {
+                        await UpdateInvoiceStatus(new InvoiceStatusType()
+                        {
+                            status = "X",
+                            invoiceType = "Sales",
+                            irnno = invoiceno,
+                            batchId = batchId,
+                            refNo = input.InvoiceNumber,
+                            inputData = JsonConvert.SerializeObject(input),
+                            isPdfGenerated = false,
+                            isXmlSigned = true,
+                            TenantId = TenantId
+                        });
+                        await uow.CompleteAsync();
+                    }
+
+                    await _pdfReportAppService.GeneratePdfRequest(input, invoiceno, uuid.ToString(), TenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Sales);
 
 
-                //_ = Task.Run(() =>
-                //    XmlPdfJob(input, data.UniqueIdentifier, invoiceno, batchId)
-                //) ;
-                Guid uuid = data.UniqueIdentifier;
-                await _generateXmlAppService.GenerateXmlRequest_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString(),input.Additional_Info);
-                await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
+                    using (var uow = UnitOfWorkManager.Begin())
+                    {
+                        await UpdateInvoiceStatus(new InvoiceStatusType()
+                        {
+                            status = "I",
+                            invoiceType = "Sales",
+                            irnno = invoiceno,
+                            batchId = batchId,
+                            refNo = input.InvoiceNumber,
+                            inputData = JsonConvert.SerializeObject(input),
+                            isPdfGenerated = true,
+                            isXmlSigned = true,
+                            TenantId = TenantId
+                        });
+                        await uow.CompleteAsync();
+                    }
 
-                var pathToSave = string.Empty;
-                if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
-                else
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
-                if (!Directory.Exists(pathToSave))
-                    Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
-                var path = (Path.Combine(pathToSave, xmlfileName));
-                await _pdfReportAppService.GetPDFFile_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
-
-                response.InvoiceNumber = invoiceno;
-                response.QRCode = "";
-                response.QRCodeUrl = "";
-                response.ArchivalFileUrl = "";
-                response.PreviousHash = "";
-                response.TransactionCode = "";
-                response.TypeCode = "";
+                    await unitOfWork.CompleteAsync();
+                }
 
             }
             catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-            }
-            //  await _dbContextProvider.GetDbContext().SaveChangesAsync();
-            return true;
-
-        }
-
-        public async void XmlPdfJob(CreateOrEditSalesInvoiceDto input,Guid uuid,string invoiceno,int batchId)
-        {
-            try
-            {
-
-                await _generateXmlAppService.GenerateXmlRequest_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
-
-                var pathToSave = string.Empty;
-                if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
-                else
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
-                if (!Directory.Exists(pathToSave))
-                    Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
-                var path = (Path.Combine(pathToSave, xmlfileName));
-                await _pdfReportAppService.GetPDFFile_Invoice(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
-            }
-            catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
 
-        public async Task<bool> InsertBatchUploadSales(string json,string fileName,int? tenantId,DateTime? fromDate,DateTime? toDate)
+
+        public async Task<bool> InsertBatchUploadSales(string json, string fileName, int? tenantId, DateTime? fromDate, DateTime? toDate, bool isVita = true)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
+             InsertUploadDatatoLogs("FileReachedatSP", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+
             DataTable dt = new DataTable(); try
             {
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
@@ -648,8 +808,10 @@ namespace vita.Sales
 
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = "InsertBatchUploadSales";
+                        cmd.CommandText = isVita ? "InsertBatchUploadSales" : "InsertBatchUploadEinvocing";
                         cmd.CommandTimeout = 0;
+
+                        json = json.Replace(@"\r\n", " ").Replace(@"\n", " ").Replace(@"\t", " ");
 
                         cmd.Parameters.AddWithValue("json", json);
                         cmd.Parameters.AddWithValue("@fileName", fileName);
@@ -659,7 +821,9 @@ namespace vita.Sales
 
 
                         await cmd.ExecuteNonQueryAsync();
+                        InsertUploadDatatoLogs("FileReachedatDataBase", DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
                         conn.Close();
+
                         return true;
                     }
                 }
@@ -672,15 +836,154 @@ namespace vita.Sales
             }
         }
 
+        public async Task<DataTable> GetFileMappings()
+         {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetFileMappings";
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<string> GetFileMappingById(int id)
+        {
+            string json = null;
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetFileMappingById";
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@id", id);
+
+                        var reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            json = reader.GetString(0);
+                            break;
+                        }
+                        conn.Close();
+
+                        return json;
+
+                    }
+                 
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+      
+
+        public async Task<bool> CreateOrUpdateFileMappings(FileMappingPost input)
+        {
+
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "CreateOrUpdateFileMappings";
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@json", input.json);
+                        cmd.Parameters.AddWithValue("@type", input.type);
+                        cmd.Parameters.AddWithValue("@name", input.name);
+                        cmd.Parameters.AddWithValue("@id", input.id);
+                        cmd.Parameters.AddWithValue("@isActive", input.isActive);
+
+                        int i = cmd.ExecuteNonQuery();
+
+                        conn.Close();
+
+                        return i > 0;
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteFileMapping(int id)
+        {
+
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "DeleteFileMappings";
+                        cmd.Parameters.AddWithValue("@id", id);
+
+                        int i = cmd.ExecuteNonQuery();
+
+                        conn.Close();
+
+                        return i > 0;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
 
 
         public async Task<DataTable> GetSalesBatchData(string fileName)
         {
-            
+
             DataTable dt = new DataTable(); try
             {
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
-                using (SqlConnection conn = new SqlConnection(connStr)) 
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     using (SqlCommand cmd = new SqlCommand())
                     {
@@ -738,6 +1041,112 @@ namespace vita.Sales
                 return dt;
             }
         }
+
+        public async Task<bool> UpdateMasterValidation(string? status)
+        {
+            DataTable dt = new DataTable();
+            bool validstatus = false;
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "UpdateMasterValidation";
+                        cmd.CommandTimeout = 0;
+                        cmd.Parameters.AddWithValue("@status", status);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        using (var dataReader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (dataReader.Read())
+                            {
+                                validstatus = Convert.ToBoolean(dataReader["ValidStat"]);//dataReader.ToString('ValidStat');
+                            }
+                        }
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return validstatus;
+                    }
+                }
+
+                return validstatus;
+            }
+            catch (Exception e)
+            {
+                return validstatus;
+            }
+        }
+
+        public async Task<DataTable> GetFinancialYear()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetFinancialYear";
+                        cmd.CommandTimeout = 0;
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                }
+
+                return dt;
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> UpdateFinancialYear(string finYear)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "UpdateFinancialYear";
+                        cmd.CommandTimeout = 0;
+                        cmd.Parameters.AddWithValue("@finyear", finYear);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                }
+
+                return dt;
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
         public async Task<DataTable> getintegrationdashboradcolor(DateTime fromDate, DateTime toDate, string type)
         {
 
@@ -771,12 +1180,9 @@ namespace vita.Sales
             }
         }
 
-        public async Task<DataTable> GetStatsDashboardData(DateTime fromDate,DateTime toDate)
+        public async Task<bool> InsertUploadDatatoLogs(string text, string date)
         {
-            fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
-            toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
 
-            DataTable dt = new DataTable(); 
             try
             {
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
@@ -788,6 +1194,104 @@ namespace vita.Sales
 
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "InsertIntoLogs";
+                        cmd.Parameters.AddWithValue("@text", text);
+                        cmd.Parameters.AddWithValue("@date", date);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        int i = cmd.ExecuteNonQuery();
+                        conn.Close();
+                        return true;
+                    }
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+
+                return false;
+
+            }
+        }
+
+        public async Task<DataTable> getintegrationdashboarddataasJson(DateTime fromDate, DateTime toDate, string type,
+            string invoicereferencenumber,
+                string invoicereferncedate,
+                string purchaseOrderNo,
+                string customername,
+                string activestatus,
+                string currency,
+                string payernumber,
+                string salesordernumber,
+                string shiptonumber,
+                string IRNo,
+                string createdby)
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getintegrationdashboarddataasJson";
+                        cmd.Parameters.AddWithValue("@fromDate", fromDate);
+                        cmd.Parameters.AddWithValue("@toDate", toDate);
+                        cmd.Parameters.AddWithValue("@type", type);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@invoicereferencenumber", invoicereferencenumber);
+                        cmd.Parameters.AddWithValue("@invoicereferncedate", invoicereferncedate);
+                        cmd.Parameters.AddWithValue("@purchaseOrderNo", purchaseOrderNo);
+                        cmd.Parameters.AddWithValue("@customername", customername);
+                        cmd.Parameters.AddWithValue("@activestatus", activestatus);
+                        cmd.Parameters.AddWithValue("@currency", currency);
+                        cmd.Parameters.AddWithValue("@payernumber", payernumber);
+                        cmd.Parameters.AddWithValue("@salesorderno", salesordernumber);
+                        cmd.Parameters.AddWithValue("@shiptono", shiptonumber);
+                        cmd.Parameters.AddWithValue("@irnno", IRNo);
+                        cmd.Parameters.AddWithValue("@createdby", createdby);
+                            
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> GetStatsDashboardData(DateTime fromDate, DateTime toDate)
+        {
+            if (fromDate.Year == 1 || toDate.Year == 1)
+            {
+                fromDate = DateTime.Now;
+                toDate = DateTime.Now;
+            }
+            fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
+            toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
+
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Connection = conn;
                         cmd.CommandText = "GetStatsDashboardData";
                         cmd.Parameters.AddWithValue("@fromDate", fromDate);
                         cmd.Parameters.AddWithValue("@toDate", toDate);
@@ -805,7 +1309,7 @@ namespace vita.Sales
             }
         }
 
-        public async Task<DataTable> GetSummaryDashboardData(DateTime fromDate, DateTime toDate,string type)
+        public async Task<DataTable> GetSummaryDashboardData(DateTime fromDate, DateTime toDate, string type)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -873,7 +1377,7 @@ namespace vita.Sales
             }
         }
 
-        public async Task<DataTable> getInvoiceSuggestions(string irrno)
+        public async Task<DataTable> getInvoiceSuggestions(string irrno,string refNo)
         {
 
             DataTable dt = new DataTable(); try
@@ -888,6 +1392,39 @@ namespace vita.Sales
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandText = "getInvoiceSuggestions";
+                        cmd.Parameters.AddWithValue("@irrno", irrno);
+                        cmd.Parameters.AddWithValue("@refNo", refNo);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> getPurchaseSuggestions(string irrno)
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getPurchaseSuggestions";
                         cmd.Parameters.AddWithValue("@irrno", irrno);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
 
@@ -904,8 +1441,7 @@ namespace vita.Sales
                 return dt;
             }
         }
-
-        public async Task<DataTable> getsalesdetails(int irrno)
+        public async Task<DataTable> getsalesdetails(long irrno, string refNo)
         {
 
             DataTable dt = new DataTable(); try
@@ -922,6 +1458,7 @@ namespace vita.Sales
                         cmd.CommandText = "getsalesdetails";
 
                         cmd.Parameters.AddWithValue("@irrnNo", irrno);
+                        cmd.Parameters.AddWithValue("@refNo",refNo);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
 
 
@@ -938,13 +1475,13 @@ namespace vita.Sales
             }
         }
 
-        public async Task<DataTable> getsalesitemdetail(int irrno)
+        public async Task<DataTable> getExemptionReason(string vatcode)
         {
 
             DataTable dt = new DataTable(); try
             {
                 var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
-                using (SqlConnection conn = new SqlConnection(connStr)) 
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     using (SqlCommand cmd = new SqlCommand())
                     {
@@ -952,7 +1489,38 @@ namespace vita.Sales
 
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandText = "getsalesitemdetail";
+                        cmd.CommandText = "getExemptionReason";
+                        cmd.Parameters.AddWithValue("@vatcode", vatcode);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> getPurchaseDetails(int irrno)
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getPurchasedetails";
 
                         cmd.Parameters.AddWithValue("@irrnNo", irrno);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
@@ -971,7 +1539,72 @@ namespace vita.Sales
             }
         }
 
+        public async Task<DataTable> getsalesitemdetail(int irrno,string type)
+        {
 
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getsalesitemdetail";
+
+                        cmd.Parameters.AddWithValue("@irrnNo", irrno);
+                        cmd.Parameters.AddWithValue("@type", type);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<DataTable> getpurchaseitemdetail(int irrno)
+        {
+
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getpurchaseitemdetail";
+
+                        cmd.Parameters.AddWithValue("@irrnNo", irrno);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
 
 
 
@@ -1109,7 +1742,7 @@ namespace vita.Sales
             await Create(input);
         }
 
-        public async Task<DataTable> GetSalesData(DateTime fromDate, DateTime toDate)
+        public async Task<DataTable> GetSalesData(DateTime fromDate, DateTime toDate, DateTime? creationDate, string customername, string salesorderno, string purchaseorderno, string invoicerefno, string buyercode, string shippedcode,string IRNo,string createdby)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -1127,9 +1760,18 @@ namespace vita.Sales
                         cmd.Parameters.AddWithValue("fromDate", fromDate);
                         cmd.Parameters.AddWithValue("toDate", toDate);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@creationDate", creationDate);
+                        cmd.Parameters.AddWithValue("@customername", customername);
+                        cmd.Parameters.AddWithValue("@salesorderno", salesorderno);
+                        cmd.Parameters.AddWithValue("@purchaseorderno", purchaseorderno);
+                        cmd.Parameters.AddWithValue("@invoicerefno", invoicerefno);
+                        cmd.Parameters.AddWithValue("@buyercode", buyercode);
+                        cmd.Parameters.AddWithValue("@shippedcode", shippedcode);
+                        cmd.Parameters.AddWithValue("@IRNo", IRNo);
+                        cmd.Parameters.AddWithValue("@createdby", createdby);
+
                         dt.Load(cmd.ExecuteReader());
                         conn.Close();
-                        return dt;
                     }
                     return dt;
                 }
@@ -1140,42 +1782,532 @@ namespace vita.Sales
             }
         }
 
+        public async Task<DataTable> ViewInvoice(string irrno,string type)
+       { 
+            DataTable dt = new DataTable(); try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "ViewInvoice";
+                        cmd.Parameters.AddWithValue("@irrno", irrno);
+                        cmd.Parameters.AddWithValue("@type", type);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+        }
+
+        public async Task<Tuple<int,string>> InvoiceFromDraft(string IRNNo)
+        {
+            int invcNo = 0;
+            string transType = "";
+            int result = 1;
+            int tenantid = Convert.ToInt32(AbpSession.TenantId);
+
+            SqlConnection conn = null;
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (conn = new SqlConnection(connStr))
+                {
+                    
+                        using (SqlCommand cmd = new SqlCommand())
+                        {
+
+                            conn.Open();
+                            cmd.Connection = conn;
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.CommandText = "CreateInvoiceFromDraft";
+                            cmd.Parameters.AddWithValue("@draftIrnno", IRNNo);
+                            cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+
+
+                            var reader = cmd.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                invcNo = reader["invcNo"] == DBNull.Value ? 1 :  (int)Convert.ToUInt64(reader["invcNo"]);
+                                transType = Convert.ToString(reader["transType"]);
+                                result = reader["result"]==DBNull.Value ? 1 : (int)Convert.ToInt64(reader["result"]);
+                        }
+                            conn.Close();
+                           
+                            
+                    }
+                    // await GetSalesInvoiceData(invcNo,tenantid, transType);
+                    if(result == 0)
+                    {
+
+                        throw new Exception(transType);
+                        
+                    }
+                 
+                        return new Tuple<int, string>(invcNo, transType);
+
+                    
+                }
+                
+
+            }
+            catch (Exception e)
+            {
+                    if (e.Message == "381")
+                    {
+                        throw new UserFriendlyException("Credit Note Amount Cannot Be Greater Than SalesInvoice Amount.");
+                    }
+                    if (e.Message == "383")
+                    {
+                    throw new UserFriendlyException("Debit Note Amount Cannot Be Greater Than SalesInvoice Amount.");
+                      }
+                return new Tuple<int, string>(invcNo, transType);
+
+            }
+            finally
+            {
+                if (conn != null && conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+
+            }
+
+
+        }
+
+        public async Task<Boolean> CreateInvoiceFromDraft(string IRNNo)
+        {
+            Tuple<int, string> data;
+            InvoiceResponse response = new InvoiceResponse();;
+            using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+            {
+                 data= await InvoiceFromDraft(IRNNo);
+                await unitOfWork.CompleteAsync();
+            }
+            response=await GetSalesInvoiceData(data.Item1, Convert.ToInt32(AbpSession.TenantId), data.Item2);
+            if (data.Item2 == "388")
+            {
+                await UpdateInvoiceURL(response, "Sales");
+                await InsertSalesReportData(data.Item1);
+
+            }
+            if (data.Item2 == "381")
+            {
+                await UpdateInvoiceURL(response, "Credit");
+                await InsertCreditReportData(data.Item1);
+
+            }
+            if (data.Item2 == "383")
+            {
+                await UpdateInvoiceURL(response, "Debit");
+                await InsertDebitReportData(data.Item1);
+
+            }
+
+            //   await CurrentUnitOfWork.SaveChangesAsync();
+
+
+            return true;
+
+        }
+
+        public async Task<bool> InsertDebitReportData(long IRNNo)
+        {
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "InsertDebitReportData";
+
+                        cmd.Parameters.AddWithValue("@IRNNo", IRNNo);
+                        cmd.Parameters.AddWithValue("@TenantId", AbpSession.TenantId);
+
+
+                        int i = cmd.ExecuteNonQuery();
+                        conn.Close();
+                        return true;
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+
+        public async Task<bool> InsertCreditReportData(long IRNNo)
+        {
+
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "InsertCreditReportData";
+
+                        cmd.Parameters.AddWithValue("@IRNNo", IRNNo);
+                        cmd.Parameters.AddWithValue("@TenantId", AbpSession.TenantId);
+
+
+                        int i = cmd.ExecuteNonQuery();
+                        conn.Close();
+                        return true;
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public async Task<InvoiceResponse> GetSalesInvoiceData(int? irnNo, int tenantId, string transType)
+        {
+            bool isPhase1 = true;
+
+            DataTable dt = new DataTable();
+            dt = await _tenantbasicdetails.GetTenantById(tenantId);
+
+            InvoiceResponse pdfResponse = new();
+            IRNMaster irn = new();
+            CreateOrEditSalesInvoiceDto data = new();
+            CreateOrEditSalesInvoicePartyDto supplier = new();
+            supplier.Address = new();
+            supplier.ContactPerson = new();
+            var i = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                supplier.RegistrationName = row["TenancyName"].ToString();
+
+                supplier.VATID = row["vatid"].ToString();
+                supplier.Website = row["website"].ToString();
+                supplier.FaxNo = row["faxNo"].ToString();
+                //Address
+                supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
+                supplier.Address.BuildingNo = row["BuildingNo"].ToString();
+                supplier.Address.Street = row["Street"].ToString();
+                supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
+                supplier.Address.PostalCode = row["PostalCode"].ToString();
+                supplier.Address.CountryCode = row["country"].ToString();
+                supplier.Address.City = row["city"].ToString();
+                supplier.Address.State = row["State"].ToString();
+                supplier.CRNumber = row["DocumentNumber"].ToString();
+                supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
+                isPhase1 = Convert.ToInt32(row["isPhase1"] ?? 0) == 1;
+
+                i++;
+            }
+
+
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "GetSalesInvoiceData";
+                        cmd.Parameters.AddWithValue("@IrnNo", irnNo);
+                        cmd.Parameters.AddWithValue("@tenantId", tenantId);
+                        cmd.Parameters.AddWithValue("@transtype", transType);
+                        using (var dataReader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (dataReader.Read())
+                            {
+                                irn = dataReader.MapToObject<IRNMaster>();
+                            }
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    data = dataReader.MapToObject<CreateOrEditSalesInvoiceDto>();
+                                }
+                            }
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.Items == null)
+                                        data.Items = new();
+                                    var items = dataReader.MapToObject<CreateOrEditSalesInvoiceItemDto>();
+                                    data.Items.Add(items);
+                                }
+                            }
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.InvoiceSummary == null)
+                                        data.InvoiceSummary = new();
+                                    data.InvoiceSummary = dataReader.MapToObject<CreateOrEditSalesInvoiceSummaryDto>();
+                                }
+                            }
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.Buyer == null)
+                                        data.Buyer = new();
+                                    //if (data.Supplier == null)
+                                    //   supplier = new();
+                                    var party = dataReader.MapToObject<CreateOrEditSalesInvoicePartyDto>();
+                                    if (party.Type == "Buyer" )
+                                    {
+                                        data.Buyer.Add(party);
+                                    }
+                                    //else if (party.Type == "Supplier" && string.IsNullOrEmpty(party.Language))
+                                    //{
+                                    //   supplier.Add(party);
+                                    //}
+                                }
+                            }
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.Buyer[0].Address == null)
+                                        data.Buyer[0].Address = new();
+                                    //if (data.Supplier[0].Address == null)
+                                    //   supplier[0].Address = new();
+                                    var party = dataReader.MapToObject<CreateOrEditSalesInvoiceAddressDto>();
+                                    if (party.Type == "Buyer")
+                                    {
+                                        data.Buyer[0].Address = party;
+                                    }
+                                    //else if (party.Type == "Supplier" && string.IsNullOrEmpty(party.Language))
+                                    //{
+                                    //   supplier[0].Address = party;
+                                    //}
+                                }
+                            }
+
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.Buyer[0].ContactPerson == null)
+                                        data.Buyer[0].ContactPerson = new();
+                                    //if (data.Supplier[0].ContactPerson == null)
+                                    //   supplier[0].ContactPerson = new();
+                                    var party = dataReader.MapToObject<CreateOrEditSalesInvoiceContactPersonDto>();
+                                    if (party.Type == "Buyer")
+                                    {
+                                        data.Buyer[0].ContactPerson = party;
+                                    }
+                                    //else if (party.Type == "Supplier" && string.IsNullOrEmpty(party.Language))
+                                    //{
+                                    //   supplier[0].ContactPerson = party;
+                                    //}
+                                }
+                            }
+
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.VATDetails == null)
+                                        data.VATDetails = new();
+                                    var items = dataReader.MapToObject<CreateOrEditSalesInvoiceVATDetailDto>();
+                                    data.VATDetails.Add(items);
+                                }
+                            }
+
+                            if (dataReader.NextResult())
+                            {
+                                while (dataReader.Read())
+                                {
+                                    if (data.Discount == null)
+                                        data.Discount = new();
+                                    var items = dataReader.MapToObject<CreateOrEditSalesInvoiceDiscountDto>();
+                                    data.Discount.Add(items);
+                                }
+                            }
+                            data.Supplier = new();
+                            data.Supplier.Add(supplier);
+
+                            var response = new InvoiceResponse();
+                            try
+                            {
+                                response.PdfFileUrl = irn.UniqueIdentifier + "_" + irn.IRNNo.ToString() + ".pdf";
+                                response.XmlFileUrl = irn.UniqueIdentifier + "_" + irn.IRNNo.ToString() + ".xml";
+                                response.QRCodeUrl = irn.UniqueIdentifier + "_" + irn.IRNNo.ToString() + ".png";
+
+                                if (transType == "388")
+                                {
+                                    await _generateXmlAppService.GenerateXmlRequest(data, new UblSharp.Dtos.XMLRequestParam
+                                    {
+                                        invoiceno = irn.IRNNo.ToString(),
+                                        uniqueIdentifier = irn.UniqueIdentifier.ToString(),
+                                        tenantId = tenantId.ToString(),
+                                        xml_uid = data.Additional_Info,
+                                        isPhase1 = isPhase1,
+                                        invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Sales
+                                    });
+                                }
+
+                                if (transType == "383")
+                                {
+                                    await _generateXmlAppService.GenerateXmlRequest(data, new UblSharp.Dtos.XMLRequestParam
+                                    {
+                                        invoiceno = irn.IRNNo.ToString(),
+                                        uniqueIdentifier = irn.UniqueIdentifier.ToString(),
+                                        tenantId = tenantId.ToString(),
+                                        xml_uid = data.Additional_Info,
+                                        isPhase1 = isPhase1,
+                                        invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Debit
+                                    });
+                                }
+
+                                if (transType == "381")
+                                {
+                                    await _generateXmlAppService.GenerateXmlRequest(data, new UblSharp.Dtos.XMLRequestParam
+                                    {
+                                        invoiceno = irn.IRNNo.ToString(),
+                                        uniqueIdentifier = irn.UniqueIdentifier.ToString(),
+                                        tenantId = tenantId.ToString(),
+                                        xml_uid = data.Additional_Info,
+                                        isPhase1 = isPhase1,
+                                        invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Credit
+                                    });
+                                }
+                                //var newURL = Request.Scheme + "://" + Request.Host.Value + "/";
+
+                                var pathToSave = string.Empty;
+                                if (tenantId != null && tenantId.ToString() != "")
+                                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + tenantId, irn.UniqueIdentifier.ToString());
+                                else
+                                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", irn.UniqueIdentifier.ToString());
+                                if (!Directory.Exists(pathToSave))
+                                    Directory.CreateDirectory(pathToSave);
+                                var xmlfileName = data.Supplier[0].VATID + "_" + data.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + data.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + irn.IRNNo.ToString() + ".xml";
+                                var path = (Path.Combine(pathToSave, xmlfileName));
+
+                                var xmlBase64 = FileIO.GetFileInBas64(path);
+                                var pdfBase64 = xmlBase64;
+                                var xmlHash = FileIO.GetSha256FileHash(path);
+                                var pdfHash = xmlHash;
+
+                                if (transType == "381")
+                                {
+                                    pdfResponse = await _pdfReportAppService.GeneratePdfRequest(data, irn.IRNNo.ToString(), irn.UniqueIdentifier.ToString(), tenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Credit);
+                                }
+                                if (transType == "383")
+                                {
+                                    pdfResponse = await _pdfReportAppService.GeneratePdfRequest(data, irn.IRNNo.ToString(), irn.UniqueIdentifier.ToString(), tenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Debit);
+                                }
+                                if (transType == "388")
+                                {
+                                    pdfResponse = await _pdfReportAppService.GeneratePdfRequest(data, irn.IRNNo.ToString(), irn.UniqueIdentifier.ToString(), tenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Sales);
+                                }
+                                response.InvoiceNumber = irn.IRNNo.ToString();
+
+                                _ = Task.Run(() => AzureUpload.CopyFolderToAzureStorage(pathToSave, tenantId, irn.UniqueIdentifier.ToString()));
+
+                                //var emaildata = mapper.Map<InvoiceRequest>(data);
+                                //_ = Task.Run(() => EmailSender.SendEmail(pdfResponse.PdfFileUrl, emaildata));
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                return new InvoiceResponse();
+                            }
+                            return new InvoiceResponse()
+                            {
+                                InvoiceId = Convert.ToInt32(irn.IRNNo.ToString()),
+                                InvoiceNumber = data.InvoiceNumber,
+                                Uuid = irn.UniqueIdentifier,
+                                PdfFileUrl = AzureUpload.GetBlobUrl(pdfResponse.PdfFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                                XmlFileUrl = AzureUpload.GetBlobUrl(pdfResponse.XmlFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                                QRCodeUrl = AzureUpload.GetBlobUrl(pdfResponse.QRCodeUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/"))
+                            };
+                        }
+
+                    }
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         private async Task<InvoiceResponse> GenerateInvoice(CreateOrEditSalesInvoiceDto input)
         {
+            InvoiceResponse pdfResponse = new();
             input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
+            bool isPhase1 = true;
 
-
-           DataTable dt = new DataTable();
+            DataTable dt = new DataTable();
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
 
 
             var i = 0;
             foreach (DataRow row in dt.Rows)
             {
+                input.Supplier[0].RegistrationName = row["TenancyName"].ToString();
 
-                input.Supplier.VATID = row["vatid"].ToString();
+                input.Supplier[0].VATID = row["vatid"].ToString();
+                input.Supplier[0].Website = row["website"].ToString();
+                input.Supplier[0].FaxNo = row["faxNo"].ToString();
                 //Address
-                input.Supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
-                input.Supplier.Address.BuildingNo = row["BuildingNo"].ToString();
-                input.Supplier.Address.Street = row["Street"].ToString();
-                input.Supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
-                input.Supplier.Address.PostalCode = row["PostalCode"].ToString();
-                input.Supplier.Address.CountryCode = row["country"].ToString();
-                input.Supplier.Address.City = row["city"].ToString();
-                input.Supplier.Address.State = row["State"].ToString();
-                input.Supplier.CRNumber = row["DocumentNumber"].ToString();
-                input.Supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
+                input.Supplier[0].Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
+                input.Supplier[0].Address.BuildingNo = row["BuildingNo"].ToString();
+                input.Supplier[0].Address.Street = row["Street"].ToString();
+                input.Supplier[0].Address.AdditionalStreet = row["AdditionalStreet"].ToString();
+                input.Supplier[0].Address.PostalCode = row["PostalCode"].ToString();
+                input.Supplier[0].Address.CountryCode = row["country"].ToString();
+                input.Supplier[0].Address.City = row["city"].ToString();
+                input.Supplier[0].Address.State = row["State"].ToString();
+                input.Supplier[0].CRNumber = row["DocumentNumber"].ToString();
+                input.Supplier[0].ContactPerson.ContactNumber = row["ContactNumber"].ToString();
 
                 i++;
 
             }
-            input.Buyer.Address.Type = "Buyer";
-            input.Buyer.ContactPerson.Type = "Buyer";
-            input.Buyer.Type = "Buyer";
-            input.Supplier.Address.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.Type = "Supplier";
+            isPhase1 =  tenantConfigurationAppService.GetTenantConfigurationByTransactionType("General").Result?.TenantConfiguration?.isPhase1 ?? true;
+
+            input.Supplier[0].Address.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].Type = "Supplier";
+            
 
             var a = new CreateOrEditIRNMasterDto()
             {
@@ -1185,26 +2317,64 @@ namespace vita.Sales
             var data = await _transactionsAppService.CreateOrEdit(a);
             string invoiceno = data.IRNNo.ToString();
             input.IRNNo = invoiceno;
-            input.Buyer.IRNNo = invoiceno;
-            input.Supplier.IRNNo = invoiceno;
-            input.Supplier.Address.IRNNo = invoiceno;
-            input.Buyer.Address.IRNNo = invoiceno;
-            input.Buyer.ContactPerson.IRNNo = invoiceno;
-            input.Supplier.ContactPerson.IRNNo = invoiceno;
+            input.Supplier[0].IRNNo = invoiceno;
+            input.Supplier[0].Address.IRNNo = invoiceno;
+            input.Supplier[0].ContactPerson.IRNNo = invoiceno;
             input.InvoiceSummary.IRNNo = invoiceno;
+            input.Additional_Info = data.UniqueIdentifier.ToString();
+            foreach (var buyer in input.Buyer)
+            {
+                if (buyer.Address == null)
+                {
+                    buyer.Address = new CreateOrEditSalesInvoiceAddressDto();
+                }
+                if (buyer.ContactPerson == null)
+                {
+                    buyer.ContactPerson = new CreateOrEditSalesInvoiceContactPersonDto();
+                }
+                buyer.IRNNo = invoiceno;
+                buyer.Address.IRNNo = invoiceno;
+                buyer.ContactPerson.IRNNo = invoiceno;
+
+
+                if(buyer.Address.Type == null)
+                {
+                    buyer.Address.Type = "Buyer";
+                }
+
+                if (buyer.ContactPerson.Type == null)
+                {
+                    buyer.ContactPerson.Type = "Buyer";
+                }
+                if (buyer.Type == null)
+                {
+                    buyer.Type = "Buyer";
+                }
+            }
+
 
             await CreateOrEdit(input);
             await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
-            await _partyAppService.CreateOrEdit(input.Buyer);
-            await _partyAppService.CreateOrEdit(input.Supplier);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
-            await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
-            await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
+            foreach (var buyer in input.Buyer)
+            {
+                await _partyAppService.CreateOrEdit(buyer);
+                await _invoiceAddressesAppService.CreateOrEdit(buyer.Address);
+                if(buyer.Language =="EN" || buyer.Language == null)
+                {
+                    await _contactPersonsAppService.CreateOrEdit(buyer.ContactPerson);
+
+                }
+            }
+
+
+
+            await _partyAppService.CreateOrEdit(input.Supplier[0]);
+            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier[0].Address);
+            await _contactPersonsAppService.CreateOrEdit(input.Supplier[0].ContactPerson);
 
 
             //--------------------newly added---------------------------
-            if (input.PaymentDetails == null)
+            if (input.PaymentDetails == null || input.PaymentDetails.Count == 0)
             {
                 var paymentD = new CreateOrEditSalesInvoicePaymentDetailDto()
                 {
@@ -1227,7 +2397,7 @@ namespace vita.Sales
                 }
             }
 
-            if (input.VATDetails == null)
+            if (input.VATDetails == null || input.VATDetails.Count == 0)
             {
                 var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
                 input.VATDetails = new List<CreateOrEditSalesInvoiceVATDetailDto>();
@@ -1261,20 +2431,23 @@ namespace vita.Sales
 
             foreach (var item in input.Items)
             {
+                item.Description = item.Description.Replace("\r\n", "<br />").Replace("\n", "<br />");
                 item.IRNNo = invoiceno;
-                if (string.IsNullOrWhiteSpace(item.VATCode))
-                {
-                    if (item.VATRate == 15)
-                        item.VATCode = "S";
-                    else if (item.VATRate == 0)
-                        item.VATCode = "Z";
-                    else
-                        item.VATCode = "S";
-                }
+                //if (string.IsNullOrWhiteSpace(item.VATCode))
+                //{
+                //    {
+                //        if (item.VATRate == 15)
+                //            item.VATCode = "S";
+                //        else if (item.VATRate == 0)
+                //            item.VATCode = "Z";
+                //        else
+                //            item.VATCode = "S";
+                //    }
+                //}
                 await _invoiceItemsAppService.CreateOrEdit(item);
+
+
             }
-
-
             var response = new InvoiceResponse();
             try
             {
@@ -1282,7 +2455,15 @@ namespace vita.Sales
                 response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
                 response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
 
-               await _generateXmlAppService.GenerateXmlRequest_Invoice(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(),data.UniqueIdentifier.ToString());
+                await _generateXmlAppService.GenerateXmlRequest(input, new UblSharp.Dtos.XMLRequestParam
+                {
+                    invoiceno = invoiceno,
+                    uniqueIdentifier = data.UniqueIdentifier.ToString(),
+                    tenantId = AbpSession.TenantId.ToString(),
+                    xml_uid = input.Additional_Info,
+                    isPhase1 = isPhase1,
+                    invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Sales
+                });
 
                 //var newURL = Request.Scheme + "://" + Request.Host.Value + "/";
 
@@ -1293,7 +2474,7 @@ namespace vita.Sales
                     pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", data.UniqueIdentifier.ToString());
                 if (!Directory.Exists(pathToSave))
                     Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
+                var xmlfileName = input.Supplier[0].VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
                 var path = (Path.Combine(pathToSave, xmlfileName));
 
                 var xmlBase64 = FileIO.GetFileInBas64(path);
@@ -1302,16 +2483,23 @@ namespace vita.Sales
                 var pdfHash = xmlHash;
 
 
-                var isGenFile = await _pdfReportAppService.GetPDFFile_Invoice(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString());
+                pdfResponse = await _pdfReportAppService.GeneratePdfRequest(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Sales);
+
+                int tenantId = AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "" ? (int)AbpSession.TenantId : 0;
+                _ = Task.Run(() => AzureUpload.CopyFolderToAzureStorage(pathToSave, tenantId, data.UniqueIdentifier.ToString()));
+
+                var emaildata = mapper.Map<InvoiceRequest>(input);
+                var email = tenantConfigurationAppService.GetTenantConfigurationByTransactionType("General");
+
+                if (email.Result.TenantConfiguration.EmailJson != null && email.Result.TenantConfiguration.EmailJson != "{}")
+                {
+                    var emailsetting = (EmailDto)JsonConvert.DeserializeObject(email.Result.TenantConfiguration.EmailJson, typeof(EmailDto));
+                    _ = Task.Run(() => EmailSender.SendEmail(pdfResponse.PdfFileUrl, emaildata, emailsetting));
+                }
 
 
                 response.InvoiceNumber = invoiceno;
-                response.QRCode = "";
-                response.QRCodeUrl = "";
-                response.ArchivalFileUrl = "";
-                response.PreviousHash = "";
-                response.TransactionCode = "";
-                response.TypeCode = "";
+
 
             }
             catch (Exception ex)
@@ -1323,16 +2511,17 @@ namespace vita.Sales
                 InvoiceId = Convert.ToInt32(invoiceno),
                 InvoiceNumber = input.InvoiceNumber,
                 Uuid = data.UniqueIdentifier,
+                PdfFileUrl = AzureUpload.GetBlobUrl(pdfResponse.PdfFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                XmlFileUrl = AzureUpload.GetBlobUrl(pdfResponse.XmlFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                QRCodeUrl = AzureUpload.GetBlobUrl(pdfResponse.QRCodeUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/"))
             };
+
         }
 
+        [VitaFilter_Validation(VitaFilter_ValidationType.Sales)]
         public async Task<InvoiceResponse> CreateSalesInvoice(CreateOrEditSalesInvoiceDto input)
         {
-            var errors =await ValidateRequest(input, 2);
-            if (errors != null)
-            {
-                throw new UserFriendlyException(errors.Replace(';','\n'));
-            }
+
             InvoiceResponse data = new InvoiceResponse();
 
             // await _dbContextProvider.GetDbContext().SaveChangesAsync();
@@ -1340,18 +2529,19 @@ namespace vita.Sales
             //await _dbContextProvider.GetDbContext().Database.CloseConnectionAsync();
             using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                 data = await GenerateInvoice(input);
+                data = await GenerateInvoice(input);
                 await unitOfWork.CompleteAsync();
             }
+            await UpdateInvoiceURL(data, "Sales");
 
             //   await CurrentUnitOfWork.SaveChangesAsync();
             await InsertSalesReportData(data.InvoiceId);
 
 
-                return data;
+            return data;
 
         }
-        
+
         [AbpAuthorize(AppPermissions.Pages_SalesInvoices_Create)]
         protected virtual async Task Create(CreateOrEditSalesInvoiceDto input)
         {
@@ -1382,5 +2572,77 @@ namespace vita.Sales
             await _salesInvoiceRepository.DeleteAsync(input.Id);
         }
 
+        public async Task<bool> CheckIfRefNumExists(string RefNum)
+        {
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "CheckIfRefNumExists";
+
+                        cmd.Parameters.AddWithValue("@refnum", RefNum);
+                        cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+
+                        var reader = cmd.ExecuteReader();
+                        int count = 0;
+                        while (reader.Read())
+                        {
+                            count = reader.GetInt32("count");
+                        }
+                        conn.Close();
+
+                        return count > 0;
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+        public async Task<DataTable> GetBuyertypelist()
+        {
+
+            DataTable dt = new DataTable();
+            try
+            {
+                var connStr = _dbContextProvider.GetDbContext().Database.GetConnectionString();
+                using (SqlConnection conn = new SqlConnection(connStr))
+                {
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandText = "getbuyertype";
+
+                        dt.Load(cmd.ExecuteReader());
+                        conn.Close();
+
+                        return dt;
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception e)
+            {
+                return dt;
+            }
+
+
+        }
+
+        public Task<InvoiceResponse> GenerateInvoice_SG(CreateOrEditSalesInvoiceDto input, int batchId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

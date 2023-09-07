@@ -28,5 +28,9 @@ namespace vita.Sales.Dtos
 
         public string CurrencyCodeFilter { get; set; }
 
+        public string AdditionalData1Filter { get; set; }
+
+        public string LanguageFilter { get; set; }
+
     }
 }

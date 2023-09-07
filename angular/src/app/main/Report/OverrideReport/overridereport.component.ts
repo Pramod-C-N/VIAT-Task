@@ -36,6 +36,7 @@ export class OverrideReportComponent extends AppComponentBase {
     selectedInvoices: any[] = [];
     code = '';
     isdisable = false;
+    reportType: any;
 
     columns: any[] = [
         { field: 'number', header: 'Number' },
@@ -67,6 +68,8 @@ export class OverrideReportComponent extends AppComponentBase {
     ngOnInit(): void {
         this.tenantId = this._sessionService.tenantId;
         this.tenantName = this._sessionService.tenancyName;
+        this.code = 'VATSAL000';
+        this.getReportType();
     }
     getSalesDetailedReport() {
         this.isdisable = true;
@@ -101,4 +104,9 @@ export class OverrideReportComponent extends AppComponentBase {
                 this._fileDownloadService.downloadTempFile(result);
             });
     }
+    getReportType() {
+        this._ReportServiceProxy.getReportType('OVR').subscribe((result) => {
+          this.reportType = result;
+        });
+      }
 }

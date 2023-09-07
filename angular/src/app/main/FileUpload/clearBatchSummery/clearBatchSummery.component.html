@@ -1,0 +1,119 @@
+<style>
+    .ui-autocomplete .inputTest {
+        background-color: red;
+    }
+
+    .panelTest .ui-autocomplete-items .ui-state-highlight {
+        background-color: blue;
+    }
+</style>
+<div class="content d-flex flex-column flex-column-fluid">
+    <sub-header [title]="'Configuration' | localize">
+        <div role="actions">
+            <!-- <select class="form-select form-select-solid form-select-lg fw-bold" style="border-color:transparent;" #typeSelect (change)="onOptionSelected(typeSelect.value)">
+                <option value="">Select a Type</option>
+                <option value="/app/main/customers/createCustomers">Nominal Supplies</option>
+                <option value="/app/main/Fileupload/OverHeadApportionment">Overhead Apportionment</option>
+                <option value="/app/main/Fileupload/MasterConfiguration">Master Validation</option>
+                <option value="batchDelete">Batch Delete</option>
+                <option value="delete">Delete</option>
+            </select> -->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Select a Type
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="app/main/FileUpload/NominalSupplies">Nominal Supplies</a>
+                    <a class="dropdown-item" href="app/main/FileUpload/OverHeadApportionment">Overhead Apportionment</a>
+                    <a class="dropdown-item" href="app/main/FileUpload/MasterConfiguration">Master Validation</a>
+                    <a class="dropdown-item">Batch Delete</a>
+                </div>
+            </div>
+<!-- Example single danger button-->
+
+            <!-- <select  
+                class="form-select form-select-solid form-select-lg fw-bold " style="border-color:transparent;">
+                <option > Select a Type  </option>
+                <option > Batch Delete </option>
+                <option ><a href="/app/main/customers/createCustomers"> Nominal Supplies </a></option>
+                <option ><a href="/app/main/Fileupload/OverHeadApportionment"> Overhead Apportionment </a></option>
+                <option ><a href="/app/main/Fileupload/MasterConfiguration"> Master Validation </a></option>
+                <option > Delete </option>
+            </select> -->
+        </div>
+    </sub-header>
+    <div class="ng-tns-c327-6 app-container container-fluid">
+        <div class="card">
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="card-header  border-0 pt-5 col-lg-11">
+                    <h3 class="card-title align-items-start flex-column col-lg-6">
+                        <span class="card-label fw-bolder fs-3 mb-1">Clear batch &nbsp;</span>
+                    </h3>
+                </div>
+                <div class="card-body py-3">
+                    <div class="row gx-10 mb-2 " style="text-align: center">
+                        <div class="col-lg-4 px-1">
+                            <div>
+                                <select
+                                    class="form-select form-select-solid form-select-lg"
+                                    name="country"
+                                    [(ngModel)]="transMaster"
+                                    
+                                >
+                                    <option value="2">Transaction</option>
+                                    <option value="1">Master</option>
+                                </select>
+                                <!-- <input
+                                type="text"
+                                [(ngModel)]="customer.registrationName"
+                                class="form-control form-control-lg form-control-solid"
+                                id="name"
+                                name="name"
+                                placeholder="Customer Name"
+                                value=""
+                                formControlName="Name"
+                            /> -->
+                               
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback"></div>
+                        </div>
+                        <div class="col-lg-4 px-1">
+                            <div >
+                                <input
+                                    type="text"
+                                    minlength="15"
+                                   [(ngModel)]="batchid"
+                                    maxlength="15"
+                                    pattern="^3[0-9]*3$"
+                                    class="form-control form-control-lg form-control-solid"
+                                    id="vatid"
+                                    name="vatid"
+                                    placeholder=""
+                                    value=""
+                                    
+                                />
+                            </div>
+                            <div class="fv-plugins-message-container invalid-feedback" style="text-align: left"></div>
+                        </div>   
+                        <div class="col-lg-4 px-1">
+                            <div class="row">
+
+                            <div class="col-lg-6 text-end">
+                                <button class="btn btn-primary w-50" (click)="Search()">Search</button>
+                        </div> 
+                       
+                            <div *ngIf="setview==true" class="col-lg-6">
+                                <button class="btn btn-danger w-50" (click)="deleteBatch()">Delete</button>
+                        </div>                                
+                  
+                    </div>                              
+                    </div>
+                       
+                     </div>
+                     <app-errorlist *ngIf="setview==true" [batchid]="batchid" [fileName]="fileName" [Type]="type" [Deletepage]="Deletepage"></app-errorlist>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>

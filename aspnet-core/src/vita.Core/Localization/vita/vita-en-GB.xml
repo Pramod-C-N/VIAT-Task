@@ -500,7 +500,7 @@
     <text name="SmsSecurityCodeMessage">Your security code is: {0}</text>
     <text name="PasswordComplexity_RequireDigit_Hint">Passwords must have at least one digit ('0'-'9').</text>
     <text name="PasswordComplexity_RequireLowercase_Hint">Passwords must have at least one lowercase ('a'-'z').</text>
-    <text name="PasswordComplexity_RequireNonAlphanumeric_Hint">Passwords must have at least one non-alphanumeric character.</text>
+    <text name="PasswordComplexity_RequireNonAlphanumeric_Hint">Password cannot contain non-alphanumeric character.</text>
     <text name="PasswordComplexity_RequireUppercase_Hint">Passwords must have at least one uppercase ('A'-'Z').</text>
     <text name="PasswordComplexity_RequiredLength_Hint">Passwords must be at least {0} characters.</text>
     <text name="PasswordComplexity_RequireDigit">Require digit</text>

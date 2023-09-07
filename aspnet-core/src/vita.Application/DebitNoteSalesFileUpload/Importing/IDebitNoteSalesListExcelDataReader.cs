@@ -13,5 +13,7 @@ namespace vita.DebitNoteSalesFileUpload.Importing
     public interface IDebitNoteSalesListExcelDataReader : ITransientDependency
     {
         List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes);
+        byte[] ConvertCsvToExcel(byte[] csvBytes);
+
     }
 }

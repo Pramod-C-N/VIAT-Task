@@ -34,56 +34,58 @@ namespace vita.MasterData
         public async Task<PagedResultDto<GetPaymentMeansForViewDto>> GetAll(GetAllPaymentMeansInput input)
         {
 
-            var filteredPaymentMeans = _paymentMeansRepository.GetAll()
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
+                var filteredPaymentMeans = _paymentMeansRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredPaymentMeans = filteredPaymentMeans
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredPaymentMeans = filteredPaymentMeans
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var paymentMeans = from o in pagedAndFilteredPaymentMeans
-                               select new
-                               {
+                var paymentMeans = from o in pagedAndFilteredPaymentMeans
+                                   select new
+                                   {
 
-                                   o.Name,
-                                   o.Description,
-                                   o.Code,
-                                   o.IsActive,
-                                   Id = o.Id
-                               };
+                                       o.Name,
+                                       o.Description,
+                                       o.Code,
+                                       o.IsActive,
+                                       Id = o.Id
+                                   };
 
-            var totalCount = await filteredPaymentMeans.CountAsync();
+                var totalCount = await filteredPaymentMeans.CountAsync();
 
-            var dbList = await paymentMeans.ToListAsync();
-            var results = new List<GetPaymentMeansForViewDto>();
+                var dbList = await paymentMeans.ToListAsync();
+                var results = new List<GetPaymentMeansForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetPaymentMeansForViewDto()
+                foreach (var o in dbList)
                 {
-                    PaymentMeans = new PaymentMeansDto
+                    var res = new GetPaymentMeansForViewDto()
                     {
+                        PaymentMeans = new PaymentMeansDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetPaymentMeansForViewDto>(
+                    totalCount,
+                    results
+                );
             }
-
-            return new PagedResultDto<GetPaymentMeansForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetPaymentMeansForViewDto> GetPaymentMeansForView(int id)

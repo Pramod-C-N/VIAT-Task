@@ -31,6 +31,19 @@ using Abp.Timing.Timezone;
 using System.Text.RegularExpressions;
 using System.Text;
 using vita.Credit.Dtos;
+using NPOI.POIFS.Crypt.Dsig;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using JsonFlatten;
+using System.DirectoryServices.Protocols;
+using vita.Filters;
+using static vita.Filters.VitaFilter_Validation;
+using vita.Sales;
+using vita.TenantConfigurations;
+using AutoMapper;
+using vita.EInvoicing.Dto;
+using vita.TenantConfigurations.Dtos;
+using vita.Credit;
 
 namespace vita.Debit
 {
@@ -51,9 +64,12 @@ namespace vita.Debit
         private readonly IPdfReportAppService _pdfReportAppService;
         private readonly ITenantBasicDetailsAppService _tenantbasicdetails;
         private readonly ITimeZoneConverter _timeZoneConverter;
-
-
+        private readonly ISalesInvoicesAppService _salesInvoicesAppService;
+        private readonly ITenantConfigurationAppService tenantConfigurationAppService;
+        private readonly IMapper mapper;
         private readonly IDbContextProvider<vitaDbContext> _dbContextProvider;
+        private readonly IRepository<SalesInvoiceItem, long> _salesInvoiceItemRepository;
+        private readonly IRepository<DebitNoteItem, long> _debitItemRepository;
         public DebitNotesAppService(IRepository<DebitNote, long> debitNoteRepository,
             IDebitNotePartiesAppService partyAppService,
        IDebitNoteItemsAppService invoiceItemsAppService,
@@ -68,6 +84,11 @@ namespace vita.Debit
        IPdfReportAppService pdfReportAppService,
        ITenantBasicDetailsAppService tenantbasicdetails,
        IDbContextProvider<vitaDbContext> dbContextProvider,
+       ISalesInvoicesAppService salesInvoicesAppService,
+              ITenantConfigurationAppService tenantConfigurationAppService,
+                       IRepository<SalesInvoiceItem, long> salesInvoiceSummaryRepository,
+         IRepository<DebitNoteItem, long> creditnoteitemRepository,
+              IMapper mapper,
        ITimeZoneConverter timeZoneConverter)
         {
             _debitNoteRepository = debitNoteRepository;
@@ -85,9 +106,11 @@ namespace vita.Debit
             _dbContextProvider = dbContextProvider;
             _tenantbasicdetails = tenantbasicdetails;
             _timeZoneConverter = timeZoneConverter;
-
-
-
+            _salesInvoicesAppService = salesInvoicesAppService;
+            this.tenantConfigurationAppService = tenantConfigurationAppService;
+            this.mapper = mapper;
+            _salesInvoiceItemRepository = salesInvoiceSummaryRepository;
+            _debitItemRepository = creditnoteitemRepository;
         }
 
         public async Task<bool> InsertDebitReportData(long IRNNo)
@@ -122,7 +145,7 @@ namespace vita.Debit
                 return false;
             }
         }
-        public async Task<DataTable> GetDebitData(DateTime fromDate, DateTime toDate)
+        public async Task<DataTable> GetDebitData(DateTime fromDate, DateTime toDate, DateTime? creationDate, string customername, string salesorderno, string purchaseorderno, string invoicerefno, string buyercode, string shippedcode,string IRNo,string createdby)
         {
             fromDate = _timeZoneConverter.Convert(fromDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromDate;
             toDate = _timeZoneConverter.Convert(toDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? toDate;
@@ -140,11 +163,21 @@ namespace vita.Debit
                         cmd.Parameters.AddWithValue("fromDate", fromDate);
                         cmd.Parameters.AddWithValue("toDate", toDate);
                         cmd.Parameters.AddWithValue("@tenantId", AbpSession.TenantId);
+                        cmd.Parameters.AddWithValue("@creationDate", creationDate);
+                        cmd.Parameters.AddWithValue("@customername", customername);
+                        cmd.Parameters.AddWithValue("@salesorderno", salesorderno);
+                        cmd.Parameters.AddWithValue("@purchaseorderno", purchaseorderno);
+                        cmd.Parameters.AddWithValue("@invoicerefno", invoicerefno);
+                        cmd.Parameters.AddWithValue("@buyercode", buyercode);
+                        cmd.Parameters.AddWithValue("@shippedcode", shippedcode);
+                        cmd.Parameters.AddWithValue("@IRNo", IRNo);
+                        cmd.Parameters.AddWithValue("@createdBy", createdby);
+
                         dt.Load(cmd.ExecuteReader());
                         conn.Close();
                         return dt;
                     }
-                     return dt;
+                    return dt;
                 }
             }
             catch (Exception e)
@@ -295,7 +328,7 @@ namespace vita.Debit
 
         }
 
-        public async Task<bool> InsertBatchUploadDebitSales(string json, string fileName, int? tenantId, DateTime? fromdate,DateTime? todate)
+        public async Task<bool> InsertBatchUploadDebitSales(string json, string fileName, int? tenantId, DateTime? fromdate, DateTime? todate)
         {
 
             fromdate = _timeZoneConverter.Convert(fromdate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? fromdate;
@@ -390,6 +423,7 @@ namespace vita.Debit
             await Create(input);
         }
 
+        [VitaFilter_Validation(VitaFilter_ValidationType.Debit)]
         public async Task<InvoiceResponse> CreateDebitNote(CreateOrEditDebitNoteDto input)
         {
 
@@ -403,6 +437,7 @@ namespace vita.Debit
                 data = await GenerateDebitNote(input);
                 await unitOfWork.CompleteAsync();
             }
+            await _salesInvoicesAppService.UpdateInvoiceURL(data, "Debit");
 
             //   await CurrentUnitOfWork.SaveChangesAsync();
             await InsertDebitReportData(data.InvoiceId);
@@ -410,46 +445,65 @@ namespace vita.Debit
 
             return data;
         }
-            private async Task<InvoiceResponse> GenerateDebitNote(CreateOrEditDebitNoteDto input)
+        private async Task<InvoiceResponse> GenerateDebitNote(CreateOrEditDebitNoteDto input)
         {
+            InvoiceResponse pdfResponse = new();
             input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
-
-
+            bool isPhase1 = true;
 
             DataTable dt = new DataTable();
             dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
+            var salesTotalAmount = ((_salesInvoiceItemRepository.GetAll().Where(a => a.IRNNo == input.BillingReferenceId).Sum(a => a.LineAmountInclusiveVAT)));
+            var debitHeader = _debitNoteRepository.GetAll().Where(a => a.BillingReferenceId == input.BillingReferenceId);
+            var debitItem = _debitItemRepository.GetAll();
+            var total = from ch in debitHeader
+                        from ci in debitItem
+                        where ch.IRNNo == ci.IRNNo
+                        select new
+                        {
+                            ci.IRNNo,
+                            ci.LineAmountInclusiveVAT
+                        };
+            var creditCount = total.Count();
 
+            // var creditTotalAmount = ((_creditSummaryRepository.GetAll().Where(a => a. == input.BillingReferenceId).Sum(a => a.LineAmountInclusiveVAT)));
 
+            if ((_salesInvoiceItemRepository.GetAll().Where(a => a.IRNNo == input.BillingReferenceId)).Count() > 0 || creditCount > 0)
+            {
+                if (input.Items.Sum(a => a.LineAmountInclusiveVAT) > (salesTotalAmount - total.Sum(a => a.LineAmountInclusiveVAT)))
+                {
+                    throw new UserFriendlyException("Debit Note Amount Cannot Be Greater Than SalesInvoice Amount.");
+                }
+            }
             var i = 0;
             foreach (DataRow row in dt.Rows)
             {
+                input.Supplier[0].RegistrationName = row["TenancyName"].ToString();
 
-                input.Supplier.VATID = row["vatid"].ToString();
+                input.Supplier[0].VATID = row["vatid"].ToString();
+                input.Supplier[0].Website = row["website"].ToString();
+                input.Supplier[0].FaxNo = row["faxNo"].ToString();
                 //Address
-                input.Supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
-                input.Supplier.Address.BuildingNo = row["BuildingNo"].ToString();
-                input.Supplier.Address.Street = row["Street"].ToString();
-                input.Supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
-                input.Supplier.Address.PostalCode = row["PostalCode"].ToString();
-                input.Supplier.Address.CountryCode = row["country"].ToString();
-                input.Supplier.Address.City = row["city"].ToString();
-                input.Supplier.Address.State = row["State"].ToString();
-                input.Supplier.CRNumber = row["DocumentNumber"].ToString();
-                input.Supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
-
-
+                input.Supplier[0].Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
+                input.Supplier[0].Address.BuildingNo = row["BuildingNo"].ToString();
+                input.Supplier[0].Address.Street = row["Street"].ToString();
+                input.Supplier[0].Address.AdditionalStreet = row["AdditionalStreet"].ToString();
+                input.Supplier[0].Address.PostalCode = row["PostalCode"].ToString();
+                input.Supplier[0].Address.CountryCode = row["country"].ToString();
+                input.Supplier[0].Address.City = row["city"].ToString();
+                input.Supplier[0].Address.State = row["State"].ToString();
+                input.Supplier[0].CRNumber = row["DocumentNumber"].ToString();
+                input.Supplier[0].ContactPerson.ContactNumber = row["ContactNumber"].ToString();
+                isPhase1 = Convert.ToInt32(row["isPhase1"] ?? 0) == 1;
 
                 i++;
-                
             }
-            input.Buyer.Address.Type = "Buyer";
-            input.Buyer.ContactPerson.Type = "Buyer";
-            input.Buyer.Type = "Buyer";
-            input.Supplier.Address.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.ContactPerson.Type = "Supplier";
-            input.Supplier.Type = "Supplier";
+            isPhase1 = tenantConfigurationAppService.GetTenantConfigurationByTransactionType("General").Result?.TenantConfiguration?.isPhase1 ?? true;
 
+            input.Supplier[0].Address.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].ContactPerson.Type = "Supplier";
+            input.Supplier[0].Type = "Supplier";
             var a = new CreateOrEditIRNMasterDto()
             {
                 TransactionType = "DebitNote",
@@ -457,26 +511,58 @@ namespace vita.Debit
             var data = await _transactionsAppService.CreateOrEdit(a);
             string invoiceno = data.IRNNo.ToString();
             input.IRNNo = invoiceno;
-            input.Buyer.IRNNo = invoiceno;
-            input.Supplier.IRNNo = invoiceno;
-            input.Supplier.Address.IRNNo = invoiceno;
-            input.Buyer.Address.IRNNo = invoiceno;
-            input.Buyer.ContactPerson.IRNNo = invoiceno;
-            input.Supplier.ContactPerson.IRNNo = invoiceno;
+            input.Supplier[0].IRNNo = invoiceno;
+            input.Supplier[0].Address.IRNNo = invoiceno;
+            input.Supplier[0].ContactPerson.IRNNo = invoiceno;
             input.InvoiceSummary.IRNNo = invoiceno;
+            input.Additional_Info = data.UniqueIdentifier.ToString();
+
+            foreach (var buyer in input.Buyer)
+            {
+                if (buyer.Address == null)
+                {
+                    buyer.Address = new CreateOrEditDebitNoteAddressDto();
+                }
+                if (buyer.ContactPerson == null)
+                {
+                    buyer.ContactPerson = new CreateOrEditDebitNoteContactPersonDto();
+                }
+                buyer.IRNNo = invoiceno;
+                buyer.Address.IRNNo = invoiceno;
+                buyer.ContactPerson.IRNNo = invoiceno;
+
+                if (buyer.Address.Type == null)
+                {
+                    buyer.Address.Type = "Buyer";
+                }
+                if (buyer.ContactPerson.Type == null)
+                {
+                    buyer.ContactPerson.Type = "Buyer";
+                }
+                if (buyer.Type == null)
+                {
+                    buyer.Type = "Buyer";
+                }
+            }
 
             await CreateOrEdit(input);
             await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
-            await _partyAppService.CreateOrEdit(input.Buyer);
-            await _partyAppService.CreateOrEdit(input.Supplier);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
-            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
-            await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
-            await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
+            foreach (var buyer in input.Buyer)
+            {
+                await _partyAppService.CreateOrEdit(buyer);
+                await _invoiceAddressesAppService.CreateOrEdit(buyer.Address);
+                if (buyer.Language == "EN" || buyer.Language == null) {
+                    await _contactPersonsAppService.CreateOrEdit(buyer.ContactPerson);
+                }
+                   
+            }
 
+            await _partyAppService.CreateOrEdit(input.Supplier[0]);
+            await _invoiceAddressesAppService.CreateOrEdit(input.Supplier[0].Address);
+            await _contactPersonsAppService.CreateOrEdit(input.Supplier[0].ContactPerson);
 
             //--------------------newly added---------------------------
-            if (input.PaymentDetails == null)
+            if (input.PaymentDetails == null || input.PaymentDetails.Count == 0)
             {
                 var paymentD = new CreateOrEditDebitNotePaymentDetailDto()
                 {
@@ -499,7 +585,7 @@ namespace vita.Debit
                 }
             }
 
-            if (input.VATDetails == null)
+            if (input.VATDetails == null || input.VATDetails.Count == 0)
             {
                 var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
                 input.VATDetails = new List<CreateOrEditDebitNoteVATDetailDto>();
@@ -529,23 +615,23 @@ namespace vita.Debit
                 }
             }
 
-            //------------------------------------------------------
 
             foreach (var item in input.Items)
             {
+                item.Description = item.Description.Replace("\r\n", "<br />").Replace("\n", "<br />");
                 item.IRNNo = invoiceno;
-                if (string.IsNullOrWhiteSpace(item.VATCode))
-                {
-                    if (item.VATRate == 15)
-                        item.VATCode = "S";
-                    else if (item.VATRate == 0)
-                        item.VATCode = "Z";
-                    else
-                        item.VATCode = "S";
-                }
+                //if (string.IsNullOrWhiteSpace(item.VATCode))
+                //{
+                //    if (item.VATRate == 15)
+                //        item.VATCode = "S";
+                //    else if (item.VATRate == 0)
+                //        item.VATCode = "Z";
+                //    else
+                //        item.VATCode = "S";
+                //}
                 await _invoiceItemsAppService.CreateOrEdit(item);
             }
-    
+
             var response = new InvoiceResponse();
             try
             {
@@ -553,8 +639,15 @@ namespace vita.Debit
                 response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
                 response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
 
-                await _generateXmlAppService.GenerateXmlRequest_DebitNote(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(), data.UniqueIdentifier.ToString());
-
+                await _generateXmlAppService.GenerateXmlRequest(input, new UblSharp.Dtos.XMLRequestParam
+                {
+                    invoiceno = invoiceno,
+                    uniqueIdentifier = data.UniqueIdentifier.ToString(),
+                    tenantId = AbpSession.TenantId.ToString(),
+                    xml_uid = input.Additional_Info,
+                    isPhase1 = isPhase1,
+                    invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Debit
+                });
 
                 var pathToSave = string.Empty;
                 if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
@@ -563,7 +656,7 @@ namespace vita.Debit
                     pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", data.UniqueIdentifier.ToString());
                 if (!Directory.Exists(pathToSave))
                     Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
+                var xmlfileName = input.Supplier[0].VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
                 var path = (Path.Combine(pathToSave, xmlfileName));
 
                 var xmlBase64 = FileIO.GetFileInBas64(path);
@@ -572,16 +665,22 @@ namespace vita.Debit
                 var pdfHash = xmlHash;
 
 
-                var isGenFile = await _pdfReportAppService.GetPDFFile_DebitNote(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString());
+                pdfResponse = await _pdfReportAppService.GeneratePdfRequest(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Debit);
 
+                int tenantId = AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "" ? (int)AbpSession.TenantId : 0;
+                _ = Task.Run(() => AzureUpload.CopyFolderToAzureStorage(pathToSave, tenantId, data.UniqueIdentifier.ToString()));
+
+                var emaildata = mapper.Map<InvoiceRequest>(input);
+                var email = tenantConfigurationAppService.GetTenantConfigurationByTransactionType("General");
+
+                if (email.Result.TenantConfiguration.EmailJson != null && email.Result.TenantConfiguration.EmailJson !="{}")
+                {
+                    var emailsetting = (EmailDto)JsonConvert.DeserializeObject(email.Result.TenantConfiguration.EmailJson, typeof(EmailDto));
+                    _ = Task.Run(() => EmailSender.SendEmail(pdfResponse.PdfFileUrl, emaildata, emailsetting));
+                }
 
                 response.InvoiceNumber = invoiceno;
-                response.QRCode = "";
-                response.QRCodeUrl = "";
-                response.ArchivalFileUrl = "";
-                response.PreviousHash = "";
-                response.TransactionCode = "";
-                response.TypeCode = "";
+
             }
             catch (Exception ex)
             {
@@ -593,6 +692,9 @@ namespace vita.Debit
                 InvoiceId = Convert.ToInt32(invoiceno),
                 InvoiceNumber = input.InvoiceNumber,
                 Uuid = data.UniqueIdentifier,
+                PdfFileUrl = AzureUpload.GetBlobUrl(pdfResponse.PdfFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                XmlFileUrl = AzureUpload.GetBlobUrl(pdfResponse.XmlFileUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/")),
+                QRCodeUrl = AzureUpload.GetBlobUrl(pdfResponse.QRCodeUrl.Replace("wwwroot\\", "").Replace("InvoiceFiles\\", "").Replace("\\", "/"))
             };
 
         }
@@ -616,30 +718,10 @@ namespace vita.Debit
                     exceptionMessage.Append("Invoice Currency code should be SAR;");
 
                 }
-                if (!string.IsNullOrWhiteSpace(data.Buyer.VATID))
-                {
-                    if (!data.Buyer.VATID.StartsWith("3"))
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should start with 3;");
-                    }
-                    if (data.Buyer.VATID.Trim().Length != 15)
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should have 15 character length;");
-                    }
-                    if (!Regex.IsMatch(data.Buyer.VATID, "\\d{15}"))
-                    {
-                        exceptionMessage.Append("Buyer VAT Code should be Numeric;");
-                    }
-
-                }
 
                 if (!uom.Contains(data.Items.FirstOrDefault()?.UOM?.ToUpper()))
                 {
                     exceptionMessage.Append("Invalid UOM;");
-                }
-                if (!countryCode.Contains(data.Buyer?.Address?.CountryCode?.ToUpper()))
-                {
-                    exceptionMessage.Append("Invalid Buyer Country Code;");
                 }
                 if (!taxCurrencyCode.Contains(data.InvoiceCurrencyCode.ToUpper()))
                 {
@@ -737,245 +819,222 @@ namespace vita.Debit
                 return false;
             }
         }
-        public async Task<bool> GenerateInvoice_SG(CreateOrEditDebitNoteDto input, int batchId)
-        {
-            TransactionDto data = new TransactionDto();
-            string invoiceno = "";
+        //public async Task<bool> GenerateInvoice_SG(CreateOrEditDebitNoteDto input, int batchId)
+        //{
+        //    TransactionDto data = new TransactionDto();
+        //    string invoiceno = "";
 
-            using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
-            {
-                await unitOfWork.CompleteAsync();
-                input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
+        //    using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+        //    {
+        //        await unitOfWork.CompleteAsync();
+        //        input.IssueDate = _timeZoneConverter.Convert(input.IssueDate, AbpSession.TenantId, AbpSession.UserId ?? 0) ?? input.IssueDate;
 
-                input.InvoiceCurrencyCode = "SAR";
-                DataTable dt = new DataTable();
-                dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
-
-
-                if (input.Supplier == null)
-                {
-                    input.Supplier = new CreateOrEditDebitNotePartyDto();
-                    input.Supplier.Address = new CreateOrEditDebitNoteAddressDto();
-
-                }
-                input.Supplier.ContactPerson = new CreateOrEditDebitNoteContactPersonDto();
-
-                if (input.Buyer == null)
-                {
-                    input.Buyer = new CreateOrEditDebitNotePartyDto();
-                    input.Buyer.Address = new CreateOrEditDebitNoteAddressDto();
-
-                }
-                input.Buyer.ContactPerson = new CreateOrEditDebitNoteContactPersonDto();
+        //        input.InvoiceCurrencyCode = "SAR";
+        //        DataTable dt = new DataTable();
+        //        dt = await _tenantbasicdetails.GetTenantById(AbpSession.TenantId);
 
 
-                var i = 0;
-                foreach (DataRow row in dt.Rows)
-                {
+        //        if (input.Supplier == null)
+        //        {
+        //            input.Supplier = new CreateOrEditDebitNotePartyDto();
+        //            input.Supplier.Address = new CreateOrEditDebitNoteAddressDto();
 
-                    input.Supplier.VATID = row["vatid"].ToString();
-                    //Address
-                    input.Supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
-                    input.Supplier.Address.BuildingNo = row["BuildingNo"].ToString();
-                    input.Supplier.Address.Street = row["Street"].ToString();
-                    input.Supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
-                    input.Supplier.Address.PostalCode = row["PostalCode"].ToString();
-                    input.Supplier.Address.CountryCode = row["country"].ToString();
-                    input.Supplier.Address.City = row["city"].ToString();
-                    input.Supplier.Address.State = row["State"].ToString();
-                    input.Supplier.CRNumber = row["DocumentNumber"].ToString();
-                    input.Supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
+        //        }
+        //        input.Supplier.ContactPerson = new CreateOrEditDebitNoteContactPersonDto();
 
-                    i++;
+        //        if (input.Buyer == null)
+        //        {
+        //            input.Buyer = new CreateOrEditDebitNotePartyDto();
+        //            input.Buyer.Address = new CreateOrEditDebitNoteAddressDto();
+        //            input.Buyer.ContactPerson = new CreateOrEditDebitNoteContactPersonDto();
 
-                }
-                input.Buyer.Address.Type = "Buyer";
-                input.Buyer.ContactPerson.Type = "Buyer";
-                input.Buyer.Type = "Buyer";
-                input.Supplier.Address.Type = "Supplier";
-                input.Supplier.ContactPerson.Type = "Supplier";
-                input.Supplier.ContactPerson.Type = "Supplier";
-                input.Supplier.Type = "Supplier";
-
-                var a = new CreateOrEditIRNMasterDto()
-                {
-                    TransactionType = "DebitNote",
-                };
-
-                data = await _transactionsAppService.CreateOrEdit(a);
-                invoiceno = data.IRNNo.ToString();
-                input.IRNNo = invoiceno;
-                input.Buyer.IRNNo = invoiceno;
-                input.Supplier.IRNNo = invoiceno;
-                input.Supplier.Address.IRNNo = invoiceno;
-                input.Buyer.Address.IRNNo = invoiceno;
-                input.Buyer.ContactPerson.IRNNo = invoiceno;
-                input.Supplier.ContactPerson.IRNNo = invoiceno;
-                input.InvoiceSummary.IRNNo = invoiceno;
-
-                foreach (var item in input.Items)
-                {
-                    item.IRNNo = invoiceno;
-                    if (string.IsNullOrWhiteSpace(item.VATCode))
-                    {
-                        if (item.VATRate == 15)
-                            item.VATCode = "S";
-                        else if (item.VATRate == 0)
-                            item.VATCode = "Z";
-                        else
-                            item.VATCode = "S";
-                    }
-                }
-
-                string errors = await Validator(input, batchId);
-
-                if (errors != null && errors.Length > 0)
-                    await UpdateInvoiceStatus("R", batchId, input.InvoiceNumber, 0, invoiceno, errors);
-                else
-                    await UpdateInvoiceStatus("V", batchId, input.InvoiceNumber, 1, invoiceno, errors);
-
-                await CreateOrEdit(input);
-                await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
-                await _partyAppService.CreateOrEdit(input.Buyer);
-                await _partyAppService.CreateOrEdit(input.Supplier);
-                await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
-                await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
-                await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
-                await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
+        //        }
 
 
-                //--------------------newly added---------------------------
-                if (input.PaymentDetails == null)
-                {
-                    var paymentD = new CreateOrEditDebitNotePaymentDetailDto()
-                    {
-                        PaymentMeans = "Cash",
-                        PaymentTerms = "",
-                        IRNNo = invoiceno
+        //        var i = 0;
+        //        foreach (DataRow row in dt.Rows)
+        //        {
 
-                    };
-                    input.PaymentDetails = new List<CreateOrEditDebitNotePaymentDetailDto>();
-                    input.PaymentDetails.Add(paymentD);
-                    await _paymentDetailsAppService.CreateOrEdit(paymentD);
+        //            input.Supplier.VATID = row["vatid"].ToString();
+        //            //Address
+        //            input.Supplier.Address.AdditionalNo = row["AdditionalBuildingNumber"].ToString();
+        //            input.Supplier.Address.BuildingNo = row["BuildingNo"].ToString();
+        //            input.Supplier.Address.Street = row["Street"].ToString();
+        //            input.Supplier.Address.AdditionalStreet = row["AdditionalStreet"].ToString();
+        //            input.Supplier.Address.PostalCode = row["PostalCode"].ToString();
+        //            input.Supplier.Address.CountryCode = row["country"].ToString();
+        //            input.Supplier.Address.City = row["city"].ToString();
+        //            input.Supplier.Address.State = row["State"].ToString();
+        //            input.Supplier.CRNumber = row["DocumentNumber"].ToString();
+        //            input.Supplier.ContactPerson.ContactNumber = row["ContactNumber"].ToString();
 
-                }
-                else
-                {
-                    foreach (var paymentDetail in input.PaymentDetails)
-                    {
-                        paymentDetail.IRNNo = invoiceno;
-                        await _paymentDetailsAppService.CreateOrEdit(paymentDetail);
-                    }
-                }
+        //            i++;
 
-                if (input.VATDetails == null)
-                {
-                    var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
-                    input.VATDetails = new List<CreateOrEditDebitNoteVATDetailDto>();
+        //        }
+        //        input.Buyer.Address.Type = "Buyer";
+        //        input.Buyer.ContactPerson.Type = "Buyer";
+        //        input.Buyer.Type = "Buyer";
+        //        input.Supplier.Address.Type = "Supplier";
+        //        input.Supplier.ContactPerson.Type = "Supplier";
+        //        input.Supplier.ContactPerson.Type = "Supplier";
+        //        input.Supplier.Type = "Supplier";
 
-                    foreach (var item in details)
-                    {
-                        var vatdata = new CreateOrEditDebitNoteVATDetailDto();
-                        vatdata.IRNNo = invoiceno;
-                        vatdata.VATRate = (decimal)input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATRate;
-                        vatdata.TaxSchemeId = "VAT";
-                        vatdata.ExcemptionReasonCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonCode;
-                        vatdata.ExcemptionReasonText = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonText;
-                        vatdata.VATCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATCode;
-                        vatdata.TaxAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.VATAmount);
-                        vatdata.TaxableAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.NetPrice);
-                        vatdata.CurrencyCode = "SAR";
-                        input.VATDetails.Add(vatdata);
-                        await _vatDetailsAppService.CreateOrEdit(vatdata);
-                    }
-                }
-                else
-                {
-                    foreach (var vatDetail in input.VATDetails)
-                    {
-                        vatDetail.IRNNo = invoiceno;
-                        await _vatDetailsAppService.CreateOrEdit(vatDetail);
-                    }
-                }
+        //        var a = new CreateOrEditIRNMasterDto()
+        //        {
+        //            TransactionType = "DebitNote",
+        //        };
 
-                //------------------------------------------------------
+        //        data = await _transactionsAppService.CreateOrEdit(a);
+        //        invoiceno = data.IRNNo.ToString();
+        //        input.IRNNo = invoiceno;
+        //        input.Buyer.IRNNo = invoiceno;
+        //        input.Supplier.IRNNo = invoiceno;
+        //        input.Supplier.Address.IRNNo = invoiceno;
+        //        input.Buyer.Address.IRNNo = invoiceno;
+        //        input.Buyer.ContactPerson.IRNNo = invoiceno;
+        //        input.Supplier.ContactPerson.IRNNo = invoiceno;
+        //        input.InvoiceSummary.IRNNo = invoiceno;
 
-                foreach (var item in input.Items)
-                {
-                    await _invoiceItemsAppService.CreateOrEdit(item);
-                }
-            }
+        //        foreach (var item in input.Items)
+        //        {
+        //            item.IRNNo = invoiceno;
+        //            if (string.IsNullOrWhiteSpace(item.VATCode))
+        //            {
+        //                if (item.VATRate == 15)
+        //                    item.VATCode = "S";
+        //                else if (item.VATRate == 0)
+        //                    item.VATCode = "Z";
+        //                else
+        //                    item.VATCode = "S";
+        //            }
+        //        }
+
+        //        string errors = await Validator(input, batchId);
+
+        //        if (errors != null && errors.Length > 0)
+        //            await UpdateInvoiceStatus("R", batchId, input.InvoiceNumber, 0, invoiceno, errors);
+        //        else
+        //            await UpdateInvoiceStatus("V", batchId, input.InvoiceNumber, 1, invoiceno, errors);
+
+        //        await CreateOrEdit(input);
+        //        await _invoiceSummariesAppService.CreateOrEdit(input.InvoiceSummary);
+        //        await _partyAppService.CreateOrEdit(input.Buyer);
+        //        await _partyAppService.CreateOrEdit(input.Supplier);
+        //        await _invoiceAddressesAppService.CreateOrEdit(input.Buyer.Address);
+        //        await _invoiceAddressesAppService.CreateOrEdit(input.Supplier.Address);
+        //        await _contactPersonsAppService.CreateOrEdit(input.Buyer.ContactPerson);
+        //        await _contactPersonsAppService.CreateOrEdit(input.Supplier.ContactPerson);
 
 
-            // _dbContextProvider.GetDbContext().Database.CommitTransaction();
+        //        //--------------------newly added---------------------------
+        //        if (input.PaymentDetails == null)
+        //        {
+        //            var paymentD = new CreateOrEditDebitNotePaymentDetailDto()
+        //            {
+        //                PaymentMeans = "Cash",
+        //                PaymentTerms = "",
+        //                IRNNo = invoiceno
 
-            var response = new InvoiceResponse();
-            try
-            {
-                response.PdfFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".pdf";
-                response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
-                response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
+        //            };
+        //            input.PaymentDetails = new List<CreateOrEditDebitNotePaymentDetailDto>();
+        //            input.PaymentDetails.Add(paymentD);
+        //            await _paymentDetailsAppService.CreateOrEdit(paymentD);
 
-                //   _ = Task.Run(() => XmlPdfJob(input,data.UniqueIdentifier,invoiceno,batchId));
-                Guid uuid = data.UniqueIdentifier;
-                await _generateXmlAppService.GenerateXmlRequest_DebitNote(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString(),input.Additional_Info);
-                await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
+        //        }
+        //        else
+        //        {
+        //            foreach (var paymentDetail in input.PaymentDetails)
+        //            {
+        //                paymentDetail.IRNNo = invoiceno;
+        //                await _paymentDetailsAppService.CreateOrEdit(paymentDetail);
+        //            }
+        //        }
 
-                var pathToSave = string.Empty;
-                if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
-                else
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
-                if (!Directory.Exists(pathToSave))
-                    Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
-                var path = (Path.Combine(pathToSave, xmlfileName));
-                await _pdfReportAppService.GetPDFFile_DebitNote(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
+        //        if (input.VATDetails == null)
+        //        {
+        //            var details = input.Items.Select(p => p.VATCode).Distinct().ToList();
+        //            input.VATDetails = new List<CreateOrEditDebitNoteVATDetailDto>();
 
-                response.InvoiceNumber = invoiceno;
-                response.QRCode = "";
-                response.QRCodeUrl = "";
-                response.ArchivalFileUrl = "";
-                response.PreviousHash = "";
-                response.TransactionCode = "";
-                response.TypeCode = "";
+        //            foreach (var item in details)
+        //            {
+        //                var vatdata = new CreateOrEditDebitNoteVATDetailDto();
+        //                vatdata.IRNNo = invoiceno;
+        //                vatdata.VATRate = (decimal)input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATRate;
+        //                vatdata.TaxSchemeId = "VAT";
+        //                vatdata.ExcemptionReasonCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonCode;
+        //                vatdata.ExcemptionReasonText = input.Items.Where(p => p.VATCode == item).FirstOrDefault().ExcemptionReasonText;
+        //                vatdata.VATCode = input.Items.Where(p => p.VATCode == item).FirstOrDefault().VATCode;
+        //                vatdata.TaxAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.VATAmount);
+        //                vatdata.TaxableAmount = input.Items.Where(p => p.VATCode == item).Sum(p => p.NetPrice);
+        //                vatdata.CurrencyCode = "SAR";
+        //                input.VATDetails.Add(vatdata);
+        //                await _vatDetailsAppService.CreateOrEdit(vatdata);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            foreach (var vatDetail in input.VATDetails)
+        //            {
+        //                vatDetail.IRNNo = invoiceno;
+        //                await _vatDetailsAppService.CreateOrEdit(vatDetail);
+        //            }
+        //        }
 
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-            }
-            //  await _dbContextProvider.GetDbContext().SaveChangesAsync();
-            return true;
+        //        //------------------------------------------------------
 
-        }
+        //        foreach (var item in input.Items)
+        //        {
+        //            await _invoiceItemsAppService.CreateOrEdit(item);
+        //        }
+        //    }
 
-        public async void XmlPdfJob(CreateOrEditDebitNoteDto input, Guid uuid, string invoiceno, int batchId)
-        {
-            try
-            {
 
-                await _generateXmlAppService.GenerateXmlRequest_DebitNote(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
+        //    // _dbContextProvider.GetDbContext().Database.CommitTransaction();
 
-                var pathToSave = string.Empty;
-                if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
-                else
-                    pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
-                if (!Directory.Exists(pathToSave))
-                    Directory.CreateDirectory(pathToSave);
-                var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
-                var path = (Path.Combine(pathToSave, xmlfileName));
-                await _pdfReportAppService.GetPDFFile_DebitNote(input, invoiceno, uuid.ToString(), AbpSession.TenantId.ToString());
-                await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
-            }
-        }
+        //    var response = new InvoiceResponse();
+        //    try
+        //    {
+        //        response.PdfFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".pdf";
+        //        response.XmlFileUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".xml";
+        //        response.QRCodeUrl = data.UniqueIdentifier + "_" + invoiceno.ToString() + ".png";
+
+        //        //   _ = Task.Run(() => XmlPdfJob(input,data.UniqueIdentifier,invoiceno,batchId));
+        //        Guid uuid = data.UniqueIdentifier;
+        //        await _generateXmlAppService.GenerateXmlRequest(input, new UblSharp.Dtos.XMLRequestParam
+        //        {
+        //            invoiceno = invoiceno,
+        //            uniqueIdentifier = data.UniqueIdentifier.ToString(),
+        //            tenantId = AbpSession.TenantId.ToString(),
+        //            xml_uid = input.Additional_Info,
+        //            invoiceType = EInvoicing.Dto.InvoiceTypeEnum.Debit
+        //        });
+
+        //        await UpdateInvoiceStatus("X", batchId, input.InvoiceNumber, 3);
+
+        //        var pathToSave = string.Empty;
+        //        if (AbpSession.TenantId != null && AbpSession.TenantId.ToString() != "")
+        //            pathToSave = Path.Combine("wwwroot/InvoiceFiles/" + AbpSession.TenantId, uuid.ToString());
+        //        else
+        //            pathToSave = Path.Combine("wwwroot/InvoiceFiles/0/", uuid.ToString());
+        //        if (!Directory.Exists(pathToSave))
+        //            Directory.CreateDirectory(pathToSave);
+        //        var xmlfileName = input.Supplier.VATID + "_" + input.IssueDate.ToString("ddMMyyyy").Replace("-", String.Empty) + "T" + input.IssueDate.ToString("HH:mm:ss").Replace(":", String.Empty) + "_" + invoiceno + ".xml";
+        //        var path = (Path.Combine(pathToSave, xmlfileName));
+        //        await _pdfReportAppService.GeneratePdfRequest(input, invoiceno, data.UniqueIdentifier.ToString(), AbpSession.TenantId.ToString(), EInvoicing.Dto.InvoiceTypeEnum.Debit);
+
+        //        await UpdateInvoiceStatus("I", batchId, input.InvoiceNumber, 4);
+
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine(ex.ToString());
+        //    }
+        //    //  await _dbContextProvider.GetDbContext().SaveChangesAsync();
+        //    return true;
+
+        //}
 
 
         [AbpAuthorize(AppPermissions.Pages_DebitNotes_Create)]
@@ -1007,6 +1066,6 @@ namespace vita.Debit
             await _debitNoteRepository.DeleteAsync(input.Id);
         }
 
-        
+
     }
 }

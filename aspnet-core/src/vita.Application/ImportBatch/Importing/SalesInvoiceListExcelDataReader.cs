@@ -10,6 +10,9 @@ using NPOI.SS.UserModel;
 using vita.ImportBatch.Dtos;
 using System.Text.RegularExpressions;
 using vita.ImportBatch.Dtos;
+using Org.BouncyCastle.Utilities;
+using System.IO;
+using NPOI.XSSF.UserModel;
 
 namespace vita.ImportBatch.Importing
 {
@@ -45,6 +48,46 @@ namespace vita.ImportBatch.Importing
         //{
         //    return ProcessExcelFile(fileBytes, ProcessExcelRow);
         //}
+
+        public byte[] ConvertCsvToExcel(byte[] csvBytes)
+        {
+            using (MemoryStream csvStream = new MemoryStream(csvBytes))
+            {
+                // Read CSV using StreamReader
+                using (StreamReader csvReader = new StreamReader(csvStream))
+                {
+                    // Create a new Excel workbook
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("Sheet1");
+
+                    int rowIndex = 0;
+                    string line;
+                    while ((line = csvReader.ReadLine()) != null)
+                    {
+                        string[] values = line.Split(',');
+
+                        // Create a new Excel row
+                        IRow row = sheet.CreateRow(rowIndex);
+
+                        for (int colIndex = 0; colIndex < values.Length; colIndex++)
+                        {
+                            // Set cell values for each column in the row
+                            row.CreateCell(colIndex).SetCellValue(values[colIndex]);
+                        }
+
+                        rowIndex++;
+                    }
+
+                    // Convert Excel data to byte array
+                    using (MemoryStream excelStream = new MemoryStream())
+                    {
+                        workbook.Write(excelStream);
+                        return excelStream.ToArray();
+                    }
+                }
+            }
+        }
+
 
         public List<Dictionary<string, string>> GetInvoiceFromExcelCustom(byte[] fileBytes)
         {
@@ -114,7 +157,7 @@ namespace vita.ImportBatch.Importing
 
                 for (int i = 0; i < properties.Count; i++)
                 {
-                    objResult.Add(properties[i], csv[i]);
+                    objResult.Add(properties[i].Trim(), csv[i]);
                 }
                 objResult.Add("xml_uuid", Guid.NewGuid().ToString());
             }

@@ -39,5 +39,7 @@ namespace vita.Credit.Dtos
 
         public decimal AdvanceVat { get; set; }
 
+        public string AdditionalData1 { get; set; }
+
     }
 }

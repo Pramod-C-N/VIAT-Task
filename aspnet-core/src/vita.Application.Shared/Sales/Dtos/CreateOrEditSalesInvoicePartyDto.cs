@@ -20,8 +20,18 @@ namespace vita.Sales.Dtos
         public string OtherID { get; set; }
 
         public string CustomerId { get; set; }
-            
+
         public string Type { get; set; }
+
+        public string Language { get; set; }
+        public string AdditionalData1 { get; set; }
+
+        public string OtherDocumentTypeId { get; set; }
+
+        public string FaxNo { get; set; }
+
+        public string Website { get; set; }
+
         public CreateOrEditSalesInvoiceAddressDto Address { get; set; }
         public CreateOrEditSalesInvoiceContactPersonDto ContactPerson { get; set; }
 

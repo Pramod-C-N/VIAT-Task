@@ -4,9 +4,50 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Entities;
 using Abp.Auditing;
+using System.Collections.Generic;
 
 namespace vita.Sales
 {
+
+
+
+    public class FileMappingModel
+    {
+        public List<string> UploadedFields { get; set; }
+        public string FieldForMapping { get; set; }
+        public string DefaultValue { get; set; }
+        public List<TransformAction> Transform { get; set; }
+        public string DataType { get; set; }
+
+        public List<string> Combination { get; set; }
+
+
+    }
+
+    public class AvailableFields
+    {
+        public string Name { get; set; }
+        public List<Columns> Columns { get; set; }
+    }
+
+    public class Columns
+    {
+        public string Name { get; set; }
+        public string DefaultValue { get; set; }
+        public string DataType { get; set; }
+    }
+
+    public class TransformAction
+    {
+        public string Field { get; set; }
+        public string Operation { get; set; }
+        public List<string> Args { get; set; }
+        public int StepNum { get; set; }
+        public string Output { get; set; }
+    }
+
+
+
     [Table("SalesInvoice")]
     [Audited]
     public class SalesInvoice : FullAuditedEntity<long>, IMayHaveTenant
@@ -81,6 +122,20 @@ namespace vita.Sales
         public virtual string BusinessProcessType { get; set; }
 
         public virtual string InvoiceNotes { get; set; }
+
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string XmlUuid { get; set; }
+
+        public virtual string InvoiceTypeCode { get; set; }
+
+        public virtual string Language { get; set; }
+
+        public virtual string AdditionalData2 { get; set; }
+
+        public virtual string AdditionalData3 { get; set; }
+
+        public virtual string AdditionalData4 { get; set; }
 
     }
 }

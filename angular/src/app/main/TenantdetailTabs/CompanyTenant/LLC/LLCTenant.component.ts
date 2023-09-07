@@ -48,7 +48,8 @@ import {
     CreateOrEditTenantSupplyVATCategoryDto,
     CreateOrEditTenantBusinessSuppliesDto,
     DesignationServiceProxy,
-    GetDesignationForViewDto
+    GetDesignationForViewDto,
+    TenantRegistrationServiceProxy
 } from '@shared/service-proxies/service-proxies';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppSessionService } from '@shared/common/session/app-session.service';
@@ -56,6 +57,7 @@ import { Location } from '@angular/common';
 import { FileUploader, FileUploaderOptions } from 'ng2-file-upload';
 import { IAjaxResponse, TokenService } from 'abp-ng2-module';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'LLCTenant',
@@ -104,6 +106,7 @@ export class LLCTenantComponent extends AppComponentBase {
     logoUploader: FileUploader;
     customCssUploader: FileUploader;
     doctype: GetDocumentMasterForViewDto[] = [];
+    vatid: string;
     transtype: GetTransactionCategoryForViewDto[] = [];
     taxcat: GetTaxCategoryForViewDto[] = [];
     invoicetype: GetInvoiceTypeForViewDto[] = [];
@@ -131,6 +134,7 @@ export class LLCTenantComponent extends AppComponentBase {
         private _masterInvoiceTypeServiceProxy: InvoiceTypeServiceProxy,
         private _masterSectorServiceProxy: SectorServiceProxy,
         private _masterBusinessCategoryServiceProxy: TransactionCategoryServiceProxy,
+        private _tenantRegistrationService: TenantRegistrationServiceProxy,
         private _masterTaxCategoryServiceProxy: TaxCategoryServiceProxy,
         private _designationServiceProxy: DesignationServiceProxy,
 
@@ -305,6 +309,7 @@ export class LLCTenantComponent extends AppComponentBase {
     show(tenantId: number): void {
         this.active = true;
         this._tenantbasicdetailsServiceProxy.getTenantById(tenantId).subscribe((data) => {
+            console.log(data,'data');
             this.tenants.vatid = data[0]?.vatid;
             this.tenants.emailID = data[0].emailID?.trim();
             this.tenants.nationality = data[0].nationality?.trim();
@@ -315,8 +320,7 @@ export class LLCTenantComponent extends AppComponentBase {
             this.tenants.businessCategory = data[0].businessCategory?.trim();
             this.tenants.operationalModel = data[0].operationalModel?.trim();
             this.tenants.turnoverSlab = data[0].turnoverSlab?.trim();
-            this.tenants.lastReturnFiled = data[0].lastReturnFiled?.trim();
-            this.tenants.vatReturnFillingFrequency = data[0].vatReturnFillingFrequency?.trim();
+this.tenants.lastReturnFiled = data[0].lastReturnFiled1?.trim();            this.tenants.vatReturnFillingFrequency = data[0].vatReturnFillingFrequency?.trim();
             this.address.buildingNo = data[0]?.buildingNo;
             this.address.additionalBuildingNumber = data[0]?.additionalBuildingNumber;
             this.address.street = data[0]?.street?.trim();
@@ -327,12 +331,15 @@ export class LLCTenantComponent extends AppComponentBase {
             this.address.postalCode = data[0]?.postalCode;
             this.address.neighbourhood = data[0]?.neighbourhood?.trim();
             this.documents.documentNumber = data[0].documentNumber?.trim();
+            this.vatid=data[0]?.vatid;
 
             this.BusinessPurchase.businessPurchase = data[0].businessPurchase?.trim();
             this.businessSupplies.businessSupplies = data[0].businessSupplies?.trim();
             this.supplyVATCategory.vatCategoryName = data[0].vatCategoryName?.trim();
             this.purchaseVatCateory.vatCategoryName = data[0].vatCategoryName?.trim();
             for (let i = 0; i < data.length; i++) {
+                if(data[i].documentType != null || data[i].documentType != undefined)
+                {
                 this.Documentitem.docUniqueId = data[i].docunique;
               this.Documentitem.docUniqueId = data[i].docunique;
               this.Documentitem.documentId = data[i].documentId;
@@ -341,12 +348,15 @@ export class LLCTenantComponent extends AppComponentBase {
               this.Documentitem.registrationDate = data[i].registrationDate;
               this.Documentitems.push(this.Documentitem);
               this.Documentitem = new CreateOrEditTenantDocumentsDto();
+                }
             }
             this.tenants.address = this.address;
             this.tenants.documents = this.Documentitems;
         });
         this._tenantbasicdetailsServiceProxy.getTenantpartnerinfoById(tenantId).subscribe((patdata) => {
             for (let i = 0; i < patdata.length; i++) {
+                if(patdata[i].patunique != null || patdata[i].patunique != undefined)
+                {
             this.partnerShareHolderItem.shareUniqueId = patdata[i].patunique;
               this.partnerShareHolderItem.partnerName = patdata[i].partnerName;
               this.partnerShareHolderItem.constitutionName = patdata[i].constitutionName;
@@ -359,19 +369,42 @@ export class LLCTenantComponent extends AppComponentBase {
               this.partnerShareHolderItem.nationality = patdata[i].nationality;
               this.partnerShareHolderItems.push(this.partnerShareHolderItem);
               this.partnerShareHolderItem = new CreateOrEditTenantShareHoldersDto();
+                }
             }
         });
     }
+    async isvatRegistered(){
+        //return false 
+        if((this.tenants.vatid).charAt(10)!='1')
+        {
+            if(this.vatid != this.tenants.vatid)
+            {
+           var res = await firstValueFrom(this._tenantRegistrationService.checkIfVatExists(this.tenants.vatid,true))
+            return res
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return res;
+        }
+    }
 
-
-    updatedetails() {
+    async updatedetails() {
+        if(await this.isvatRegistered()){
+            this.notify.error(this.l('Entered VAT Number  already exists'));
+          return null;
+        }
             if (
                 (this.tenants.vatid == null || this.tenants.vatid === undefined || !this.tenants.vatid) &&
                 (this.documents.documentNumber === null ||
                     this.documents.documentNumber === undefined ||
                     !this.documents.documentNumber)
             ) {
-                this.notify.error(this.l('Please fill either CR number or VAT ID to save.'));
+                this.notify.error(this.l('Please fill either CR number or VAT number to save.'));
             } else {
                 if (this.type === 'Update') {
                     this.tenants.id = this.tenantid;
@@ -387,6 +420,7 @@ export class LLCTenantComponent extends AppComponentBase {
                         .pipe(finalize(() => (this.saving = false)))
                         .subscribe(() => {
                             this.notify.success(this.l('UpdatedSuccessfully'));
+                            window.location.reload()
                             this.state.emit();
                         });
                 } else {

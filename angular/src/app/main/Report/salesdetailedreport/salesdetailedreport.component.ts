@@ -38,40 +38,40 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
     toDate: Date;
     invoices: any[] = [];
     selectedInvoices: any[] = [];
-    code:string;
-    vatAmount: number = 0;
-    totalAmount: number = 0;
-    taxableAmount: number = 0;
-    zeroRated: number = 0;
-    health: number = 0;
-    export: number = 0;
-    exempt: number = 0;
-    Gov:number=0;
-    OutofScope:number=0;
-    vatrate:number=0;
-    isdisable:boolean=false;
+    code: string;
+    vatAmount = 0;
+    totalAmount = 0;
+    taxableAmount = 0;
+    zeroRated = 0;
+    health = 0;
+    export = 0;
+    exempt = 0;
+    Gov = 0;
+    OutofScope = 0;
+    vatrate = 0;
+    isdisable = false;
 
     //-----------------------------Export to Excel--------------------------------
-    columns: any[]= [
+    columns: any[] = [
       { field: 'invoiceDate', header: 'Invoice Date' },
       { field: 'irnNo', header: 'IRN No' },
       { field: 'invoicenumber', header: 'Invoice Number' },
-      {field:"taxableAmount",header:"Taxable Amount"},
-      {field:"govtTaxableAmt",header:"Govt Taxable Amount"},
-      {field:"zeroRated",header:"Zero Rated"},
-      {field:"exempt",header:"Exempt"},
-      {field:"exports",header:"Exports"},
-      {field:"outofScope",header:"Out of Scope"},
-      {field:"vatrate",header:"VAT Rate"},
-      {field:"vatAmount",header:"VAT Amount"},
-      {field:"totalAmount",header:"Total Amount"}];
+      {field: 'taxableAmount', header: 'Taxable Amount'},
+      {field: 'govtTaxableAmt', header: 'Govt Taxable Amount'},
+      {field: 'zeroRated', header: 'Zero Rated'},
+      {field: 'exempt', header: 'Exempt'},
+      {field: 'exports', header: 'Exports'},
+      {field: 'outofScope', header: 'Out of Scope'},
+      {field: 'vatrate', header: 'VAT Rate'},
+      {field: 'vatAmount', header: 'VAT Amount'},
+      {field: 'totalAmount', header: 'Total Amount'}];
 
 
   exportColumns: any[] = this.columns.map(col => ({title: col.header, dataKey: col.field}));
   _selectedColumns: any[] = this.columns;
 
-  
-  
+
+
   @Input() get selectedColumns(): any[] {
     return this._selectedColumns;
   }
@@ -93,17 +93,17 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
 
     ) {
       super(injector);
-  
+
   }
-    
+
 
 
     //ngoninit
 
     ngOnInit(): void {
-      this.code='VATSAL000'
-      this.tenantId = this._sessionService.tenantId
-      this.tenantName = this._sessionService.tenancyName
+      this.code = 'VATSAL000';
+      this.tenantId = this._sessionService.tenantId;
+      this.tenantName = this._sessionService.tenancyName;
     }
 
 
@@ -114,16 +114,16 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
       this.totalAmount = 0;
       this.health = 0;
       this.exempt = 0;
-      this.zeroRated=0;
-      this.Gov=0;
-      this.OutofScope=0;
+      this.zeroRated = 0;
+      this.Gov = 0;
+      this.OutofScope = 0;
     }
 
     getSalesDetailedReport() {
       this.ResetData();
-      this.isdisable=true;
-      this._ReportServiceProxy.getSalesDetailedReport(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()),this.code)
-      .pipe(finalize(() => this.isdisable=false))
+      this.isdisable = true;
+      this._ReportServiceProxy.getSalesDetailedReport(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, undefined,undefined,undefined)
+      .pipe(finalize(() => this.isdisable = false))
       .subscribe((result) => {
         console.log(result);
         this.invoices = result;
@@ -134,10 +134,10 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
           this.totalAmount = this.totalAmount + element.totalAmount;
         //  this.health = this.health + element.zeroRated;
           this.exempt = this.exempt + element.exempt;
-          this.zeroRated+=element.zeroRated;
-          this.Gov+=element.govtTaxableAmt;
-          this.OutofScope+=element.outofScope;
-          this.vatrate+=element.vatrate;
+          this.zeroRated += element.zeroRated;
+          this.Gov += element.govtTaxableAmt;
+          this.OutofScope += element.outofScope;
+          this.vatrate += element.vatrate;
         });
       });
     }
@@ -150,25 +150,25 @@ import { FileDownloadService } from '@shared/utils/file-download.service';
       return null;
     }
 
-    
+
     clear(table: Table) {
       table.clear();
   }
 
-  addFooter(li:any[]):any[]{
-    li.push({invoiceDate:"Total",taxableAmount:this.taxableAmount,govtTaxableAmt:this.Gov,zeroRated:this.zeroRated,exempt:this.exempt,exports:this.export,outofScope:this.OutofScope,vatAmount:this.vatAmount,totalAmount:this.totalAmount})
+  addFooter(li: any[]): any[]{
+    li.push({invoiceDate: 'Total', taxableAmount: this.taxableAmount, govtTaxableAmt: this.Gov, zeroRated: this.zeroRated, exempt: this.exempt, exports: this.export, outofScope: this.OutofScope, vatAmount: this.vatAmount, totalAmount: this.totalAmount});
    console.log(li);
     return li;
   }
 
-  removeFooter(li:any[]):any[]{
+  removeFooter(li: any[]): any[]{
     console.log(li);
     li.pop();
     return li;
    }
 
-   downloadExcel(li:any[]){
-    this._ReportServiceProxy.getSalesDetailedToExcel(this.parseDate(this.dateRange[0].toString()),this.parseDate(this.dateRange[1].toString()),this.code,'SalesDetailedReport',this.tenantName,false)
+   downloadExcel(li: any[]){
+    this._ReportServiceProxy.getSalesDetailedToExcel(this.parseDate(this.dateRange[0].toString()), this.parseDate(this.dateRange[1].toString()), this.code, undefined,undefined,undefined, 'SalesDetailedReport', this.tenantName, false)
     .subscribe((result) => {
         this._fileDownloadService.downloadTempFile(result);
     });

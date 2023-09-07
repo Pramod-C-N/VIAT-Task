@@ -7,7 +7,7 @@ namespace vita.Debit.Dtos
     public class CreateOrEditDebitNoteSummaryDto : EntityDto<long?>
     {
 
-        
+
         public string IRNNo { get; set; }
 
         public decimal NetInvoiceAmount { get; set; }
@@ -39,6 +39,10 @@ namespace vita.Debit.Dtos
         public decimal AdvanceAmountwithoutVat { get; set; }
 
         public decimal AdvanceVat { get; set; }
+
+
+        public string AdditionalData1 { get; set; }
+
 
     }
 }

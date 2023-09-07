@@ -33,59 +33,61 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetExemptionReasonForViewDto>> GetAll(GetAllExemptionReasonInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredExemptionReason = _exemptionReasonRepository.GetAll()
+                var filteredExemptionReason = _exemptionReasonRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredExemptionReason = filteredExemptionReason
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredExemptionReason = filteredExemptionReason
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var exemptionReason = from o in pagedAndFilteredExemptionReason
-                                  select new
-                                  {
+                var exemptionReason = from o in pagedAndFilteredExemptionReason
+                                      select new
+                                      {
 
-                                      o.Name,
-                                      o.Description,
-                                      o.Code,
-                                      o.IsActive,
-                                      Id = o.Id
-                                  };
+                                          o.Name,
+                                          o.Description,
+                                          o.Code,
+                                          o.IsActive,
+                                          Id = o.Id
+                                      };
 
-            var totalCount = await filteredExemptionReason.CountAsync();
+                var totalCount = await filteredExemptionReason.CountAsync();
 
-            var dbList = await exemptionReason.ToListAsync();
-            var results = new List<GetExemptionReasonForViewDto>();
+                var dbList = await exemptionReason.ToListAsync();
+                var results = new List<GetExemptionReasonForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetExemptionReasonForViewDto()
+                foreach (var o in dbList)
                 {
-                    ExemptionReason = new ExemptionReasonDto
+                    var res = new GetExemptionReasonForViewDto()
                     {
+                        ExemptionReason = new ExemptionReasonDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetExemptionReasonForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetExemptionReasonForViewDto>(
-                totalCount,
-                results
-            );
-
         }
-
         public async Task<GetExemptionReasonForViewDto> GetExemptionReasonForView(int id)
         {
             var exemptionReason = await _exemptionReasonRepository.GetAsync(id);

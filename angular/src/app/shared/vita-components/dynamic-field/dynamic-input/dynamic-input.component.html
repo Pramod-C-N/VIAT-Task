@@ -1,0 +1,29 @@
+<form [formGroup]="formName">
+    <div *ngIf="field.formGroupName!=''" formGroupName="{{ field.formGroupName}}" class="form-floating">
+        <input
+            class="form-control form-control-lg form-control-solid"
+            [type]="field.type"
+            [id]="field.fieldName"
+            placeholder="{{ field?.placeholder }}"
+            [formControlName]="field.fieldName"
+            [max]="field.max"
+            [min]="field.min"
+        />
+        <label style="text-align: left;" [for]="field.fieldName"  [ngClass]="{'required': field?.rules?.required}">{{  field?.placeholder }}
+        </label>
+
+    </div>
+    <div *ngIf="field.formGroupName==''" class="form-floating">
+        <input
+            class="form-control form-control-lg form-control-solid"
+            [type]="field.type"
+            [id]="field.fieldName"
+            placeholder="{{ field?.placeholder }}"
+            [formControlName]="field.fieldName"
+            [max]="field.max"
+            [min]="field.min"
+        />
+        <label style="text-align: left;" [for]="field.fieldName" [ngClass]="{'required': field?.rules?.required}">{{  field?.placeholder }}</label>
+
+    </div>
+</form>

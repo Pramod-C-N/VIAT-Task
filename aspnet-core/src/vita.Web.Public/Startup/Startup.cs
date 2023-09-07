@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
+using Abp.AspNetCore.Mvc.ExceptionHandling;
 using Abp.AspNetCore.Mvc.Extensions;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using vita.Configuration;
 using vita.Identity;
 using vita.Web.HealthCheck;
@@ -38,8 +41,13 @@ namespace vita.Web.Public.Startup
             //MVC
             services.AddControllersWithViews(options =>
             {
+
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+
+
             }).AddNewtonsoftJson();
+
+
 
             if (bool.Parse(_appConfiguration["KestrelServer:IsEnabled"]))
             {
@@ -81,7 +89,7 @@ namespace vita.Web.Public.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAbp(); //Initializes ABP framework.
-
+        
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

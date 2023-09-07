@@ -1,0 +1,65 @@
+<div class="row gx-10 mb-2" style="padding-left: 1%; padding-right: 1%">
+    <div class="col-md-3 px-1">
+        <div class="form-floating">
+            <select [(ngModel)]="filterName" class="form-select form-select-solid form-select-lg pb-0" id="select">
+                <option value="undefined" selected disabled>Select a Filter...</option>
+                <option value="any">Any</option>
+                <option *ngFor="let cols of fields" [value]="cols.field">
+                    {{ cols.header }}
+                </option>
+            </select>
+            <label style="text-align: left" for="select">Select Filter</label>
+        </div>
+    </div>
+    <div class="col-md-3 px-1">
+        <div class="form-floating">
+            <input
+                type="text"
+                [(ngModel)]="searchText"
+                class="form-control form-control-lg form-control-solid"
+                id="searchtext"
+                name="searchtext"
+                placeholder="Buyer Code"
+                value=""
+            />
+            <label style="text-align: left" for="searchtext">Text</label>
+        </div>
+    </div>
+    <div class="col-md-4 px-1 form-floating">
+        <input
+            class="form-control form-control-lg form-control-solid"
+            id="StartEndRange"
+            name="StartEndRange"
+            #drp="bsDaterangepicker"
+            readonly="readonly"
+            bsDaterangepicker
+            dateRangePickerLuxonModifier
+            [(date)]="dateRange"
+            placement="bottom right"
+            [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
+        />
+        <label style="text-align: left" for="StartEndRange">Date</label>
+
+        <!-- (bsValueChange)="searchData()" -->
+    </div>
+    <div class="col-lg-2 d-flex align-items-center justify-content-end">
+        <div class="btn-group" dropdown container="body">
+            <a
+                class="btn nav-link w-100 btn-sm fw-bold"
+                (click)="search()"
+                [ngStyle]="{
+                    'text-align': 'center',
+                    color: 'white',
+                    'border-color': '#20AAF8',
+                    border: '1px solid',
+                    'background-color': '#20AAF8'
+                }"
+            >
+                Search
+            </a>
+        </div>
+        <div class="px-5">
+            <span style="font-size: 2rem; color: black; cursor: pointer" class="bi bi-arrow-clockwise" (click)="clear()"></span>
+        </div>
+    </div>
+</div>

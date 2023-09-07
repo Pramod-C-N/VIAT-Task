@@ -49,5 +49,13 @@ namespace vita.TenantDetails
 
         public virtual string TimeZone { get; set; }
 
+        public virtual bool isPhase1 { get; set; }
+
+        public virtual string FaxNo { get; set; }
+
+        public virtual string Website { get; set; }
+
+        public virtual string LangTenancyName { get; set; }
+
     }
 }

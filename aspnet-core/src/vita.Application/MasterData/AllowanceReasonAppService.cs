@@ -33,57 +33,60 @@ namespace vita.MasterData
 
         public async Task<PagedResultDto<GetAllowanceReasonForViewDto>> GetAll(GetAllAllowanceReasonInput input)
         {
+            using (CurrentUnitOfWork.SetTenantId(null))
+            {
 
-            var filteredAllowanceReason = _allowanceReasonRepository.GetAll()
+                var filteredAllowanceReason = _allowanceReasonRepository.GetAll()
                         .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), e => false || e.Name.Contains(input.Filter) || e.Description.Contains(input.Filter) || e.Code.Contains(input.Filter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.NameFilter), e => e.Name.Contains(input.NameFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.DescriptionFilter), e => e.Description.Contains(input.DescriptionFilter))
                         .WhereIf(!string.IsNullOrWhiteSpace(input.CodeFilter), e => e.Code.Contains(input.CodeFilter))
                         .WhereIf(input.IsActiveFilter.HasValue && input.IsActiveFilter > -1, e => (input.IsActiveFilter == 1 && e.IsActive) || (input.IsActiveFilter == 0 && !e.IsActive));
 
-            var pagedAndFilteredAllowanceReason = filteredAllowanceReason
-                .OrderBy(input.Sorting ?? "id asc")
-                .PageBy(input);
+                var pagedAndFilteredAllowanceReason = filteredAllowanceReason
+                    .OrderBy(input.Sorting ?? "id asc")
+                    .PageBy(input);
 
-            var allowanceReason = from o in pagedAndFilteredAllowanceReason
-                                  select new
-                                  {
+                var allowanceReason = from o in pagedAndFilteredAllowanceReason
+                                      select new
+                                      {
 
-                                      o.Name,
-                                      o.Description,
-                                      o.Code,
-                                      o.IsActive,
-                                      Id = o.Id
-                                  };
+                                          o.Name,
+                                          o.Description,
+                                          o.Code,
+                                          o.IsActive,
+                                          Id = o.Id
+                                      };
 
-            var totalCount = await filteredAllowanceReason.CountAsync();
+                var totalCount = await filteredAllowanceReason.CountAsync();
 
-            var dbList = await allowanceReason.ToListAsync();
-            var results = new List<GetAllowanceReasonForViewDto>();
+                var dbList = await allowanceReason.ToListAsync();
+                var results = new List<GetAllowanceReasonForViewDto>();
 
-            foreach (var o in dbList)
-            {
-                var res = new GetAllowanceReasonForViewDto()
+                foreach (var o in dbList)
                 {
-                    AllowanceReason = new AllowanceReasonDto
+                    var res = new GetAllowanceReasonForViewDto()
                     {
+                        AllowanceReason = new AllowanceReasonDto
+                        {
 
-                        Name = o.Name,
-                        Description = o.Description,
-                        Code = o.Code,
-                        IsActive = o.IsActive,
-                        Id = o.Id,
-                    }
-                };
+                            Name = o.Name,
+                            Description = o.Description,
+                            Code = o.Code,
+                            IsActive = o.IsActive,
+                            Id = o.Id,
+                        }
+                    };
 
-                results.Add(res);
+                    results.Add(res);
+                }
+
+                return new PagedResultDto<GetAllowanceReasonForViewDto>(
+                    totalCount,
+                    results
+                );
+
             }
-
-            return new PagedResultDto<GetAllowanceReasonForViewDto>(
-                totalCount,
-                results
-            );
-
         }
 
         public async Task<GetAllowanceReasonForViewDto> GetAllowanceReasonForView(int id)

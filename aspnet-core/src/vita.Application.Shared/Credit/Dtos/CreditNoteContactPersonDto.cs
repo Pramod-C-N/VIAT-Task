@@ -23,5 +23,9 @@ namespace vita.Credit.Dtos
 
         public string Type { get; set; }
 
+        public string AdditionalData1 { get; set; }
+
+        public string Language { get; set; }
+
     }
 }

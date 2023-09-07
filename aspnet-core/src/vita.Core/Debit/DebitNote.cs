@@ -80,5 +80,19 @@ namespace vita.Debit
 
         public virtual string InvoiceNotes { get; set; }
 
+        public virtual string AdditionalData1 { get; set; }
+
+        public virtual string XmlUuid { get; set; }
+
+        public virtual string InvoiceTypeCode { get; set; }
+
+        public virtual string Language { get; set; }
+
+        public virtual string AdditionalData2 { get; set; }
+
+        public virtual string AdditionalData3 { get; set; }
+
+        public virtual string AdditionalData4 { get; set; }
+
     }
 }

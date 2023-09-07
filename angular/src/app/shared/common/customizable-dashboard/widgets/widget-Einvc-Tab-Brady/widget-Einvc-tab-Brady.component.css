@@ -1,0 +1,14 @@
+.card.card-custom > .card-body{
+    padding: 1rem 1.25rem;
+}
+.card .card-header {   
+    flex-wrap: unset; 
+}
+
+.tdColorBlue{
+    background-color: blue !important;
+    color:blue !important
+}
+.bluecolor{
+    background-color: #e3f2fd;
+}

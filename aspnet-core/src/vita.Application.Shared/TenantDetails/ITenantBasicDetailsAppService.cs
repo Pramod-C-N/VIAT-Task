@@ -19,8 +19,6 @@ namespace vita.TenantDetails
         Task CreateOrEdit(CreateOrEditTenantBasicDetailsDto input);
 
         Task Delete(EntityDto input);
-
-
         Task<bool> InsertBatchUploadTenant(string json, string fileName, int? tenantId);
 
         Task<DataTable> GetTenantById(int? Id);

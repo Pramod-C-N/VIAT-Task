@@ -5,7 +5,7 @@
             <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0" style="gap: 10px">
                 <li class="nav-item">
                     <input class="form-control startEndRange" id="StartEndRange" name="StartEndRange"
-                        #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker  [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
+                        #drp="bsDaterangepicker" readonly="readonly" bsDaterangepicker [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY'}" dateRangePickerLuxonModifier
                         [(date)]="dateRange" placement="bottom right" (bsValueChange)="searchData()" />
                 </li>
             </ul>
@@ -14,8 +14,8 @@
     <div [class]="containerClass">
         <div class="card">
             <div class="card-body">
-                <div *ngIf="!hideHeader" class="header row">
-                    <div class="col-lg-10">
+                <div class="row" style="margin-top: -10px; padding-bottom: 10px;">
+                    <div class="col-lg-8">
                         <ul class="nav nav-tabs nav-line-tabs nav-stretch border-0 mb-2">
                             <li class="gapbetweenbtn">
                                 <a [ngClass]="{
@@ -37,7 +37,7 @@
                                     Credit Note
                                 </a>
                             </li>
-                            <li>
+                            <li class="gapbetweenbtn">
                                 <a [ngClass]="{
                                             'nav-link w-100 btn btn-flex startEndRange fw-bold': true,
                                             active: tab == 'Debit Note'
@@ -49,105 +49,82 @@
                             </li>
                         </ul>
                     </div>
-                    <div class=" col-lg-2 mt-1">
-                        <div class="btn-group dropdown " dropdown container="body" style="margin-right: 5px;">
-                            <button class="dropdown-toggle btn btn-sm btn-primary" dropdownToggle>
-                                <span class="caret"></span>
-                                <b>{{ l('Create New') }}</b>
-                            </button>
-                            <ul class="dropdown-menu" *dropdownMenu>
-                                <li>
-                                    <a class="dropdown-item" [routerLink]="['/app/main/sales/createPurchaseEntry']">
-                                        {{ l('Create Purchase Entry') }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:;" class="dropdown-item"
-                                        [routerLink]="['/app/main/sales/createCreditNote']">
-                                        {{ l('Credit Note Invoice') }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:;"
-                                        [routerLink]="['/app/main/sales/createDebitNote']">
-                                        {{ l('Debit Note Invoice') }}
-                                    </a>
-                                </li>
-                            </ul>
+                    <div class="col-lg-4 d-flex align-items-center justify-content-end">
+                        <div class="gapbetweenbtn btn-group" dropdown container="body">
+                            <a *ngIf="tab == 'Debit Note'" class="btn nav-link w-100 btn-sm fw-bold"
+                                [routerLink]="[createUrl]"
+                                [ngStyle]="{'text-align': 'center',color: 'white','border-color': '#F1BC00',border: '1px solid','background-color': '#F1BC00'}">
+                                {{ l('Create ')+ tab }}
+                            </a>
+                            <a *ngIf="tab == 'Credit Note'" class="btn nav-link w-100 btn-sm fw-bold"
+                                [routerLink]="[createUrl]"
+                                [ngStyle]="{'text-align': 'center',color: 'white','border-color': '#1BC5BD',border: '1px solid','background-color': '#1BC5BD'}">
+                                {{ l('Create ')+ tab }}
+                            </a>
+                            <a *ngIf="tab == 'Sales Invoice'" class="btn nav-link w-100 btn-sm fw-bold"
+                                [routerLink]="[createUrl]"
+                                [ngStyle]="{'text-align': 'center',color: 'white','border-color': '#20AAF8',border: '1px solid','background-color': '#20AAF8'}">
+                                {{ l('Create Purchase Entry')}}
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
-                        <div class="card card-p-0 card-flush">
-                            <div class="card-body">
-                                <p-table #dt sortMode="multiple" [value]="invoices" [columns]="columns"
-                                    [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
-                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                                    [rowsPerPageOptions]="[5, 10, 15, 20]">
-                                    <ng-template pTemplate="header">
-                                        <tr>
-                                            <th *ngFor="let col of columns" class="fw-bold"
-                                                pSortableColumn="{{col.field}}">
-                                                {{ col.header | localize }}
-                                                <p-sortIcon field="{{col.field}}"></p-sortIcon>
-                                            </th>
-                                            <th style="width: 150px" class="fw-bold" *ngIf="tab == 'Debit Note'">
-                                                {{ 'Invoice Download' | localize }}
-                                            </th>
-                                        </tr>
-                                    </ng-template>
-                                    <ng-template pTemplate="body" let-record="$implicit" let-columns="columns">
-                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Sales Invoice'"
-                                            class="alternate-row">
-                                            <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
-                                                *ngFor="let col of columns">
-                                                <span *ngIf="col.header == 'Amount (SAR)'">
-                                                    {{ record[col.field].toFixed(2) | currency:'':''}}
-                                                </span>
-                                                <span *ngIf="col.header != 'Amount (SAR)'">
-                                                    {{ record[col.field] }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Credit Note'"
-                                            class="alternate-row-credit">
-                                            <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
-                                                *ngFor="let col of columns">
-                                                <span *ngIf="col.header == 'Amount (SAR)'">
-                                                    {{ record[col.field].toFixed(2) | currency:'':''}}
-                                                </span>
-                                                <span *ngIf="col.header != 'Amount (SAR)'">
-                                                    {{ record[col.field] }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <tr [pSelectableRow]="record" *ngIf="tab == 'Debit Note'"
-                                            class="alternate-row-debit">
-                                            <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
-                                                *ngFor="let col of columns">
-                                                <span *ngIf="col.header == 'Amount (SAR)'">
-                                                    {{ record[col.field].toFixed(2) | currency:'':''}}
-                                                </span>
-                                                <span *ngIf="col.header != 'Amount (SAR)'">
-                                                    {{ record[col.field] }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="p-column-title">{{ 'Download' | localize }}</span>
-                                                <a target="_blank" href="{{ pdfUrl }}/{{ tenantId }}/{{ record.uniqueIdentifier }}/{{
-                                                            record.uniqueIdentifier
-                                                        }}_{{ record.invoiceId }}.pdf"
-                                                    class="btn btn-light-color-primary btn-sm me-2 p-0">
-                                                    <span class="svg-icon svg-icon-3 m-0">
-                                                        <img class="pdf-md"
-                                                            [src]="'/assets/common/images/pdf_icon.svg'" />
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="kt_tab_pane_7" role="tabpanel">
+                            <div class="card card-p-0 card-flush">
+                                <div class="card-body">
+                                    <p-table #dt sortMode="multiple" [value]="invoices" [columns]="columns"
+                                        [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                        [rowsPerPageOptions]="[5, 10, 15, 20]">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th *ngFor="let col of columns" class="fw-bold"
+                                                    pSortableColumn="{{col.field}}">
+                                                    {{ col.header | localize }}
+                                                    <p-sortIcon field="{{col.field}}"></p-sortIcon>
+                                                </th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-record="$implicit" let-columns="columns">
+                                            <tr [pSelectableRow]="record" *ngIf="tab == 'Sales Invoice'"
+                                                class="alternate-row">
+                                                <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
+                                                    *ngFor="let col of columns">
+                                                    <span *ngIf="col.header == 'Amount (SAR)'">
+                                                        {{ record[col.field].toFixed(2) | currency:'':''}}
                                                     </span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </ng-template>
-                                </p-table>
+                                                    <span *ngIf="col.header != 'Amount (SAR)'">
+                                                        {{ record[col.field] }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr [pSelectableRow]="record" *ngIf="tab == 'Credit Note'"
+                                                class="alternate-row-credit">
+                                                <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
+                                                    *ngFor="let col of columns">
+                                                    <span *ngIf="col.header == 'Amount (SAR)'">
+                                                        {{ record[col.field].toFixed(2) | currency:'':''}}
+                                                    </span>
+                                                    <span *ngIf="col.header != 'Amount (SAR)'">
+                                                        {{ record[col.field] }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr [pSelectableRow]="record" *ngIf="tab == 'Debit Note'"
+                                                class="alternate-row-debit">
+                                                <td [ngStyle]="col.header == 'Amount (SAR)' ? {'text-align': 'right'} : {'text-align': 'left'}"
+                                                    *ngFor="let col of columns">
+                                                    <span *ngIf="col.header == 'Amount (SAR)'">
+                                                        {{ record[col.field].toFixed(2) | currency:'':''}}
+                                                    </span>
+                                                    <span *ngIf="col.header != 'Amount (SAR)'">
+                                                        {{ record[col.field] }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,4 +132,3 @@
             </div>
         </div>
     </div>
-</div>
